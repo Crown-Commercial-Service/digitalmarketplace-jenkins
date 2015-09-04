@@ -1,0 +1,9 @@
+---
+- hosts: jenkins
+  name: setup
+  user: ubuntu
+  gather_facts: True
+  sudo: True
+
+  roles:
+    - jenkins

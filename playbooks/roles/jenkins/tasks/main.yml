@@ -1,0 +1,29 @@
+---
+- name: Ensure dependencies are installed.
+  apt: pkg=curl state=installed
+
+- name: Add Jenkins apt repository key.
+  apt_key:
+    url: "{{ jenkins_repo_key_url }}"
+    state: present
+
+- name: Add Jenkins apt repository.
+  apt_repository:
+    repo: "{{ jenkins_repo_url }}"
+    state: present
+    update_cache: yes
+
+- name: Ensure Jenkins is installed.
+  apt: pkg=jenkins state=installed
+
+# Make sure Jenkins starts, then configure Jenkins.
+- name: Ensure Jenkins is started and runs on startup.
+  service: name=jenkins state=started enabled=yes
+
+- name: Wait for Jenkins to start up before proceeding.
+  shell: curl --head --silent http://{{ jenkins_hostname }}:8080/cli/
+  register: result
+  until: result.stdout.find("200 OK") != -1
+  retries: "{{ jenkins_connection_retries }}"
+  delay: "{{ jenkins_connection_delay }}"
+  changed_when: false
