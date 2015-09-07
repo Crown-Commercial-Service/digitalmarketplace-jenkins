@@ -22,11 +22,15 @@
             backup=no
   notify: restart jenkins
 
-- name: Copy Jenkins config file
-  template: src=jenkins/config.xml.j2
-        dest=/data/jenkins/config.xml
+- name: Copy Jenkins config files
+  template: src=jenkins/{{ item }}.j2
+        dest=/data/jenkins/{{ item }}
         backup=yes
   notify: restart jenkins
+  with_items:
+    - config.xml
+    - credentials.xml
+    - hudson.plugins.git.GitSCM.xml
   tags: config
 
 - name: Ensure Jenkins is started and runs on startup.
@@ -53,4 +57,6 @@
   delay: 10
 
 - include: plugins.yml tags=plugins
+- include: jobs.yml tags=jobs
+- include: tools.yml tags=tools
 - include: nginx.yml tags=nginx
