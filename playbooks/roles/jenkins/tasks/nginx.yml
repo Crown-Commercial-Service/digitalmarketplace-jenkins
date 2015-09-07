@@ -1,0 +1,38 @@
+---
+- name: Install Nginx
+  apt: name=nginx update_cache=yes state=installed
+
+- name: Create ssl-cert group
+  group: name=ssl-cert state=present
+
+- name: Make sure nginx user is in ssl-cert
+  user: name=nginx groups=www-data,ssl-cert
+
+- name: Create ssl/certs dir
+  file: path=/etc/ssl/certs mode=755 state=directory owner=root
+
+- name: Create ssl/private dir
+  file: path=/etc/ssl/private mode=700 state=directory owner=root
+  sudo: yes
+  tags: ssl
+
+- name: Copy the TLS certificate
+  copy: src={{ ssl_cert_path }} dest=/etc/ssl/certs/jenkins.crt mode=644 group=ssl-cert
+
+- name: Copy the TLS key
+  copy: src={{ ssl_key_path }} dest=/etc/ssl/private/jenkins.key mode=640 group=ssl-cert
+
+- name: Create nginx jenkins proxy configuration files
+  template: src=jenkins_nginx.j2
+            dest=/etc/nginx/sites-available/jenkins
+            backup=yes
+  notify: reload nginx
+
+- name: Ensure that the configuration files are enabled
+  command: ln -s /etc/nginx/sites-available/jenkins
+           /etc/nginx/sites-enabled/jenkins
+           creates=/etc/nginx/sites-enabled/jenkins
+  notify: reload nginx
+
+- name: Ensure Nginx service is started
+  service: name=nginx state=started enabled=yes

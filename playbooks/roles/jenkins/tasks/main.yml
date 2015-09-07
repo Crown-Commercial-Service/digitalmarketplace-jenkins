@@ -45,3 +45,4 @@
   delay: 10
 
 - include: plugins.yml
+- include: nginx.yml
