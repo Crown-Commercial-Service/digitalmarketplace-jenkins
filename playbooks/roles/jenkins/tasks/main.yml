@@ -26,10 +26,25 @@
   copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
   tags: config
 
+- name: Copy internal Github CA certificate
+  copy: src={{ github_ca_cert_path }} dest=/data/jenkins/github-gds-ca.pem mode=600 owner=jenkins
+  tags: config
+
+- name: Check if Github CA is already imported
+  shell: keytool -list -keystore /etc/ssl/certs/java/cacerts -storepass {{ java_certificate_store_pass }} -noprompt -alias github_gds_ca
+  ignore_errors: true
+  register: java_cert_imported
+  tags: config
+
+- name: Add internal Github CA certificate
+  shell: keytool -import -trustcacerts -keystore /etc/ssl/certs/java/cacerts -alias github_gds_ca -storepass {{ java_certificate_store_pass }} -noprompt -file /data/jenkins/github-gds-ca.pem
+  when: java_cert_imported|failed
+  tags: config
+
 - name: Copy Jenkins config files
   template: src=jenkins/{{ item }}.j2
         dest=/data/jenkins/{{ item }}
-        backup=yes
+        backup=no
   notify: restart jenkins
   with_items:
     - config.xml

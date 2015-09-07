@@ -3,6 +3,7 @@
     name: snapshot-g7-stats
     environment:
       - preview
+      - production
     jobs:
       - '{environment}-{name}'
 

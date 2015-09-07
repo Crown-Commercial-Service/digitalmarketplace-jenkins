@@ -13,15 +13,19 @@
   {% endfor %}
 
     <!-- Jenkins Github user used for jenkins-job-builder -->
-    <permission>hudson.model.Hudson.Administer:dm-ssp-jenkins</permission>
+    <permission>hudson.model.Hudson.Read:{{ jenkins_api_user }}</permission>
+    <permission>hudson.model.Item.Configure:{{ jenkins_api_user }}</permission>
+    <permission>hudson.model.Item.Create:{{ jenkins_api_user }}</permission>
+    <permission>hudson.model.Item.Delete:{{ jenkins_api_user }}</permission>
+    <permission>hudson.model.Item.Read:{{ jenkins_api_user }}</permission>
 
   </authorizationStrategy>
   <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
     <!-- GitHub authorization app, belongs to the dm-ssp-jenkins user -->
-    <githubWebUri>https://github.com</githubWebUri>
-    <githubApiUri>https://api.github.com</githubApiUri>
-    <clientID>31a371575baf184068eb</clientID>
-    <clientSecret>0cdee885a8560dec70b088646efe6c88636583cf</clientSecret>
+    <githubWebUri>https://github.gds</githubWebUri>
+    <githubApiUri>https://github.gds/api/v3</githubApiUri>
+    <clientID>{{ jenkins_github_auth_client_id }}</clientID>
+    <clientSecret>{{ jenkins_github_auth_client_secret }}</clientSecret>
     <oauthScopes>read:org,user:email</oauthScopes>
   </securityRealm>
   <disableRememberMe>false</disableRememberMe>
