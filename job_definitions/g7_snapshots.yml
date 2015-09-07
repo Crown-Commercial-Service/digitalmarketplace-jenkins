@@ -1,0 +1,30 @@
+---
+- project:
+    name: snapshot-g7-stats
+    environment:
+      - preview
+    jobs:
+      - '{environment}-{name}'
+
+- job-template:
+    name: '{environment}-{name}'
+    project-type: freestyle
+    description: Creates an hourly snapshot of G-Cloud 7 framework stats and stores it in the API audit event
+    display-name: "Snapshot G7 stats [{environment}]"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-api.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+
+    triggers:
+      - timed: "H * * * *"
+    builders:
+      - shell: |
+          [ -d venv ] || virtualenv venv
+
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+
+          ./scripts/snapshot_framework_stats.py g-cloud-7 {environment} "$DM_DATA_API_TOKEN_{environment}"

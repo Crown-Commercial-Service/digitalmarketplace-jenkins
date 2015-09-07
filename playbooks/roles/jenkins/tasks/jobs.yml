@@ -1,0 +1,22 @@
+---
+
+- name: Install pip
+  apt: name=python-pip state=present
+
+- name: Install jenkins-job-builder
+  pip: name=jenkins-job-builder state=present
+
+- name: Create /etc/jenkins_jobs
+  file: path=/etc/jenkins_jobs state=directory
+
+- name: Deploy jenkins_jobs.ini
+  template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
+
+- name: Upload jenkins jobs definitions
+  copy: dest="/etc/jenkins_jobs/definitions" src="../../../../job_definitions/"
+
+- name: Test job definitions before updating
+  command: su - jenkins -c "jenkins-jobs test /etc/jenkins_jobs/definitions"
+
+- name: Update job definitions
+  command: su - jenkins -c "jenkins-jobs update /etc/jenkins_jobs/definitions"
