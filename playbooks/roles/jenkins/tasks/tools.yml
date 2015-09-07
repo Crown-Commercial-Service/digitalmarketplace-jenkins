@@ -1,0 +1,10 @@
+---
+- name: Install tools
+  apt: update_cache=true name={{ item }}
+  with_items:
+    - git
+    - python-pip
+    - python-virtualenv
+    - libpq-dev
+    - python-dev
+
