@@ -12,6 +12,9 @@
     <permission>hudson.model.Hudson.Administer:{{ user }}</permission>
   {% endfor %}
 
+    <!-- Jenkins Github user used for jenkins-job-builder -->
+    <permission>hudson.model.Hudson.Administer:dm-ssp-jenkins</permission>
+
   </authorizationStrategy>
   <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
     <!-- GitHub authorization app, belongs to the dm-ssp-jenkins user -->
