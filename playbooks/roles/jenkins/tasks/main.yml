@@ -1,6 +1,5 @@
 ---
-- name: Ensure dependencies are installed.
-  apt: pkg=curl state=installed
+- include: volume.yml
 
 - name: Add Jenkins apt repository key.
   apt_key:
