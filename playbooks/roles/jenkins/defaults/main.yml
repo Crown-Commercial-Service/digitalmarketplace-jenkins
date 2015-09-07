@@ -1,5 +1,4 @@
 ---
-
 mount_dir: /data
 jenkins_home: /data/jenkins
 jenkins_logs_dir: /data/logs

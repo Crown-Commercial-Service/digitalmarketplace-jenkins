@@ -15,14 +15,21 @@
 - name: Ensure Jenkins is installed.
   apt: pkg=jenkins state=installed
 
-- name: Ensure Jenkins is started and runs on startup.
-  service: name=jenkins state=started enabled=yes
-
 - name: Set Jenkins service boot config
   template: src=jenkins_defaults.j2
             dest=/etc/default/jenkins
             backup=no
   notify: restart jenkins
+
+- name: Copy Jenkins config file
+  template: src=jenkins/config.xml.j2
+        dest=/data/jenkins/config.xml
+        backup=yes
+  notify: restart jenkins
+  tags: config
+
+- name: Ensure Jenkins is started and runs on startup.
+  service: name=jenkins state=started enabled=yes
 
 - name: Instal curl
   apt: pkg=curl state=installed
