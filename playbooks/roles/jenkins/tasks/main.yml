@@ -22,6 +22,10 @@
             backup=no
   notify: restart jenkins
 
+- name: Copy Github private key for jenkins user
+  copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
+  tags: config
+
 - name: Copy Jenkins config files
   template: src=jenkins/{{ item }}.j2
         dest=/data/jenkins/{{ item }}
