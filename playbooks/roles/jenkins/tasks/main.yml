@@ -1,5 +1,6 @@
 ---
-- include: volume.yml
+- include: volume.yml tags=volume
+- include: vpn.yml tags=vpn
 
 - name: Add Jenkins apt repository key.
   apt_key:
@@ -51,5 +52,5 @@
   retries: 5
   delay: 10
 
-- include: plugins.yml
-- include: nginx.yml
+- include: plugins.yml tags=plugins
+- include: nginx.yml tags=nginx

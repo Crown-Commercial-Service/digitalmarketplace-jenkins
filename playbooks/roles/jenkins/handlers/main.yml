@@ -4,3 +4,6 @@
 
 - name: restart jenkins
   service: name=jenkins state=restarted
+
+- name: restart openconnect
+  service: name=openconnect state=restarted
