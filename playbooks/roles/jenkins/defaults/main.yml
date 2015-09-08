@@ -15,6 +15,7 @@ jenkins_jar_location: /opt/jenkins-cli.jar
 jenkins_plugins:
   - git
   - github
+  - github-oauth
   - conditional-buildstep
   - parameterized-trigger
   - postbuildscript
