@@ -13,7 +13,9 @@
   template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
 
 - name: Upload jenkins jobs definitions
-  copy: dest="/etc/jenkins_jobs/definitions" src="../../../../job_definitions/"
+  template: src={{ item }} dest=/etc/jenkins_jobs/definitions
+  with_fileglob:
+    - "../../../../job_definitions/*.yml"
 
 - name: Test job definitions before updating
   command: su - jenkins -c "jenkins-jobs test /etc/jenkins_jobs/definitions"
