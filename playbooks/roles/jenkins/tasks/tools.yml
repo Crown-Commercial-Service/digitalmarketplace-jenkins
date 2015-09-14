@@ -8,3 +8,27 @@
     - libpq-dev
     - python-dev
 
+- name: Install rbenv
+  sudo: yes
+  sudo_user: jenkins
+  git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
+  with_items:
+    - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
+    - {repo: "https://github.com/sstephenson/ruby-build.git", path: ".rbenv/plugins/ruby-build"}
+
+- name: Add .rbenv to PATH
+  lineinfile: >
+    dest=/var/lib/jenkins/.bash_profile
+    create=yes
+    regexp='^export PATH="$HOME/.rbenv'
+    line='export PATH="$HOME/.rbenv:$PATH"'
+    owner=jenkins
+    group=jenkins
+
+- name: Add rbenv init
+  lineinfile: >
+    dest=/var/lib/jenkins/.bash_profile
+    regexp='rbenv init'
+    line='eval "$(rbenv init -)"'
+    owner=jenkins
+    group=jenkins
