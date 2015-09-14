@@ -22,6 +22,17 @@ jenkins_plugins:
   - build-monitor-plugin
   - nodejs
 
+jenkins_list_views:
+  - name: "Data"
+    jobs:
+      - preview-snapshot-g7-stats
+      - production-snapshot-g7-stats
+  - name: "Smoke tests"
+    jobs:
+      - preview-apps-are-up
+      - staging-apps-are-up
+      - production-apps-are-up
+
 app_urls:
   preview:
     data_api: https://preview-api.development.digitalmarketplace.service.gov.uk
