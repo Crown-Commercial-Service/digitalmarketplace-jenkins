@@ -21,6 +21,8 @@ jenkins_plugins:
   - postbuildscript
   - build-monitor-plugin
   - nodejs
+  - ansicolor
+  - htmlpublisher
 
 jenkins_list_views:
   - name: "Data"

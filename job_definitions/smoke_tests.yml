@@ -22,6 +22,16 @@
             - master
     triggers:
       - timed: "H/5 * * * *"
+    wrappers:
+      - ansicolor
+    publishers:
+      - html-publisher:
+          name: "smoke test report"
+          dir: reports
+          files: index.html
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
     builders:
       - shell: |
           rbenv install -s
