@@ -2,17 +2,19 @@
 ---
 {% for environment in environments %}
 - job:
-    name: '{{ environment }}-snapshot-g7-stats'
+    name: 'snapshot-g7-stats-{{ environment }}'
+    display-name: "Snapshot G7 stats - {{ environment }}"
     project-type: freestyle
     description: Creates an hourly snapshot of G-Cloud 7 framework stats and stores it in the API audit event
-    display-name: "Snapshot G7 stats [{{ environment }}]"
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-api.git
           credentials-id: github-ssh-key
           branches:
             - master
-
     triggers:
       - timed: "H * * * *"
     builders:

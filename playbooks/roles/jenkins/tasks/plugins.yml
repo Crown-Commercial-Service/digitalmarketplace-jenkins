@@ -19,6 +19,7 @@
     group: jenkins
     mode: 0755
 
+# TODO: add -i option here so that it still works after setup
 - name: Install Jenkins plugins.
   command: >
     java -jar {{ jenkins_jar_location }} -s http://{{ jenkins_hostname }}:8080/ install-plugin {{ item }}

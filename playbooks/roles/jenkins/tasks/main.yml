@@ -49,7 +49,7 @@
 - name: Ensure Jenkins is started and runs on startup.
   service: name=jenkins state=started enabled=yes
 
-- name: Instal curl
+- name: Install curl
   apt: pkg=curl state=installed
 
 - name: Wait for Jenkins to start up before proceeding.

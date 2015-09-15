@@ -1,0 +1,58 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "apps-are-up-{{ environment }}"
+    display-name: "Apps are up - {{ environment }}"
+    project-type: freestyle
+    description: |
+      Check that the five Digital Marketplace apps are up and running in the {{ environment|upper }} environment:
+      <ul>
+        <li>API</li>
+        <li>Search API</li>
+        <li>Buyer frontend</li>
+        <li>Supplier frontend</li>
+        <li>Admin frontend</li>
+      </ul>
+    logrotate:
+      daysToKeep: 4
+      artifactDaysToKeep: 4
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    triggers:
+      - timed: "H/5 * * * *"
+    wrappers:
+      - ansicolor
+    publishers:
+      - html-publisher:
+          name: "smoke test report"
+          dir: reports
+          files: index.html
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
+    builders:
+      - shell: |
+          rbenv install -s
+          which bundler || gem install bundler
+          bundle install
+          
+          export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
+          export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
+
+          export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
+          export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
+          export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+
+          export DM_SUPPLIEREMAIL="{{ functional_test_variables[environment].supplier_email }}"
+          export DM_SUPPLIERPASSWORD="{{ functional_test_variables[environment].supplier_password }}"
+
+          mkdir -p reports
+          rm -f screenshot*
+
+          bundle exec cucumber features --tags ~@wip --tags ~@not-production --color --format html --out reports/index.html --format pretty
+{% endfor %}

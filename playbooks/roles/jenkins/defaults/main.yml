@@ -21,3 +21,30 @@ jenkins_plugins:
   - postbuildscript
   - build-monitor-plugin
   - nodejs
+  - ansicolor
+  - htmlpublisher
+
+jenkins_list_views:
+  - name: "Data"
+    jobs:
+      - preview-snapshot-g7-stats
+      - production-snapshot-g7-stats
+  - name: "Smoke tests"
+    jobs:
+      - preview-apps-are-up
+      - staging-apps-are-up
+      - production-apps-are-up
+
+app_urls:
+  preview:
+    data_api: https://preview-api.development.digitalmarketplace.service.gov.uk
+    search_api: https://preview-search-api.development.digitalmarketplace.service.gov.uk
+    www: https://preview.development.digitalmarketplace.service.gov.uk
+  staging:
+    data_api: https://staging-api.digitalmarketplace.service.gov.uk
+    search_api: https://staging-search-api.digitalmarketplace.service.gov.uk
+    www: https://staging.digitalmarketplace.service.gov.uk
+  production:
+    data_api: https://api.digitalmarketplace.service.gov.uk
+    search_api: https://search-api.digitalmarketplace.service.gov.uk
+    www: https://www.digitalmarketplace.service.gov.uk
