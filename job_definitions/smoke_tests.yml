@@ -2,11 +2,11 @@
 ---
 {% for environment in environments %}
 - job:
-    name: "{{ environment }}-apps-are-up"
-    display-name: "{{ environment|title }} apps are up"
+    name: "apps-are-up-{{ environment }}"
+    display-name: "Apps are up - {{ environment }}"
     project-type: freestyle
     description: |
-      Check that the five Digital Marketplace apps are up and running in the {{ environment|upper }}environment:
+      Check that the five Digital Marketplace apps are up and running in the {{ environment|upper }} environment:
       <ul>
         <li>API</li>
         <li>Search API</li>
