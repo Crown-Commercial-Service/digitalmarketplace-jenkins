@@ -14,6 +14,9 @@
         <li>Supplier frontend</li>
         <li>Admin frontend</li>
       </ul>
+    logrotate:
+      daysToKeep: 4
+      artifactDaysToKeep: 4
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
