@@ -82,6 +82,7 @@
     - config.xml
     - credentials.xml
     - hudson.plugins.git.GitSCM.xml
+    - hudson.tasks.Shell.xml
   tags: config
 
 - include: jobs.yml tags=jobs
