@@ -1,0 +1,23 @@
+---
+- job:
+    name: 'tag-dmutils'
+    display-name: "Tag dmutils"
+    project-type: freestyle
+    description: "Push the git tag on the https://github.com/alphagov/digitalmarketplace-utils repository."
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-utils.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    triggers:
+      - github
+    wrappers:
+      - ansicolor
+    builders:
+      - shell: |
+          git config user.name "Jenkins"
+          ./scripts/push-tag.sh
