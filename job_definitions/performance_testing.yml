@@ -106,7 +106,16 @@
           name: MAXIDLE
           default: "200"
           description: "Maximum number of milliseconds between each request"
+    publishers:
+      - html-publisher:
+          name: "results"
+          dir: results
+          files: index.html
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
     builders:
       - shell: |
           ./scripts/run-gatling.sh --token "$DM_DATA_API_TOKEN_STAGING" --users $USERS --repeat $REPEAT --unit $UNIT --minIdle $MINIDLE --maxIdle $MAXIDLE --baseUrl {{ app_urls.staging[area.url] }} --test $TEST
+          mv results/$(ls results)/* results
 {% endfor %}
