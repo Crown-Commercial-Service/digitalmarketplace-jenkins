@@ -1,0 +1,108 @@
+---
+- job:
+    name: "notify-slack"
+    display-name: "Notify slack"
+    project-type: freestyle
+    description:
+    logrotate:
+      daysToKeep: 4
+      artifactDaysToKeep: 4
+    parameters:
+      - string:
+          name: USERNAME
+          default: deploy
+      - string:
+          name: ICON
+          default: ":shipit:"
+      - string:
+          name: TEXT
+      - string:
+          name: CHANNEL
+          default: "#dm-release"
+      - string:
+          name: PROJECT
+      - text:
+          name: STAGE
+      - text:
+          name: RELEASE
+      - string:
+          name: STATUS
+      - string:
+          name: URL
+      - text:
+          name: JOB
+    builders:
+      - shell: |
+          #!/usr/bin/env python
+          # encoding: utf-8
+          
+          # curl -X POST -d "{\"username\": \"$USERNAME\", \"icon_emoji\": \"$ICON\", \"text\": \"$TEXT\", \"channel\": \"$CHANNEL\"}" https://hooks.slack.com/services/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
+          import json
+          import os
+          import urllib2
+
+          SLACK_URL = 'https://hooks.slack.com/services/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'  # noqa
+
+          USERNAME = os.getenv('USERNAME', 'deploy')
+          ICON = os.getenv('ICON', ':shipit:')
+          CHANNEL = os.getenv('CHANNEL', '#dm-release')
+
+          TEXT = os.getenv('TEXT', '')
+
+          PROJECT = os.getenv('PROJECT', None)
+          STAGE = os.getenv('STAGE', None)
+          RELEASE = os.getenv('RELEASE', None)
+
+          STATUS = os.getenv('STATUS', None)
+          URL = os.getenv('URL', None)
+
+          # STARTED_BY = os.getenv('STARTED_BY')
+          JOB = os.getenv('JOB', None)
+
+
+          def build_fields(fields):
+              return [
+                  {"title": key, "value": val, "short": short}
+                  for key, val, short in fields
+                  if val
+              ]
+
+
+          def color_from_status(status):
+              if status == "SUCCESS":
+                  return "good"
+              elif status == "FAILED":
+                  return "danger"
+
+
+          def build_message():
+              message = {
+                  "username": USERNAME,
+                  "icon_emoji": ICON,
+                  "channel": CHANNEL,
+              }
+
+              if TEXT:
+                  message.update({"text": TEXT})
+                  return message
+
+              message.update({
+                  "text": "{} finished".format(JOB),
+                  "attachments": [{
+                      "fallback": "{} ",
+                      "color": color_from_status(STATUS),
+                      "fields": build_fields([
+                          ("Project", PROJECT, False),
+                          ("Stage", STAGE, True),
+                          ("Release", RELEASE, True),
+                          ("Status", STATUS, True),
+                          ("Build URL", URL, True),
+                      ])
+                  }],
+              })
+
+              return message
+
+
+          urllib2.urlopen(SLACK_URL, data=json.dumps(build_message()))
+

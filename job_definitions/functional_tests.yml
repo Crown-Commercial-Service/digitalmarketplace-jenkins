@@ -1,0 +1,74 @@
+---
+- job:
+    name: "functional-tests-preview"
+    display-name: "Functional tests - preview"
+    project-type: freestyle
+    description: |
+      Run the full functional test suite against the preview environment
+    logrotate:
+      daysToKeep: 4
+      artifactDaysToKeep: 4
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+{#    triggers:
+      - timed: "H/30 * * * *"
+      - github #}
+    wrappers:
+      - ansicolor
+    publishers:
+      - html-publisher:
+          name: "functional test report"
+          dir: reports
+          files: index.html
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=functional-tests
+              JOB=AWS Preview functional tests
+              ICON=:rotating_light:
+              STAGE=preview
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=functional-tests
+              JOB=AWS Preview functional tests
+              ICON=:alarm_clock:
+              STAGE=preview
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          rbenv install -s
+          which bundler || gem install bundler
+          bundle install
+          
+          export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_PREVIEW"
+          export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_PREVIEW"
+
+          export DM_API_DOMAIN="{{ app_urls.preview.data_api }}"
+          export DM_SEARCH_API_DOMAIN="{{ app_urls.preview.search_api }}"
+          export DM_FRONTEND_DOMAIN="{{ app_urls.preview.www }}"
+
+          export DM_ADMINISTRATORNAME="{{ functional_test_variables.preview.admin_email }}"
+          export DM_ADMINISTRATORPASSWORD="{{ functional_test_variables.preview.admin_password }}"
+          export DM_SUPPLIEREMAIL="{{ functional_test_variables.preview.supplier_email }}"
+          export DM_SUPPLIER2EMAIL="{{ functional_test_variables.preview.supplier2_email }}"
+          export DM_SUPPLIER3EMAIL="{{ functional_test_variables.preview.supplier3_email }}"
+          export DM_SUPPLIERPASSWORD="{{ functional_test_variables.preview.supplier_password }}"
+
+          mkdir -p reports
+          rm -f screenshot*
+
+          bundle exec cucumber features --tags ~@wip --tags ~@ssp --tags @functional-test --color --format html --out reports/index.html --format pretty 
