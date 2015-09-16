@@ -13,7 +13,7 @@
   template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
 
 - name: Upload jenkins jobs definitions
-  template: src={{ item }} dest=/etc/jenkins_jobs/definitions
+  template: src={{ item }} dest=/etc/jenkins_jobs/definitions/
   with_fileglob:
     - "../../../../job_definitions/*.yml"
 
