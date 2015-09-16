@@ -14,9 +14,9 @@
           credentials-id: github-ssh-key
           branches:
             - master
-    triggers:
+{#    triggers:
       - timed: "H/30 * * * *"
-      - github
+      - github #}
     wrappers:
       - ansicolor
     publishers:
