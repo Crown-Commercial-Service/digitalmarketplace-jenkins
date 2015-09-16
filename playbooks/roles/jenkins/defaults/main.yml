@@ -34,6 +34,10 @@ jenkins_list_views:
       - preview-apps-are-up
       - staging-apps-are-up
       - production-apps-are-up
+  - name: "Utils and toolkit"
+    jobs:
+      - tag-dmutils
+      - tag-toolkit
 
 app_urls:
   preview:
