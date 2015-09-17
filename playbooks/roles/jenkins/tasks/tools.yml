@@ -8,6 +8,7 @@
     - libpq-dev
     - python-dev
     - phantomjs
+    - libyaml-dev
 
 - name: Install rbenv
   sudo: yes
@@ -34,3 +35,9 @@
     line='eval "$(rbenv init -)"'
     owner=jenkins
     group=jenkins
+
+- name: Add .aws config directory
+  file: path=/var/lib/jenkins/.aws state=directory owner=jenkins group=jenkins
+
+- name: Add AWS credentials file
+  template: src=aws_credentials.j2 dest=/var/lib/jenkins/.aws/credentials
