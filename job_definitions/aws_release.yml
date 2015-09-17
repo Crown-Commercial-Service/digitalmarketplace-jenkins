@@ -1,0 +1,62 @@
+---
+- job:
+    name: "release-app"
+    display-name: "Release application"
+    project-type: freestyle
+    description: |
+      <h1 style="color: #f00">DO NOT CALL THIS DIRECTLY</h1>
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+            - production
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+            - Select one
+            - api
+            - search-api
+            - buyer-frontend
+            - admin-frontend
+            - supplier-frontend
+      - string:
+          name: RELEASE_NAME
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-aws.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    wrappers:
+      - build-name:
+          name: '#${BUILD_NUMBER}-${ENV, var="APPLICATION_NAME"}-${ENV, var="STAGE"} ${ENV, var="RELEASE_NAME"}'
+    builders:
+      - shell: |
+          ./scripts/jenkins-release.sh
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=deploy
+              PROJECT=$APPLICATION_NAME
+              JOB="Release application"
+              ICON=:rotating_light:
+              STAGE=$STAGE
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=deploy
+              JOB="Release application"
+              PROJECT=$APPLICATION_NAME
+              ICON=:alarm_clock:
+              STAGE=$STAGE
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
