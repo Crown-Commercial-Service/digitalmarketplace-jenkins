@@ -27,13 +27,20 @@ jenkins_plugins:
 jenkins_list_views:
   - name: "Data"
     jobs:
-      - preview-snapshot-g7-stats
-      - production-snapshot-g7-stats
+      - snapshot-g7-stats-preview
+      - snapshot-g7-stats-production
   - name: "Smoke tests"
     jobs:
-      - preview-apps-are-up
-      - staging-apps-are-up
-      - production-apps-are-up
+      - apps-are-up-preview
+      - apps-are-up-production
+      - apps-are-up-staging
+  - name: "Performance tests"
+    jobs:
+      - performance-testing-buyer-app
+      - performance-testing-data-api-services
+      - performance-testing-data-api-suppliers
+      - performance-testing-data-api-users
+      - performance-testing-supplier-app
   - name: "Utils and toolkit"
     jobs:
       - tag-dmutils

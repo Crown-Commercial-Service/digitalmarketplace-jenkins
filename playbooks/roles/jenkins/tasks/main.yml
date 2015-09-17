@@ -31,6 +31,9 @@
   copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
   tags: config
 
+- name: Setup Jenkins SSH config
+  copy: src=jenkins_ssh_config dest=/var/lib/jenkins/.ssh/config owner=jenkins mode=600
+
 - name: Copy internal Github CA certificate
   copy: src={{ github_ca_cert_path }} dest=/data/jenkins/github-gds-ca.pem mode=600 owner=jenkins
   tags: config

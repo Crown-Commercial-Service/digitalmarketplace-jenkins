@@ -1,0 +1,121 @@
+{% set areas=[
+  {
+    "slug": "buyer-app", "name": "Buyer app",
+    "url": "www",
+    "tests": [
+      {"name": "BuyerAppSearchSimulation",
+       "desc": "search"},
+      {"name": "BuyerAppServicePageSimulation",
+       "desc": "service pages"},
+      {"name": "BuyerBrowseKeywordsAndFilterSimulation",
+       "desc": "browse a keyword/filter search"},
+      {"name": "BuyerBrowseToSaaSResultsSimulation",
+       "desc": "browse to SaaS results"}
+    ]
+  },
+  {
+    "slug": "data-api-services", "name": "Data API services",
+    "url": "data_api",
+    "tests": [
+      {"name": "DataApiFetchServicesSimulation",
+       "desc": "fetch services"},
+      {"name": "DataApiFetchServicesBySupplierSimulation",
+       "desc": "fetch services by supplier"},
+      {"name": "DataApiImportServicesSimulation",
+       "desc": "import services"},
+      {"name": "DataApiUpdateAndFetchServicesSimulation",
+       "desc": "update and fetch services"},
+      {"name": "DataApiUpdateServicesSimulation",
+       "desc": "update services"}
+    ]
+  },
+  {
+    "slug": "data-api-suppliers", "name": "Data API suppliers",
+    "url": "data_api",
+    "tests": [
+      {"name": "DataApiFetchSupplierPagesSimulation",
+       "desc": "fetch supplier pages"},
+      {"name": "DataApiFetchSuppliersSimulation",
+       "desc": "fetch suppliers"},
+      {"name": "DataApiImportSuppliersSimulation",
+       "desc": "import suppliers"}
+    ]
+  },
+  {
+    "slug": "data-api-users", "name": "Data API users",
+    "url": "data_api",
+    "tests": [
+      {"name": "DataApiLoginUsersSimulation",
+       "desc": "login users"}
+    ]
+  },
+  {
+    "slug": "supplier-app", "name": "Supplier app",
+    "url": "www",
+    "tests": [
+      {"name": "SupplierEditCompanyDetailsSimulation",
+       "desc": "edit company details"},
+      {"name": "SupplierEditServiceDetailsSimulation",
+       "desc": "edit service details"},
+      {"name": "SupplierEditServiceStatusSimulation",
+       "desc": "edit service status"}
+    ]
+  }
+] %}
+---
+{% for area in areas %}
+- job:
+    name: "performance-testing-{{ area.slug }}"
+    display-name: "Performance testing - {{ area.name }}"
+    description:
+    logrotate:
+      daysToKeep: 4
+      artifactDaysToKeep: 4
+    scm:
+      - git:
+          url: git@github.gds:gds/digitalmarketplace-performance-testing.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    parameters:
+      - choice:
+          name: TEST
+          choices:
+            - Select one
+{% for test in area.tests %}
+            - {{ test.name }}
+{% endfor %}
+      - string:
+          name: USERS
+          default: "1"
+          description: "Number of concurrent users"
+      - string:
+          name: REPEAT
+          default: "1"
+          description: "Number of times or number of seconds to repeat the test"
+      - choice:
+          name: UNIT
+          choices:
+            - times
+            - seconds
+      - string:
+          name: MINIDLE
+          default: "100"
+          description: "Minimum number of milliseconds between each request"
+      - string:
+          name: MAXIDLE
+          default: "200"
+          description: "Maximum number of milliseconds between each request"
+    publishers:
+      - html-publisher:
+          name: "results"
+          dir: results
+          files: index.html
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
+    builders:
+      - shell: |
+          ./scripts/run-gatling.sh --token "$DM_DATA_API_TOKEN_STAGING" --users $USERS --repeat $REPEAT --unit $UNIT --minIdle $MINIDLE --maxIdle $MAXIDLE --baseUrl {{ app_urls.staging[area.url] }} --test $TEST
+          mv results/$(ls results)/* results
+{% endfor %}
