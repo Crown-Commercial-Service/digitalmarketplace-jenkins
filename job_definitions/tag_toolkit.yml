@@ -1,0 +1,24 @@
+---
+- job:
+    name: 'tag-toolkit'
+    display-name: "Tag toolkit"
+    project-type: freestyle
+    description: "Push the git tag on the https://github.com/alphagov/digitalmarketplace-frontend-toolkit repository."
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-frontend-toolkit.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    triggers:
+      - github
+    wrappers:
+      - ansicolor
+    builders:
+      - shell: |
+          git config user.name "Jenkins"
+          ./pages_builder/tag_latest_version.sh
+          git push origin --tags
