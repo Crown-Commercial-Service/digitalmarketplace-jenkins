@@ -1,0 +1,29 @@
+{% set apps = [
+  {"name": "api"},
+  {"name": "search-api"},
+  {"name": "supplier-frontend"},
+  {"name": "buyer-frontend"},
+  {"name": "admin-frontend"},
+] %}
+---
+{% for app in apps %}
+- job:
+    name: "release-app-preview-trigger-{{ app.name }}"
+    display-name: "Release application to preview trigger {{ app.name }}"
+    project-type: freestyle
+    description: "Automatically trigger the release of the {{ app.name }} to preview."
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-{{ app.name }}.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    triggers:
+      - github
+    builders:
+      - trigger-builds:
+        - project: release-app
+          predefined-parameters: |
+            STAGE=preview
+            APPLICATION_NAME={{ app.name }}
+{% endfor %}
