@@ -43,7 +43,7 @@
             predefined-parameters: |
               USERNAME=functional-tests
               JOB=Functional tests - {{ job.display_name }}
-              ICON=:red_circle:
+              ICON=:fire:
               STAGE=preview
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>

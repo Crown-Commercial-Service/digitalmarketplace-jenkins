@@ -45,7 +45,7 @@
               USERNAME=deploy
               PROJECT=$APPLICATION_NAME
               JOB="Release application"
-              ICON=:red_circle:
+              ICON=:fire:
               STAGE=$STAGE
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
@@ -56,7 +56,7 @@
               USERNAME=deploy
               JOB="Release application"
               PROJECT=$APPLICATION_NAME
-              ICON=:green_heart:
+              ICON=:ship:
               STAGE=$STAGE
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>

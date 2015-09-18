@@ -41,7 +41,7 @@
             predefined-parameters: |
               USERNAME=smoke-tests
               JOB=Apps are up - {{ environment }}
-              ICON=:red_circle:
+              ICON=:fire:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
