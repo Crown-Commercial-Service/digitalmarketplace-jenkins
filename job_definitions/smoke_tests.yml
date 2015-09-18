@@ -44,7 +44,7 @@
               ICON=:fire:
               STAGE={{ environment }}
               STATUS=FAILED
-              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              URL=<${BUILD_URL}smoke_test_report|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
     builders:
       - shell: |
