@@ -58,6 +58,15 @@
 - name: Install curl
   apt: pkg=curl state=installed
 
+- name: Remove existing Jenkins config
+  file: path=/data/jenkins/{{ item }} state=absent
+  notify: restart jenkins
+  with_items:
+    - config.xml
+    - credentials.xml
+    - hudson.plugins.git.GitSCM.xml
+    - hudson.tasks.Shell.xml
+
 - name: Wait for Jenkins to start up before proceeding.
   shell: curl --head --silent http://{{ jenkins_hostname }}:8080/cli/
   register: result
