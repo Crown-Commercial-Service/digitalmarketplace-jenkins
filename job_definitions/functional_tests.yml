@@ -1,7 +1,7 @@
 {% set jobs = [
   {"name": "preview", "display_name": "preview",
    "description": "Run the full functional test suite against the preview environment",
-   "tags": ["~@wip", "@functional-test"],
+   "tags": ["~@ssp", "@functional-test"],
   },
   {"name": "ssp-preview", "display_name": "SSP preview",
    "description": "Run the SSP functional test suite against the preview environment",
