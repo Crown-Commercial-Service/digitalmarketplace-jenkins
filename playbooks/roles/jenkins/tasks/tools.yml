@@ -23,8 +23,8 @@
   lineinfile: >
     dest=/var/lib/jenkins/.bash_profile
     create=yes
-    regexp='^export PATH="$HOME/.rbenv'
-    line='export PATH="$HOME/.rbenv:$PATH"'
+    regexp='^export PATH="$HOME/.rbenv/bin'
+    line='export PATH="$HOME/.rbenv/bin:$PATH"'
     owner=jenkins
     group=jenkins
 

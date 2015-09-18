@@ -1,9 +1,9 @@
 ---
 - name: Create Jenkins user group
-  group: name=jenkins
+  group: gid=111 name=jenkins
 
 - name: Create Jenkins user
-  user: name=jenkins group=jenkins createhome=no
+  user: uid=106 name=jenkins group=jenkins createhome=no home=/var/lib/jenkins
 
 - include: volume.yml tags=volume
 - include: vpn.yml tags=vpn
@@ -31,6 +31,9 @@
   copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
   tags: config
 
+- name: Setup Jenkins SSH directory
+  file: path=/var/lib/jenkins/.ssh state=directory owner=jenkins group=jenkins
+
 - name: Setup Jenkins SSH config
   copy: src=jenkins_ssh_config dest=/var/lib/jenkins/.ssh/config owner=jenkins mode=600
 
@@ -54,6 +57,15 @@
 
 - name: Install curl
   apt: pkg=curl state=installed
+
+- name: Remove existing Jenkins config
+  file: path=/data/jenkins/{{ item }} state=absent
+  notify: restart jenkins
+  with_items:
+    - config.xml
+    - credentials.xml
+    - hudson.plugins.git.GitSCM.xml
+    - hudson.tasks.Shell.xml
 
 - name: Wait for Jenkins to start up before proceeding.
   shell: curl --head --silent http://{{ jenkins_hostname }}:8080/cli/
@@ -88,6 +100,6 @@
     - hudson.tasks.Shell.xml
   tags: config
 
+- include: nginx.yml tags=nginx
 - include: jobs.yml tags=jobs
 - include: tools.yml tags=tools
-- include: nginx.yml tags=nginx

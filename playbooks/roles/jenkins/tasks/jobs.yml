@@ -6,8 +6,8 @@
 - name: Install jenkins-job-builder
   pip: name=jenkins-job-builder state=present
 
-- name: Create /etc/jenkins_jobs
-  file: path=/etc/jenkins_jobs state=directory
+- name: Create /etc/jenkins_jobs/definitions
+  file: path=/etc/jenkins_jobs/definitions state=directory recurse=yes
 
 - name: Deploy jenkins_jobs.ini
   template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
