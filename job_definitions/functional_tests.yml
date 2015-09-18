@@ -1,10 +1,20 @@
+{% set jobs = [
+  {"name": "preview", "display_name": "preview",
+   "description": "Run the full functional test suite against the preview environment",
+   "tags": ["~@wip", "@functional-test"],
+  },
+  {"name": "ssp-preview", "display_name": "SSP preview",
+   "description": "Run the SSP functional test suite against the preview environment",
+   "tags": ["@ssp"],
+  }
+] %}
 ---
+{% for job in jobs %}
 - job:
-    name: "functional-tests-preview"
-    display-name: "Functional tests - preview"
+    name: "functional-tests-{{ job.name }}"
+    display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
-    description: |
-      Run the full functional test suite against the preview environment
+    description: "{{ job.description }}"
     logrotate:
       daysToKeep: 4
       artifactDaysToKeep: 4
@@ -14,9 +24,9 @@
           credentials-id: github-ssh-key
           branches:
             - master
-{#    triggers:
+    triggers:
       - timed: "H/30 * * * *"
-      - github #}
+      - github
     wrappers:
       - ansicolor
     publishers:
@@ -32,20 +42,10 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=functional-tests
-              JOB=AWS Preview functional tests
+              JOB=Functional tests - {{ job.display_name }}
               ICON=:rotating_light:
               STAGE=preview
               STATUS=FAILED
-              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-release
-          - project: notify-slack
-            condition: SUCCESS
-            predefined-parameters: |
-              USERNAME=functional-tests
-              JOB=AWS Preview functional tests
-              ICON=:alarm_clock:
-              STAGE=preview
-              STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
     builders:
@@ -71,4 +71,19 @@
           mkdir -p reports
           rm -f screenshot*
 
-          bundle exec cucumber features --tags ~@wip --tags ~@ssp --tags @functional-test --color --format html --out reports/index.html --format pretty 
+          bundle exec cucumber features --tags ~@wip {% for tag in job.tags %} --tags {{ tag }} {% endfor %} --color --format html --out reports/index.html --format pretty
+      - conditional-step:
+          condition-kind: build-cause
+          cause: UPSTREAM_CAUSE
+          steps:
+              - trigger-builds:
+                - project: notify-slack
+                  predefined-parameters: |
+                    USERNAME=functional-tests
+                    JOB=Functional tests - {{ job.display_name }}
+                    ICON=:ok_hand:
+                    STAGE=preview
+                    STATUS=SUCCESS
+                    URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+                    CHANNEL=#dm-release
+{% endfor %}

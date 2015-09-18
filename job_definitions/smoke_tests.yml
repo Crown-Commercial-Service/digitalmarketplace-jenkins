@@ -35,6 +35,17 @@
           keep-all: true
           allow-missing: true
           link-to-last-build: true
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=smoke-tests
+              JOB=Apps are up - {{ environment }}
+              ICON=:rotating_light:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
     builders:
       - shell: |
           rbenv install -s
@@ -55,4 +66,18 @@
           rm -f screenshot*
 
           bundle exec cucumber features --tags ~@wip --tags ~@not-production --color --format html --out reports/index.html --format pretty
+      - conditional-step:
+          condition-kind: build-cause
+          cause: UPSTREAM_CAUSE
+          steps:
+              - trigger-builds:
+                - project: notify-slack
+                  predefined-parameters: |
+                    USERNAME=smoke-tests
+                    JOB=Apps are up - {{ environment }}
+                    ICON=:ok_hand:
+                    STAGE={{ environment }}
+                    STATUS=SUCCESS
+                    URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+                    CHANNEL=#dm-release
 {% endfor %}
