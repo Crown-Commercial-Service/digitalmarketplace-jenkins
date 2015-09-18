@@ -100,6 +100,6 @@
     - hudson.tasks.Shell.xml
   tags: config
 
+- include: nginx.yml tags=nginx
 - include: jobs.yml tags=jobs
 - include: tools.yml tags=tools
-- include: nginx.yml tags=nginx
