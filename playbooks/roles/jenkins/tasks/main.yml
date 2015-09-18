@@ -1,9 +1,9 @@
 ---
 - name: Create Jenkins user group
-  group: name=jenkins
+  group: gid=111 name=jenkins
 
 - name: Create Jenkins user
-  user: name=jenkins group=jenkins createhome=no
+  user: uid=106 name=jenkins group=jenkins createhome=no home=/var/lib/jenkins
 
 - include: volume.yml tags=volume
 - include: vpn.yml tags=vpn
@@ -30,6 +30,9 @@
 - name: Copy Github private key for jenkins user
   copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
   tags: config
+
+- name: Setup Jenkins SSH directory
+  file: path=/var/lib/jenkins/.ssh state=directory owner=jenkins group=jenkins
 
 - name: Setup Jenkins SSH config
   copy: src=jenkins_ssh_config dest=/var/lib/jenkins/.ssh/config owner=jenkins mode=600
