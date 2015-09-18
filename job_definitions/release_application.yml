@@ -1,0 +1,116 @@
+{% set applications = [
+  "api", "search-api", "buyer-frontend", "admin-frontend", "supplier-frontend"
+] %}
+---
+- job:
+    name: "release-app"
+    display-name: "Release application"
+    project-type: freestyle
+    description: |
+      <h1 style="color: #f00">DO NOT CALL THIS DIRECTLY</h1>
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+            - production
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+            - Select one
+{% for application in applications %}
+            - {{ application }}
+{% endfor %}
+      - string:
+          name: RELEASE_NAME
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-aws.git
+          credentials-id: github-ssh-key
+          branches:
+            - master
+    wrappers:
+      - build-name:
+          name: '#${BUILD_NUMBER}-${ENV, var="APPLICATION_NAME"}-${ENV, var="STAGE"} ${ENV, var="RELEASE_NAME"}'
+    builders:
+      - shell: |
+          ./scripts/jenkins-release.sh
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=deploy
+              PROJECT=$APPLICATION_NAME
+              JOB="Release application"
+              ICON=:fire:
+              STAGE=$STAGE
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=deploy
+              JOB="Release application"
+              PROJECT=$APPLICATION_NAME
+              ICON=:ship:
+              STAGE=$STAGE
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+{% set jobs = [
+  {"stage": "preview", "release_name": False},
+  {"stage": "staging", "release_name": True},
+  {"stage": "production", "release_name": False},
+] %}
+{% for job in jobs %}
+- job:
+    name: release-app-{{ job.stage }}
+    display-name: "Release application {{ job.stage }}"
+    project-type: freestyle
+{% if job.stage == "production" %}
+    description: |
+      <div style="font-size: 150%">
+        <h2 style="color: #ff0000">WAIT!</h2>
+        
+        <img height="240px" src="http://i.imgur.com/lQwk360.jpg">
+        <h3>Release checklist</h3>
+        <ul>
+          <li>Have you deployed this release through preview and staging?</li>
+          <li>Have the functional tests passed for this release in preview?</li>
+          <li>Have the smoke tests passed for this release in staging?</li>
+          <li>Do you have Yolo the gorilla?</li>
+        </ul>
+      </div>
+{% else %}
+    description: Release an application to the {{ job.stage }} stage
+{% endif %}
+    parameters:
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+            - Select one
+{% for application in applications %}
+            - {{ application }}
+{% endfor %}
+{% if job.release_name %}
+      - string:
+          name: RELEASE_NAME
+          description: "eg release-123 where 123 is the number of a pull request"
+{% endif %}
+    builders:
+      - trigger-builds:
+        - project: "release-app"
+          predefined-parameters: |
+            STAGE={{ job.stage }}
+            APPLICATION_NAME=${APPLICATION_NAME}
+            RELEASE_NAME=${RELEASE_NAME}
+          block: true
+    publishers:
+      - trigger:
+          project: apps-are-up-{{ job.stage }}
+          threshold: FAILURE
+{% endfor %}

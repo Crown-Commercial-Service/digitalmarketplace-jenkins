@@ -41,7 +41,7 @@
             predefined-parameters: |
               USERNAME=smoke-tests
               JOB=Apps are up - {{ environment }}
-              ICON=:rotating_light:
+              ICON=:fire:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
@@ -75,7 +75,7 @@
                   predefined-parameters: |
                     USERNAME=smoke-tests
                     JOB=Apps are up - {{ environment }}
-                    ICON=:ok_hand:
+                    ICON=:green_heart:
                     STAGE={{ environment }}
                     STATUS=SUCCESS
                     URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>

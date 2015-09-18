@@ -43,7 +43,7 @@
             predefined-parameters: |
               USERNAME=functional-tests
               JOB=Functional tests - {{ job.display_name }}
-              ICON=:rotating_light:
+              ICON=:fire:
               STAGE=preview
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
@@ -81,7 +81,7 @@
                   predefined-parameters: |
                     USERNAME=functional-tests
                     JOB=Functional tests - {{ job.display_name }}
-                    ICON=:ok_hand:
+                    ICON=:green_heart:
                     STAGE=preview
                     STATUS=SUCCESS
                     URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
