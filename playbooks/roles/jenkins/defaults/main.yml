@@ -45,6 +45,11 @@ jenkins_list_views:
     jobs:
       - tag-dmutils
       - tag-toolkit
+  - name: "Release"
+    jobs:
+      - release-app-preview
+      - release-app-production
+      - release-app-staging
 
 app_urls:
   preview:
