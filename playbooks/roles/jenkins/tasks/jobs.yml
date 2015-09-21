@@ -12,6 +12,13 @@
 - name: Deploy jenkins_jobs.ini
   template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
 
+- name: Clone digitalmarketplace-credentials repository
+  git:
+    repo: "git@github.gds:gds/digitalmarketplace-credentials.git"
+    dest: /var/lib/jenkins/digitalmarketplace-credentials
+  sudo: yes
+  sudo_user: jenkins
+
 - name: Upload jenkins jobs definitions
   template: src={{ item }} dest=/etc/jenkins_jobs/definitions/
   with_fileglob:
