@@ -18,19 +18,19 @@
             - preview
             - staging
             - production
-        - choice:
-            name: STACK_NAME
-            choices:
-              - dev-access
-              - nginx-ssh-access
-              - database-dev-access
-              - elasticsearch-dev-access
-              - elasticsearch-ssh-access
-              - api-ssh-access
-              - search-api-ssh-access
-              - admin-frontend-ssh-access
-              - buyer-frontend-ssh-access
-              - supplier-frontend-ssh-access
+      - choice:
+          name: STACK_NAME
+          choices:
+            - dev-access
+            - nginx-ssh-access
+            - database-dev-access
+            - elasticsearch-dev-access
+            - elasticsearch-ssh-access
+            - api-ssh-access
+            - search-api-ssh-access
+            - admin-frontend-ssh-access
+            - buyer-frontend-ssh-access
+            - supplier-frontend-ssh-access
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-aws.git
@@ -85,7 +85,7 @@
     project-type: freestyle
     description: "Close all developer access every evening"
     triggers:
-      - "H 2 * * *"
+      - timed: "H 2 * * *"
     builders:
       - trigger-builds:
         - project: close-developer-access
