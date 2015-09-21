@@ -27,9 +27,12 @@
 - name: Ensure Jenkins is installed.
   apt: pkg=jenkins state=installed
 
-- name: Copy Github private key for jenkins user
-  copy: src={{ github_private_key_path }} dest=/data/jenkins/github-private-key.pem mode=600 owner=jenkins
+- name: Copy Github keys for jenkins user
+  copy: src={{ item.from }} dest=/var/lib/jenkins/.ssh/{{ item.to }} mode=600 owner=jenkins
   tags: config
+  with_items:
+    - { from: "{{ github_com_and_gds_private_key }}", to: "github_com_and_gds" }
+    - { from: "{{ github_com_and_gds_public_key }}", to: "github_com_and_gds.pub" }
 
 - name: Setup Jenkins SSH directory
   file: path=/var/lib/jenkins/.ssh state=directory owner=jenkins group=jenkins

@@ -21,7 +21,7 @@
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
-          credentials-id: github-ssh-key
+          credentials-id: github_com_and_gds
           branches:
             - master
     triggers:

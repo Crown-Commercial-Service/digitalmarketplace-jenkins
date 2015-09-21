@@ -74,7 +74,7 @@
     scm:
       - git:
           url: git@github.gds:gds/digitalmarketplace-performance-testing.git
-          credentials-id: github-ssh-key
+          credentials-id: github_com_and_gds
           branches:
             - master
     parameters:
