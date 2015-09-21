@@ -23,6 +23,7 @@ jenkins_plugins:
   - nodejs
   - ansicolor
   - htmlpublisher
+  - greenballs
 
 jenkins_list_views:
   - name: "Data"
