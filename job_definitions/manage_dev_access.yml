@@ -85,7 +85,7 @@
     project-type: freestyle
     description: "Close all developer access every evening"
     triggers:
-      - "0 H * * *"
+      - "H 2 * * *"
     builders:
       - trigger-builds:
         - project: close-developer-access
