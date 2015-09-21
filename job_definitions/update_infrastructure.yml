@@ -33,6 +33,9 @@
           credentials-id: github_com_and_gds
           branches:
             - master
+    wrappers:
+      - build-name:
+          name: '#${BUILD_NUMBER}-${ENV, var="STACK_NAME"}-${ENV var="STAGE"}'
     triggers:
       - github
     builders:
