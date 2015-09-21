@@ -36,12 +36,11 @@
           #!/usr/bin/env python
           # encoding: utf-8
           
-          # curl -X POST -d "{\"username\": \"$USERNAME\", \"icon_emoji\": \"$ICON\", \"text\": \"$TEXT\", \"channel\": \"$CHANNEL\"}" https://hooks.slack.com/services/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
           import json
           import os
           import urllib2
 
-          SLACK_URL = 'https://hooks.slack.com/services/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'  # noqa
+          SLACK_URL = '{{ jenkins_slack_url }}'
 
           USERNAME = os.getenv('USERNAME', 'deploy')
           ICON = os.getenv('ICON', ':shipit:')
