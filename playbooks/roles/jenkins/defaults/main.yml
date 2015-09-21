@@ -50,6 +50,11 @@ jenkins_list_views:
       - release-app-preview
       - release-app-production
       - release-app-staging
+  - name: "Infrastructure"
+    jobs:
+      - close-developer-access
+      - open-developer-access
+      - update-infrastructure
 
 app_urls:
   preview:
