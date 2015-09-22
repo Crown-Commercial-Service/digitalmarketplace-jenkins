@@ -1,0 +1,25 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "index-services-{{ environment }}"
+    display-name: "Index services - {{ environment }}"
+    project-type: freestyle
+    description: "This imports all services in the current API database into the current Elasticsearch index."
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-api.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+    triggers:
+      - timed: "H 2 * * *"
+    builders:
+      - shell: |
+          [ -d venv ] || virtualenv venv
+          
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+          
+          ./scripts/index_services.py '{{ app_urls[environment].search_api }}' "$DM_SEARCH_API_TOKEN_{{ environment|upper }}" '{{ app_urls[environment].data_api }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial
+{% endfor %}

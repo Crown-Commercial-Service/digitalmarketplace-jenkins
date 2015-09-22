@@ -73,6 +73,26 @@
       <recurse>false</recurse>
     </listView>
 {% endfor %}
+    <com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView plugin="build-monitor-plugin@1.6+build.159">
+      <owner class="hudson" reference="../../.."/>
+      <name>Build Monitor</name>
+      <description>Build monitor</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>apps-are-up-preview</string>
+        <string>apps-are-up-production</string>
+        <string>functional-tests-preview</string>
+        <string>functional-tests-ssp-preview</string>
+        <string>index-services-preview</string>
+        <string>index-services-production</string>
+      </jobNames>
+      <jobFilters/>
+      <columns/>
+      <recurse>true</recurse>
+    </com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView>
   </views>
   <primaryView>All</primaryView>
   <slaveAgentPort>0</slaveAgentPort>
