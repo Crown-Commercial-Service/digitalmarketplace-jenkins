@@ -19,7 +19,7 @@
           branches:
             - master
     triggers:
-      - github
+      - pollscm: "H/2 * * * *"
     builders:
       - trigger-builds:
         - project: release-app-preview

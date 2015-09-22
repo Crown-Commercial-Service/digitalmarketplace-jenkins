@@ -26,7 +26,7 @@
             - master
     triggers:
       - timed: "H/30 * * * *"
-      - github
+      - pollscm: "H/2 * * * *"
     wrappers:
       - ansicolor
     publishers:

@@ -14,7 +14,7 @@
           branches:
             - master
     triggers:
-      - github
+      - pollscm: "H/2 * * * *"
     wrappers:
       - ansicolor
     builders:
