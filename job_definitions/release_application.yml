@@ -107,7 +107,9 @@
           predefined-parameters: |
             STAGE={{ job.stage }}
             APPLICATION_NAME=${APPLICATION_NAME}
+{% if job.release_name %}
             RELEASE_NAME=${RELEASE_NAME}
+{% endif %}
           block: true
     publishers:
       - trigger:

@@ -19,11 +19,10 @@
           branches:
             - master
     triggers:
-      - github
+      - pollscm: "H/2 * * * *"
     builders:
       - trigger-builds:
-        - project: release-app
+        - project: release-app-preview
           predefined-parameters: |
-            STAGE=preview
             APPLICATION_NAME={{ app.name }}
 {% endfor %}

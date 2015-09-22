@@ -41,3 +41,17 @@
 
 - name: Add AWS credentials file
   template: src=aws_credentials.j2 dest=/var/lib/jenkins/.aws/credentials
+
+- name: Add NodeJS apt repository key
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+
+- name: Add NodeJS apt repository
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_0.12 trusty main"
+    state: present
+    update_cache: yes
+
+- name: Install NodeJS
+  apt: pkg=nodejs state=installed

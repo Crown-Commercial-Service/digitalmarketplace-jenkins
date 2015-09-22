@@ -37,7 +37,7 @@
       - build-name:
           name: '#${BUILD_NUMBER}-${ENV, var="STACK_NAME"}-${ENV var="STAGE"}'
     triggers:
-      - github
+      - pollscm: "H/2 * * * *"
     builders:
       - shell: |
           #!/bin/bash -xe
