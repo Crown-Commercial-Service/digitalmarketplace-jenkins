@@ -44,6 +44,7 @@ jenkins_list_views:
       - performance-testing-supplier-app
   - name: "Utils and toolkit"
     jobs:
+      - publish-toolkit-documentation
       - tag-dmutils
       - tag-toolkit
   - name: "Release"
