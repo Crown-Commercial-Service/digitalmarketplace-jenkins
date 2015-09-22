@@ -24,6 +24,7 @@ jenkins_plugins:
   - ansicolor
   - htmlpublisher
   - greenballs
+  - build-name-setter
 
 jenkins_list_views:
   - name: "Data"
