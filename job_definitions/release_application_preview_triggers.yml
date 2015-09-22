@@ -22,8 +22,7 @@
       - github
     builders:
       - trigger-builds:
-        - project: release-app
+        - project: release-app-preview
           predefined-parameters: |
-            STAGE=preview
             APPLICATION_NAME={{ app.name }}
 {% endfor %}
