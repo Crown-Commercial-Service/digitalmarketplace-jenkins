@@ -50,7 +50,7 @@
 
           PROJECT = os.getenv('PROJECT', None)
           STAGE = os.getenv('STAGE', None)
-          RELEASE = os.getenv('RELEASE', None)
+          RELEASE_NAME = os.getenv('RELEASE_NAME', None)
 
           STATUS = os.getenv('STATUS', None)
           URL = os.getenv('URL', None)
@@ -93,7 +93,7 @@
                       "fields": build_fields([
                           ("Project", PROJECT, False),
                           ("Stage", STAGE, True),
-                          ("Release", RELEASE, True),
+                          ("Release", RELEASE_NAME, True),
                           ("Status", STATUS, True),
                           ("Build URL", URL, True),
                       ])

@@ -35,11 +35,17 @@
           wipe-workspace: false
     wrappers:
       - build-name:
-          name: '#${BUILD_NUMBER}-${ENV, var="APPLICATION_NAME"}-${ENV, var="STAGE"} ${ENV, var="RELEASE_NAME"}'
+          name: '#${BUILD_NUMBER}-${ENV, var="APPLICATION_NAME"}-${ENV, var="STAGE"} ${PROPFILE, file="release_properties.out", property="RELEASE_NAME"}'
     builders:
       - shell: |
           ./scripts/jenkins-release.sh
     publishers:
+      - postbuildscript:
+          builders:
+            - shell: |
+                cp release_properties.out notify_properties.out
+                echo "" > release_properties.out
+          script-only-if-succeeded: false
       - trigger-parameterized-builds:
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
@@ -50,8 +56,9 @@
               ICON=:fire:
               STAGE=$STAGE
               STATUS=FAILED
-              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-release
+            property-file: notify_properties.out
           - project: notify-slack
             condition: SUCCESS
             predefined-parameters: |
@@ -61,8 +68,10 @@
               ICON=:ship:
               STAGE=$STAGE
               STATUS=SUCCESS
-              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-release
+            property-file: notify_properties.out
+
 {% set jobs = [
   "preview", "staging", "production"
 ] %}
