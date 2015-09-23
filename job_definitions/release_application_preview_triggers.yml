@@ -18,6 +18,7 @@
           credentials-id: github_com_and_gds
           branches:
             - master
+          wipe-workspace: false
     triggers:
       - pollscm: "H/2 * * * *"
     builders:
