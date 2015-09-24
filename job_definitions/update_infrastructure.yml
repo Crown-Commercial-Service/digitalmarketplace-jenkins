@@ -10,7 +10,6 @@
       - choice:
           name: STAGE
           choices:
-            - Select one
             - preview
             - staging
             - production
@@ -36,7 +35,7 @@
           wipe-workspace: false
     wrappers:
       - build-name:
-          name: '#${BUILD_NUMBER}-${ENV, var="STACK_NAME"}-${ENV var="STAGE"}'
+          name: '#${BUILD_NUMBER}-${ENV, var="STACK_NAME"}-${ENV, var="STAGE"}'
     triggers:
       - pollscm: "H/2 * * * *"
     builders:
