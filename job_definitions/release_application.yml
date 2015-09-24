@@ -92,10 +92,7 @@
       - extended-choice:
           name: APPLICATION_NAME
           type: radio
-          choices:
-{% for application in applications %}
-            - {{ application }}
-{% endfor %}
+          value: "{{ applications|join(',') }}"
 {% if job.release_name %}
       - string:
           name: RELEASE_NAME
