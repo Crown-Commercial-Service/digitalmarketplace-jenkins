@@ -89,10 +89,10 @@
     description: Release an application to the {{ job.stage }} stage
 {% endif %}
     parameters:
-      - choice:
+      - extended-choice:
           name: APPLICATION_NAME
+          type: radio
           choices:
-            - Select one
 {% for application in applications %}
             - {{ application }}
 {% endfor %}

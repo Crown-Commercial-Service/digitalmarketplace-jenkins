@@ -25,6 +25,7 @@ jenkins_plugins:
   - htmlpublisher
   - greenballs
   - build-name-setter
+  - extended-choice-parameter
 
 jenkins_list_views:
   - name: "Data"
