@@ -32,7 +32,7 @@
           branches:
             - '*/tags/*'
     triggers:
-      - github
+      - pollscm: "H/2 * * * *"
     wrappers:
       - ansicolor
     builders:
