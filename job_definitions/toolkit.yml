@@ -44,5 +44,6 @@
           pip install -r pages_builder/requirements.txt
           git config user.name "Jenkins"
           export ROOT_DIRECTORY='/digitalmarketplace-frontend-toolkit'
-          git tag -l | tail -n1 | xargs git checkout
-          git tag | tail -n1 | xargs -0 sh ./pages_builder/push_to_github_pages.sh
+          LATEST_TAG=`git describe`
+          git checkout $LATEST_TAG
+          sh ./pages_builder/push_to_github_pages.sh $LATEST_TAG
