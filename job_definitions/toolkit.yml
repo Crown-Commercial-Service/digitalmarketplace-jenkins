@@ -30,6 +30,7 @@
       - git:
           url: git@github.com:alphagov/digitalmarketplace-frontend-toolkit.git
           credentials-id: github_com_and_gds
+          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - '*/tags/*'
     triggers:
