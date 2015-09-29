@@ -19,6 +19,11 @@
     <permission>hudson.model.Item.Delete:{{ jenkins_api_user }}</permission>
     <permission>hudson.model.Item.Read:{{ jenkins_api_user }}</permission>
 
+    <!-- Jenkins Github user used for Build monitor -->
+    <permission>hudson.model.Hudson.Read:{{ jenkins_build_monitor_user }}</permission>
+    <permission>hudson.model.Item.Read:{{ jenkins_build_monitor_user }}</permission>
+    <permission>hudson.model.View.Read:{{ jenkins_build_monitor_user }}</permission>
+
   </authorizationStrategy>
   <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
     <!-- GitHub authorization app, belongs to the dm-ssp-jenkins user -->

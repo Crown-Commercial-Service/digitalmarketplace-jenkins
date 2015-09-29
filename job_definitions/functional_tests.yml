@@ -24,6 +24,7 @@
           credentials-id: github_com_and_gds
           branches:
             - master
+          wipe-workspace: false
     triggers:
       - timed: "H/30 * * * *"
       - pollscm: "H/2 * * * *"

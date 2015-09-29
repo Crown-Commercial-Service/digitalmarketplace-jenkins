@@ -23,6 +23,7 @@
           credentials-id: github_com_and_gds
           branches:
             - master
+          wipe-workspace: false
     triggers:
       - timed: "H/5 * * * *"
     wrappers:
