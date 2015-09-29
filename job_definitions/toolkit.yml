@@ -33,6 +33,7 @@
           refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - '*/tags/*'
+          skip-tag: true
     triggers:
       - pollscm: "H/2 * * * *"
     wrappers:
