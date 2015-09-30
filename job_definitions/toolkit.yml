@@ -47,6 +47,5 @@
           export ROOT_DIRECTORY='/digitalmarketplace-frontend-toolkit'
           git checkout master
           git pull origin master
-          LATEST_TAG=`git describe`
-          git checkout $LATEST_TAG
+          LATEST_TAG=`git describe --abbrev=0`
           sh ./pages_builder/push_to_github_pages.sh $LATEST_TAG
