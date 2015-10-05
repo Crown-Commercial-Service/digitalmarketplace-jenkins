@@ -30,8 +30,10 @@
       - git:
           url: git@github.com:alphagov/digitalmarketplace-frontend-toolkit.git
           credentials-id: github_com_and_gds
+          refspec: "+refs/tags/*:refs/remotes/origin/tags/*"
           branches:
             - '*/tags/*'
+          skip-tag: true
     triggers:
       - pollscm: "H/2 * * * *"
     wrappers:
@@ -43,5 +45,7 @@
           pip install -r pages_builder/requirements.txt
           git config user.name "Jenkins"
           export ROOT_DIRECTORY='/digitalmarketplace-frontend-toolkit'
-          git tag -l | tail -n1 | xargs git checkout
-          git tag | tail -n1 | xargs -0 sh ./pages_builder/push_to_github_pages.sh
+          git checkout master
+          git pull origin master
+          LATEST_TAG=`git describe --abbrev=0`
+          sh ./pages_builder/push_to_github_pages.sh $LATEST_TAG
