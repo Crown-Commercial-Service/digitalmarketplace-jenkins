@@ -3,6 +3,7 @@
 {% for environment in environments %}
 - job:
     name: 'snapshot-g7-stats-{{ environment }}'
+    disabled: true
     display-name: "Snapshot G7 stats - {{ environment }}"
     project-type: freestyle
     description: Creates an hourly snapshot of G-Cloud 7 framework stats and stores it in the API audit event
