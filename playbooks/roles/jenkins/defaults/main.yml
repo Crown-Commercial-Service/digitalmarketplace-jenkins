@@ -30,6 +30,9 @@ jenkins_plugins:
 jenkins_list_views:
   - name: "Data"
     jobs:
+      - index-services-preview
+      - index-services-production
+      - index-services-staging
       - snapshot-g7-stats-preview
       - snapshot-g7-stats-production
   - name: "Smoke tests"
