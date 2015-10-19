@@ -18,12 +18,6 @@
           choices:
             - www
             - route53rootrecords
-            - apps
-            - api
-            - search-api
-            - buyer-frontend
-            - admin-frontend
-            - supplier-frontend
       - string:
           name: ENVIRONMENT
     scm:
