@@ -60,8 +60,8 @@
           export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
           export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
-          export DM_SUPPLIEREMAIL="{{ smoke_test_variables[environment].supplier_email }}"
-          export DM_SUPPLIERPASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
+          export DM_SUPPLIER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
+          export DM_SUPPLIER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
 
           mkdir -p reports
           rm -f screenshot*
