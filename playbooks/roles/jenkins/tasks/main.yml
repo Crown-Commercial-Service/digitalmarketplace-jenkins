@@ -24,8 +24,8 @@
             dest=/etc/default/jenkins
             backup=no
 
-- name: Ensure Jenkins is installed.
-  apt: pkg=jenkins state=installed
+- name: Ensure latest release of Jenkins is installed.
+  apt: pkg=jenkins state=latest
 
 - name: Copy Github keys for jenkins user
   copy: src={{ item.from }} dest=/var/lib/jenkins/.ssh/{{ item.to }} mode=600 owner=jenkins
