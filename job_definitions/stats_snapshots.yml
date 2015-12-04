@@ -1,12 +1,14 @@
 {% set environments = ['preview', 'production'] %}
+{% set frameworks = [('g-cloud-7', 'true'), ('digital-outcomes-and-specialists', 'false')] %}
 ---
 {% for environment in environments %}
+{% for framework, disabled in frameworks %}
 - job:
-    name: 'snapshot-g7-stats-{{ environment }}'
-    disabled: true
-    display-name: "Snapshot G7 stats - {{ environment }}"
+    name: 'snapshot-stats-{{ framework }}-{{ environment }}'
+    disabled: {{ disabled }}
+    display-name: "Snapshot {{ framework }} stats - {{ environment }}"
     project-type: freestyle
-    description: Creates an hourly snapshot of G-Cloud 7 framework stats and stores it in the API audit event
+    description: Creates an hourly snapshot of framework stats and stores it in the API audit event
     logrotate:
       daysToKeep: 20
       artifactDaysToKeep: 20
@@ -26,5 +28,6 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          ./scripts/snapshot_framework_stats.py g-cloud-7 {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}"
+          ./scripts/snapshot_framework_stats.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}"
+{% endfor %}
 {% endfor %}
