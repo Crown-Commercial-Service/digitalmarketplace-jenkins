@@ -50,6 +50,7 @@ jenkins_list_views:
   - name: "Utils and toolkit"
     jobs:
       - publish-toolkit-documentation
+      - tag-dmapiclient
       - tag-dmutils
       - tag-toolkit
   - name: "Release"

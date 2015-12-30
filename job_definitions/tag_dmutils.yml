@@ -1,15 +1,17 @@
+{% set packages = ['utils', 'apiclient'] %}
 ---
+{% for package in packages %}
 - job:
-    name: 'tag-dmutils'
-    display-name: "Tag dmutils"
+    name: 'tag-dm{{ package }}'
+    display-name: "Tag dm{{ package }}"
     project-type: freestyle
-    description: "Push the git tag on the https://github.com/alphagov/digitalmarketplace-utils repository."
+    description: "Push the git tag on the https://github.com/alphagov/digitalmarketplace-{{ package }} repository."
     logrotate:
       daysToKeep: 20
       artifactDaysToKeep: 20
     scm:
       - git:
-          url: git@github.com:alphagov/digitalmarketplace-utils.git
+          url: git@github.com:alphagov/digitalmarketplace-{{ package }}.git
           credentials-id: github_com_and_gds
           branches:
             - master
@@ -22,3 +24,4 @@
       - shell: |
           git config user.name "Jenkins"
           ./scripts/push-tag.sh
+{% endfor %}
