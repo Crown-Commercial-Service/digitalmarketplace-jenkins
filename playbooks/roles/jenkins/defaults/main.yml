@@ -32,6 +32,7 @@ jenkins_config_templates:
   - credentials.xml
   - hudson.plugins.git.GitSCM.xml
   - hudson.tasks.Shell.xml
+  - jenkins.model.DownloadSettings.xml
 
 jenkins_list_views:
   - name: "Data"
