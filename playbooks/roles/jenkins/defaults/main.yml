@@ -33,6 +33,7 @@ jenkins_config_templates:
   - hudson.plugins.git.GitSCM.xml
   - hudson.tasks.Shell.xml
   - jenkins.model.DownloadSettings.xml
+  - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
 
 jenkins_list_views:
   - name: "Data"
