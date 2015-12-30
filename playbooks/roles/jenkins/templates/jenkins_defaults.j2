@@ -11,7 +11,7 @@ JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 JAVA_ARGS="-Djava.awt.headless=true -Dfile.encoding=UTF8 -Xmx4096m -XX:MaxPermSize=1024m"  # Allow graphs etc. to work even when an X server is present
 
 # Allow JS and CSS on HTML Publisher pages
-JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-scripts; default-src 'self' 'unsafe-inline';\""
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-scripts; default-src 'self' 'unsafe-inline' data:;\""
 
 PIDFILE=/var/run/jenkins/jenkins.pid
 
