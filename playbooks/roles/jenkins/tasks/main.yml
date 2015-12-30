@@ -23,6 +23,7 @@
   template: src=jenkins_defaults.j2
             dest=/etc/default/jenkins
             backup=no
+  tags: config
 
 - name: Ensure latest release of Jenkins is installed.
   apt: pkg=jenkins state=latest

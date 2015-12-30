@@ -9,8 +9,9 @@ JAVA=/usr/bin/java
 JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 # arguments to pass to java
 JAVA_ARGS="-Djava.awt.headless=true -Dfile.encoding=UTF8 -Xmx4096m -XX:MaxPermSize=1024m"  # Allow graphs etc. to work even when an X server is present
-#JAVA_ARGS="-Xmx256m"
-#JAVA_ARGS="-Djava.net.preferIPv4Stack=true" # make jenkins listen on IPv4 address
+
+# Allow JS and CSS on HTML Publisher pages
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-scripts; default-src 'self' 'unsafe-inline';\""
 
 PIDFILE=/var/run/jenkins/jenkins.pid
 
