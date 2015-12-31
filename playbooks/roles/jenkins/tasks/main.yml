@@ -23,6 +23,7 @@
   template: src=jenkins_defaults.j2
             dest=/etc/default/jenkins
             backup=no
+  tags: config
 
 - name: Ensure latest release of Jenkins is installed.
   apt: pkg=jenkins state=latest
@@ -64,11 +65,7 @@
 - name: Remove existing Jenkins config
   file: path=/data/jenkins/{{ item }} state=absent
   notify: restart jenkins
-  with_items:
-    - config.xml
-    - credentials.xml
-    - hudson.plugins.git.GitSCM.xml
-    - hudson.tasks.Shell.xml
+  with_items: jenkins_config_templates
 
 - name: Wait for Jenkins to start up before proceeding.
   shell: curl --head --silent http://{{ jenkins_hostname }}:8080/cli/
@@ -96,11 +93,7 @@
         owner=jenkins
         group=jenkins
   notify: restart jenkins
-  with_items:
-    - config.xml
-    - credentials.xml
-    - hudson.plugins.git.GitSCM.xml
-    - hudson.tasks.Shell.xml
+  with_items: jenkins_config_templates
   tags: config
 
 - include: nginx.yml tags=nginx

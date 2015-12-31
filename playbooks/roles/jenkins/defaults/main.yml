@@ -27,6 +27,14 @@ jenkins_plugins:
   - build-name-setter
   - extended-choice-parameter
 
+jenkins_config_templates:
+  - config.xml
+  - credentials.xml
+  - hudson.plugins.git.GitSCM.xml
+  - hudson.tasks.Shell.xml
+  - jenkins.model.DownloadSettings.xml
+  - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
+
 jenkins_list_views:
   - name: "Data"
     jobs:
