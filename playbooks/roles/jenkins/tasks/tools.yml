@@ -7,6 +7,7 @@
     - python-dev
     - phantomjs
     - libyaml-dev
+    - libffi-dev
 
 - name: Install rbenv and pyenv
   sudo: yes
@@ -58,9 +59,9 @@
 
 - name: Add NodeJS apt repository
   apt_repository:
-    repo: "deb https://deb.nodesource.com/node_0.12 trusty main"
+    repo: "deb https://deb.nodesource.com/node_4.x trusty main"
     state: present
     update_cache: yes
 
 - name: Install NodeJS
-  apt: pkg=nodejs state=installed
+  apt: pkg=nodejs=4.* state=installed
