@@ -23,6 +23,18 @@
           wipe-workspace: false
     triggers:
       - timed: "H 2 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=index-services
+              JOB=Index services {{ environment }}
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
     builders:
       - shell: |
           [ -d venv ] || virtualenv venv
