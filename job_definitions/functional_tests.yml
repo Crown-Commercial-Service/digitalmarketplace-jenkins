@@ -2,16 +2,19 @@
   {"name": "preview", "display_name": "preview",
    "description": "Run the full functional test suite against the preview environment",
    "tags": ["~@ssp-gcloud", "~@ssp-dos", "@functional-test"],
+   "disabled": "false",
   },
   {"name": "ssp-preview", "display_name": "SSP preview",
    "description": "Run the SSP functional test suite against the preview environment",
    "tags": ["@ssp-dos"],
+   "disabled": "true",
   }
 ] %}
 ---
 {% for job in jobs %}
 - job:
     name: "functional-tests-{{ job.name }}"
+    disabled: {{ job.disabled }}
     display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
     description: "{{ job.description }}"
