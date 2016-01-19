@@ -1,0 +1,67 @@
+---
+- job:
+    name: "migrate-data"
+    display-name: "Migrate data"
+    project-type: freestyle
+    description: |
+      Migrate RDS data from production to another environment.
+    parameters:
+      - choice:
+          name: TARGET_STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-aws.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+          wipe-workspace: false
+    wrappers:
+      - ansicolor
+    builders:
+      - shell: |
+          #!/bin/bash -xe
+
+          [ -d venv ] || virtualenv venv
+
+          . ./venv/bin/activate
+          pip install -e .
+
+          AWS_PROFILE="production" dmaws production production migratedata \
+            $TARGET_STAGE $TARGET_STAGE \
+            ~/digitalmarkteplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
+            -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=deploy
+              JOB="Export data"
+              ICON=:fire:
+              STAGE=production
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+- job:
+    name: "migrate-data-to-staging"
+    display-name: "Migrate data to staging"
+    project-type: freestyle
+    description: |
+      Migrate RDS data from production to staging.
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
+    triggers:
+      - timed: "H 1 * * *"
+    builders:
+      - trigger-builds:
+        - project: migrate-data
+          predefined-parameters: |
+            TARGET_STAGE=staging
