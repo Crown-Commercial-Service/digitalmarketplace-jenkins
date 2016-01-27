@@ -35,7 +35,7 @@
 
           AWS_PROFILE="production" dmaws production production migratedata \
             $TARGET_STAGE $TARGET_STAGE \
-            ~/digitalmarkteplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
+            ~/digitalmarketplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
             -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
     publishers:
       - trigger-parameterized-builds:
