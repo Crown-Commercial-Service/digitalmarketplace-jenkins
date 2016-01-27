@@ -65,3 +65,4 @@
         - project: migrate-data
           predefined-parameters: |
             TARGET_STAGE=staging
+          block: true
