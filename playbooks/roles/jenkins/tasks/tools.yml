@@ -8,6 +8,7 @@
     - phantomjs
     - libyaml-dev
     - libffi-dev
+    - postgresql-client-9.3
 
 - name: Install rbenv and pyenv
   sudo: yes
