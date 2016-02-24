@@ -67,6 +67,7 @@
 
           export DM_ADMIN_EMAIL="{{ functional_test_variables.preview.admin_email }}"
           export DM_ADMIN_CCS_SOURCING_EMAIL="{{ functional_test_variables.preview.admin_ccs_sourcing_email }}"
+          export DM_ADMIN_CCS_CATEGORY_EMAIL="{{ functional_test_variables.preview.admin_ccs_category_email }}"
           export DM_ADMIN_PASSWORD="{{ functional_test_variables.preview.admin_password }}"
           export DM_SUPPLIER_EMAIL="{{ functional_test_variables.preview.supplier_email }}"
           export DM_SUPPLIER2_EMAIL="{{ functional_test_variables.preview.supplier2_email }}"
