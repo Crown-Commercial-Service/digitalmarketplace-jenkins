@@ -27,6 +27,7 @@
 
 - name: Ensure latest release of Jenkins is installed.
   apt: pkg=jenkins state=latest
+  tags: jenkins
 
 - name: Copy Github keys for jenkins user
   copy: src={{ item.from }} dest=/var/lib/jenkins/.ssh/{{ item.to }} mode=600 owner=jenkins
