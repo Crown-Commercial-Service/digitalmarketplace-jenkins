@@ -6,8 +6,8 @@
   },
   {"name": "ssp-preview", "display_name": "SSP preview",
    "description": "Run the SSP functional test suite against the preview environment",
-   "tags": ["@ssp-dos"],
-   "disabled": "true",
+   "tags": ["@ssp-gcloud"],
+   "disabled": "false",
   }
 ] %}
 ---
