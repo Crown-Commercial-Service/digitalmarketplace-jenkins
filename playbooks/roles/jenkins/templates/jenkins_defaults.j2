@@ -15,7 +15,7 @@ JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox all
 
 # After upgrading to Jenkins v2.3 we are seeing the error described here: https://issues.jenkins-ci.org/browse/JENKINS-34775
 # A comment on that page suggests that setting this property to false should be a temporary work-around to avoid getting the error 
-JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.User.SECURITY_243_FULL_DEFENSE=false
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.User.SECURITY_243_FULL_DEFENSE=false"
 
 PIDFILE=/var/run/jenkins/jenkins.pid
 
