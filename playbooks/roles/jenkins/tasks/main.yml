@@ -97,6 +97,7 @@
   with_items: jenkins_config_templates
   tags: config
 
+- include: letsencrypt.yml tags=letsencrypt
 - include: nginx.yml tags=nginx
 - include: jobs.yml tags=jobs
 - include: tools.yml tags=tools

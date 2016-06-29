@@ -8,20 +8,6 @@
 - name: Make sure nginx user is in ssl-cert
   user: name=nginx groups=www-data,ssl-cert
 
-- name: Create ssl/certs dir
-  file: path=/etc/ssl/certs mode=755 state=directory owner=root
-
-- name: Create ssl/private dir
-  file: path=/etc/ssl/private mode=700 state=directory owner=root
-  sudo: yes
-  tags: ssl
-
-- name: Copy the TLS certificate
-  copy: src={{ ssl_cert_path }} dest=/etc/ssl/certs/jenkins.crt mode=644 group=ssl-cert
-
-- name: Copy the TLS key
-  copy: src={{ ssl_key_path }} dest=/etc/ssl/private/jenkins.key mode=640 group=ssl-cert
-
 - name: Create nginx basic auth file
   template: src=nginx_htpasswd.j2
             dest=/etc/nginx/.htpasswd
