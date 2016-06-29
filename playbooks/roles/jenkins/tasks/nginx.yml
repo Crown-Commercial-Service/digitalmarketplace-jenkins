@@ -38,6 +38,11 @@
     - kibana
   notify: reload nginx
 
+- name: Ensure that the default site is disabled
+  command: rm /etc/nginx/sites-enabled/default
+           removes=/etc/nginx/sites-enabled/default
+  notify: reload nginx
+
 - name: Ensure that the configuration files are enabled
   command: ln -s /etc/nginx/sites-available/{{ item }}
            /etc/nginx/sites-enabled/{{ item }}
