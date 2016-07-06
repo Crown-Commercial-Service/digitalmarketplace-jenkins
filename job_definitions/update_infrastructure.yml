@@ -17,9 +17,19 @@
           name: STACK_NAME
           choices:
             - www
+            - database
             - route53rootrecords
+            - route53digitalservicesstore
+            - kibana
+            - lambda_code_s3
+            - lambda_functions
+            - lambda_logs_subscription
       - string:
           name: ENVIRONMENT
+      - bool:
+          name: IGNORE_DEPENDENCIES
+          default: false
+          description: "Don't update dependency stacks. Defaults to 'false'."
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-aws.git
@@ -55,7 +65,11 @@
             ENVIRONMENT=$STAGE
           fi
 
-          AWS_PROFILE="$STAGE" dmaws $STAGE $ENVIRONMENT create -f ~/digitalmarketplace-credentials/dmaws-vars-files/${STAGE}.yml $STACK_NAME
+          if [ "$IGNORE_DEPENDENCIES" = "true" ]; then
+            FLAGS="--ignore-dependencies"
+          fi
+
+          AWS_PROFILE="$STAGE" dmaws $STAGE $ENVIRONMENT create -f ~/digitalmarketplace-credentials/dmaws-vars-files/${STAGE}.yml $STACK_NAME $FLAGS
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
