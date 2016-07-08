@@ -8,30 +8,34 @@
 - name: Make sure nginx user is in ssl-cert
   user: name=nginx groups=www-data,ssl-cert
 
-- name: Create ssl/certs dir
-  file: path=/etc/ssl/certs mode=755 state=directory owner=root
-
-- name: Create ssl/private dir
-  file: path=/etc/ssl/private mode=700 state=directory owner=root
-  sudo: yes
-  tags: ssl
-
-- name: Copy the TLS certificate
-  copy: src={{ ssl_cert_path }} dest=/etc/ssl/certs/jenkins.crt mode=644 group=ssl-cert
-
-- name: Copy the TLS key
-  copy: src={{ ssl_key_path }} dest=/etc/ssl/private/jenkins.key mode=640 group=ssl-cert
+- name: Create nginx basic auth file
+  template: src=nginx_htpasswd.j2
+            dest=/etc/nginx/.htpasswd
+            backup=no
+            mode=0644
+  notify: reload nginx
 
 - name: Create nginx jenkins proxy configuration files
-  template: src=jenkins_nginx.j2
-            dest=/etc/nginx/sites-available/jenkins
+  template: src={{ item }}_nginx.j2
+            dest=/etc/nginx/sites-available/{{ item }}
             backup=yes
+  with_items:
+    - jenkins
+    - kibana
+  notify: reload nginx
+
+- name: Ensure that the default site is disabled
+  command: rm /etc/nginx/sites-enabled/default
+           removes=/etc/nginx/sites-enabled/default
   notify: reload nginx
 
 - name: Ensure that the configuration files are enabled
-  command: ln -s /etc/nginx/sites-available/jenkins
-           /etc/nginx/sites-enabled/jenkins
-           creates=/etc/nginx/sites-enabled/jenkins
+  command: ln -s /etc/nginx/sites-available/{{ item }}
+           /etc/nginx/sites-enabled/{{ item }}
+           creates=/etc/nginx/sites-enabled/{{ item }}
+  with_items:
+    - jenkins
+    - kibana
   notify: reload nginx
 
 - name: Ensure Nginx service is started

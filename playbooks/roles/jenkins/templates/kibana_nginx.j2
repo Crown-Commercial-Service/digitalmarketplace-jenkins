@@ -1,10 +1,7 @@
-upstream jenkins {
-  server 127.0.0.1:8080 fail_timeout=0;
-}
-
+{% for stage in ["preview", "staging", "production"] %}
 server {
   listen 443 ssl;
-  server_name ci.*;
+  server_name {{ stage }}.logs.*;
 
   add_header Strict-Transport-Security "max-age=31536000; includeSubdomains";
 
@@ -18,14 +15,15 @@ server {
   ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
   ssl_prefer_server_ciphers on;
 
-  location / {
-    proxy_set_header Host $http_host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Proto https;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_redirect http:// https://;
+  auth_basic "PERSONAL";
+  auth_basic_user_file /etc/nginx/.htpasswd;
 
-    add_header Pragma "no-cache";
-    proxy_pass http://jenkins;
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header Authorization "";
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_pass {{ elasticsearch_endpoint[stage] }};
   }
 }
+
+{% endfor %}
