@@ -1,0 +1,42 @@
+{% set environments = ['production'] %}
+{% set frameworks = ['g-cloud-8'] %}
+---
+{% for environment in environments %}
+{% for framework in frameworks %}
+  - job:
+      name: "export-framework-applicant-details-{{ environment }}"
+      display-name: "Export framework applicant details - {{ environment }}"
+      project-type: freestyle
+      description: |
+        <p>This exports 'About You' and lot details for suppliers who applied to {{ framework }}.</p>
+        <p>Running this job will create a timestamped csv file in the <b>SCRIPT_OUTPUTS</b> folder 
+           in the workspace for this job.</p>
+      scm:
+        - git:
+            url: git@github.com:alphagov/digitalmarketplace-scripts.git
+            credentials-id: github_com_and_gds
+            branches:
+              - master
+            wipe-workspace: false
+      publishers:
+        - trigger-parameterized-builds:
+            - project: notify-slack
+              condition: SUCCESS
+              predefined-parameters: |
+                USERNAME=dexys-midnight-script-runner
+                JOB=Export of framework applicant details
+                ICON=:user:
+                STAGE={{ environment }}
+                STATUS=PASSED
+                URL=<${BUILD_URL}../ws/SCRIPT_OUTPUTS|Download csv file>
+                CHANNEL=#dm-development
+      builders:
+        - shell: |
+            [ -d venv ] || virtualenv venv
+            
+            . ./venv/bin/activate
+            pip install -r requirements.txt
+            
+            ./scripts/export-framework-applicant-details.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} {{ framework }} SCRIPT_OUTPUTS
+{% endfor %}
+{% endfor %}
