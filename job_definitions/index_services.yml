@@ -13,7 +13,7 @@
           description: "Index name to use (eg 'g-cloud-2015-10-30')"
       - string:
           name: FRAMEWORKS
-          default: g-cloud-6,g-cloud-7
+          default: g-cloud-7,g-cloud-8
           description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-6,g-cloud-7'). If no frameworks are specified then all currently published services will be indexed."
     scm:
       - git:
