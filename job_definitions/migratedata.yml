@@ -58,8 +58,6 @@
     logrotate:
       daysToKeep: 20
       artifactDaysToKeep: 20
-    triggers:
-      - timed: "H 1 * * *"
     builders:
       - trigger-builds:
         - project: migrate-data
