@@ -15,3 +15,6 @@
   template: dest=/etc/init/openconnect.conf src=openconnect.conf.j2
   notify:
     - restart openconnect
+
+- name: Ensure openconnect is started and runs on startup.
+  service: name=openconnect state=started enabled=yes
