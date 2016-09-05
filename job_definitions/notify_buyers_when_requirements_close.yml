@@ -1,0 +1,54 @@
+{% set environments = ['preview', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "notify-buyers-when-requirements-close-{{ environment }}"
+    display-name: "Notify buyers when requirements close - {{ environment }}"
+    project-type: freestyle
+    description: "Send email notifications to buyer users about closed requirements."
+    parameters:
+      - string:
+          name: DATE_CLOSED
+          description: "Notify about requirements that closed on the given date (date format: YYYY-MM-DD)"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "List notifications that would be sent without sending the emails"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+          wipe-workspace: false
+    triggers:
+      - timed: "H 5 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=notify-buyers
+              JOB=Notify buyers when requirements close {{ environment }}
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          [ -d venv ] || virtualenv venv
+
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+
+          if [ -n "$DATE_CLOSED" ]; then
+            FLAGS="--date-closed=$DATE_CLOSED"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+
+          ./scripts/notify-buyers-when-requirements-close.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --email-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
+{% endfor %}

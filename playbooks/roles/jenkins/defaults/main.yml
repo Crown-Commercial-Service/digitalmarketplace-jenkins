@@ -41,6 +41,8 @@ jenkins_list_views:
       - index-services-preview
       - index-services-production
       - index-services-staging
+      - notify-buyers-when-requirements-close-preview
+      - notify-buyers-when-requirements-close-production
       - snapshot-g7-stats-preview
       - snapshot-g7-stats-production
   - name: "Smoke tests"
