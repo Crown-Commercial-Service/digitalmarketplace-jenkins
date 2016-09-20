@@ -54,7 +54,7 @@
           . ./venv/bin/activate
           pip install -e .
           
-          AWS_PROFILE="$STAGE" dmaws $STAGE $STAGE {{ job.action }} -f ~jenkins/digitalmarketplace-credentials/dmaws-vars-files/$STAGE.yml $STACK_NAME --ignore-dependencies
+          AWS_PROFILE="$STAGE" dmaws {{ job.action }} $STAGE -f ~jenkins/digitalmarketplace-credentials/dmaws-vars-files/$STAGE.yml $STACK_NAME --ignore-dependencies
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack

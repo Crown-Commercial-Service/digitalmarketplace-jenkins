@@ -24,8 +24,6 @@
             - lambda_code_s3
             - lambda_functions
             - lambda_logs_subscription
-      - string:
-          name: ENVIRONMENT
       - bool:
           name: IGNORE_DEPENDENCIES
           default: false
@@ -60,16 +58,11 @@
             exit 1
           fi
 
-
-          if [ "$ENVIRONMENT" = "STAGE" -o "$ENVIRONMENT" = "" ]; then
-            ENVIRONMENT=$STAGE
-          fi
-
           if [ "$IGNORE_DEPENDENCIES" = "true" ]; then
             FLAGS="--ignore-dependencies"
           fi
 
-          AWS_PROFILE="$STAGE" dmaws $STAGE $ENVIRONMENT create -f ~/digitalmarketplace-credentials/dmaws-vars-files/${STAGE}.yml $STACK_NAME $FLAGS
+          AWS_PROFILE="$STAGE" dmaws create $STAGE -f ~/digitalmarketplace-credentials/dmaws-vars-files/${STAGE}.yml $STACK_NAME $FLAGS
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack

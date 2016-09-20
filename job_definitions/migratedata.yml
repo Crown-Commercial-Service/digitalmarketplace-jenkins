@@ -33,7 +33,7 @@
           . ./venv/bin/activate
           pip install -e .
 
-          AWS_PROFILE="production" dmaws production production migratedata \
+          AWS_PROFILE="production" dmaws migratedata production  \
             $TARGET_STAGE $TARGET_STAGE \
             ~/digitalmarketplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
             -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
