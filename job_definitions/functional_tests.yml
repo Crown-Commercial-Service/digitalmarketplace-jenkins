@@ -6,7 +6,7 @@
   },
   {"name": "ssp-preview", "display_name": "SSP preview",
    "description": "Run the SSP functional test suite against the preview environment",
-   "tags": ["@ssp-gcloud"],
+   "tags": ["@ssp-dos"],
    "disabled": "true",
   }
 ] %}
@@ -26,7 +26,7 @@
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
           credentials-id: github_com_and_gds
           branches:
-            - master
+            - jenkins
           wipe-workspace: false
     triggers:
       - timed: "H/30 * * * *"
