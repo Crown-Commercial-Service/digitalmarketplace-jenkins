@@ -6,6 +6,7 @@
     - libpq-dev
     - python-dev
     - libyaml-dev
+    - libreadline-dev
     - libffi-dev
     - postgresql-client-9.3
 

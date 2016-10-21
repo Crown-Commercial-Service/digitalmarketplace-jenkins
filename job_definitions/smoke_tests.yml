@@ -22,7 +22,7 @@
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
           credentials-id: github_com_and_gds
           branches:
-            - jenkins
+            - master
           wipe-workspace: false
     triggers:
       - timed: "H/5 * * * *"
@@ -50,23 +50,37 @@
     builders:
       - shell: |
           rbenv install -s
-          which bundler || gem install bundler
-          bundle install
-          
-          export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
-          export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
+          gem install bundler
 
           export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
+          export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
+
           export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
+          export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
+
           export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
-          export DM_SUPPLIER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
-          export DM_SUPPLIER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
+          export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
+          export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
+          export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[environment].supplier_id }}"
 
-          mkdir -p reports
-          rm -f screenshot*
+          export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[environment].buyer_email }}"
+          export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[environment].buyer_password }}"
 
-          bundle exec cucumber features --tags ~@wip --tags ~@not-production --color --format html --out reports/index.html --format pretty
+          export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ smoke_test_variables[environment].admin_email }}"
+          export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ smoke_test_variables[environment].admin_password }}"
+
+          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_category_email }}"
+          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_category_password }}"
+
+          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_sourcing_email }}"
+          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_sourcing_password }}"
+
+          export DM_PAGINATION_LIMIT=100
+
+          make setup
+
+          bundle exec cucumber features --tags @smoke-tests features/apps_status.feature features
       - conditional-step:
           condition-kind: build-cause
           cause: UPSTREAM_CAUSE
