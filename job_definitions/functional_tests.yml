@@ -1,11 +1,11 @@
 {% set jobs = [
   {"name": "preview", "display_name": "preview",
-   "description": "Run the full functional test suite against the preview environment",
+   "description": "Run the functional test suite against the preview environment",
    "tags": ["~@ssp-gcloud", "~@ssp-dos", "@functional-test"],
    "disabled": "false",
   },
-  {"name": "ssp-preview", "display_name": "SSP preview",
-   "description": "Run the SSP functional test suite against the preview environment",
+  {"name": "preview-service-submissions", "display_name": "preview service submissions",
+   "description": "Run the service submission functional test suite against the preview environment",
    "tags": ["@ssp-dos"],
    "disabled": "true",
   }
