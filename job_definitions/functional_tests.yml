@@ -29,7 +29,6 @@
             - jenkins
           wipe-workspace: false
     triggers:
-      - timed: "H/30 * * * *"
       - pollscm: "H/2 * * * *"
     wrappers:
       - ansicolor
