@@ -109,8 +109,21 @@
             STAGE={{ job }}
             APPLICATION_NAME=${APPLICATION_NAME}
           block: true
+{% if job == "preview" %}
     publishers:
       - trigger:
           project: apps-are-up-{{ job }}
           threshold: FAILURE
+      - trigger:
+          project: functional-tests-preview
+          threshold: SUCCESS
+      - trigger:
+          project: functional-tests-preview-service-submissions
+          threshold: SUCCESS
+{% else %}
+    publishers:
+      - trigger:
+          project: apps-are-up-{{ job }}
+          threshold: FAILURE
+{% endif %}
 {% endfor %}
