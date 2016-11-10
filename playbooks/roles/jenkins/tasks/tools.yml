@@ -53,9 +53,14 @@
 - name: Add AWS credentials file
   template: src=aws_credentials.j2 dest=/var/lib/jenkins/.aws/credentials
 
-- name: Add NodeJS apt repository key
+- name: Copy the NodeSource GPG key to the remote
+  copy:
+    src: ../files/nodesource.gpg.key
+    dest: /tmp/nodesource.gpg.key
+
+- name: Import the NodeSource GPG key into apt
   apt_key:
-    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    file: /tmp/nodesource.gpg.key
     state: present
 
 - name: Add NodeJS apt repository
