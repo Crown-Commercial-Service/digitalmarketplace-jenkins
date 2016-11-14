@@ -117,9 +117,6 @@
       - trigger:
           project: functional-tests-preview
           threshold: SUCCESS
-      - trigger:
-          project: functional-tests-preview-service-submissions
-          threshold: SUCCESS
 {% else %}
     publishers:
       - trigger:
