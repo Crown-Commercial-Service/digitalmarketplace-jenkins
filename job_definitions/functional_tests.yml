@@ -51,6 +51,11 @@
               STATUS=FAILED
               URL=<${BUILD_URL}functional_test_report|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
+{% if job.name == 'preview' %}
+      - trigger:
+          project: functional-tests-preview-service-submissions
+          threshold: SUCCESS
+{% endif %}
     builders:
       - shell: |
           rbenv install -s
