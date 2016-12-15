@@ -1,4 +1,15 @@
 ---
+- name: Adding APT repository key
+  apt_key:
+    id: ACCC4CF8
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+- name: Add postgres repository
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
+    state: present
+    update_cache: yes
+
 - name: Install tools
   apt: update_cache=true name={{ item }}
   with_items:
@@ -8,7 +19,7 @@
     - libyaml-dev
     - libreadline-dev
     - libffi-dev
-    - postgresql-client-9.3
+    - postgresql-client-9.5
 
 - name: Install rbenv and pyenv
   sudo: yes
