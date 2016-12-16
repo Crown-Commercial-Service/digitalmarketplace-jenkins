@@ -78,9 +78,11 @@
 
           export DM_PAGINATION_LIMIT=100
 
-          make setup
+          # Example environment uses ENV variables values when possible
+          export DM_ENVIRONMENT=example
 
-          bundle exec cucumber features --tags @smoke-tests features/apps_status.feature features
+          make smoke-tests || make rerun
+
       - conditional-step:
           condition-kind: build-cause
           cause: UPSTREAM_CAUSE
