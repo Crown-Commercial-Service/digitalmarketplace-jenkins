@@ -13,8 +13,8 @@
             - preview
             - staging
     logrotate:
-      daysToKeep: 20
-      artifactDaysToKeep: 20
+      daysToKeep: 120
+      artifactDaysToKeep: 120
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-aws.git
@@ -49,6 +49,16 @@
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=deploy
+              JOB="Export data"
+              ICON=:rowboat:
+              STAGE=$TARGET_STAGE
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
 - job:
     name: "migrate-data-to-staging"
     display-name: "Migrate data to staging"
@@ -56,8 +66,8 @@
     description: |
       Migrate RDS data from production to staging.
     logrotate:
-      daysToKeep: 20
-      artifactDaysToKeep: 20
+      daysToKeep: 120
+      artifactDaysToKeep: 120
     builders:
       - trigger-builds:
         - project: migrate-data
