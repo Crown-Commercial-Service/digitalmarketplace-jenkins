@@ -49,6 +49,16 @@
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=deploy
+              JOB="Export data"
+              ICON=:rowboat:
+              STAGE=$TARGET_STAGE
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
 - job:
     name: "migrate-data-to-staging"
     display-name: "Migrate data to staging"
