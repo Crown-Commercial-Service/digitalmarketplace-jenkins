@@ -43,7 +43,7 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=deploy
-              JOB="Export data"
+              JOB="Data migration"
               ICON=:fire:
               STAGE=production
               STATUS=FAILED
@@ -53,7 +53,7 @@
             condition: SUCCESS
             predefined-parameters: |
               USERNAME=deploy
-              JOB="Export data"
+              JOB="Data migration"
               ICON=:rowboat:
               STAGE=$TARGET_STAGE
               STATUS=SUCCESS
