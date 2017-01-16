@@ -1,0 +1,13 @@
+---
+
+- name: Download gdrive (google drive command line interface client)
+  get_url:
+    url: "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download"
+    dest: /usr/local/bin/gdrive
+    mode: 755
+
+- name: Add local .gdrive directory
+  file: path=/var/lib/jenkins/.gdrive state=directory owner=jenkins group=jenkins
+
+- name: Create token_v2.json file in .gdrive directory
+  template: src=gdrive_token_v2.json.j2 dest=/var/lib/jenkins/.gdrive/token_v2.json
