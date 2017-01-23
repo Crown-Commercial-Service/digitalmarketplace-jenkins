@@ -1,14 +1,22 @@
 {% set jobs = [
   {"name": "preview", "display_name": "preview",
    "description": "Run the functional test suite against the preview environment",
+   "tags": [],
+   "disabled": "false",
+   "branch": "master",
+  },
+  {"name": "preview-legacy", "display_name": "preview legacy functional tests",
+   "description": "Run the jenkins functional test branch against the preview environment",
    "tags": ["~@ssp-gcloud", "~@ssp-dos", "@functional-test"],
    "disabled": "false",
+   "branch": "jenkins",
   },
   {"name": "preview-service-submissions", "display_name": "preview service submissions",
    "description": "Run the service submission functional test suite against the preview environment",
    "tags": ["@ssp-dos"],
    "disabled": "true",
-  }
+   "branch": "jenkins",
+  },
 ] %}
 ---
 {% for job in jobs %}
@@ -26,7 +34,7 @@
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
           credentials-id: github_com_and_gds
           branches:
-            - jenkins
+            - {{ job.branch }}
           wipe-workspace: false
     triggers:
       - pollscm: "H/2 * * * *"
@@ -53,6 +61,11 @@
               CHANNEL=#dm-release
 {% if job.name == 'preview' %}
       - trigger:
+          project: functional-tests-preview-legacy
+          threshold: SUCCESS
+{% endif %}
+{% if job.name == 'preview-legacy' %}
+      - trigger:
           project: functional-tests-preview-service-submissions
           threshold: SUCCESS
 {% endif %}
@@ -61,7 +74,7 @@
           rbenv install -s
           which bundler || gem install bundler
           bundle install
-          
+
           export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_PREVIEW"
           export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_PREVIEW"
 
