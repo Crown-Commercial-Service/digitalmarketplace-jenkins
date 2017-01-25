@@ -90,7 +90,6 @@
         <ul>
           <li>Have you deployed this release through preview and staging?</li>
           <li>Have the functional tests passed for this release in preview and staging?</li>
-          <li>Have the smoke tests passed for this release in staging?</li>
           <li>Do you have Yolo the gorilla?</li>
         </ul>
       </div>
@@ -111,12 +110,13 @@
           block: true
 
     publishers:
-      - trigger:
-          project: apps-are-up-{{ job }}
-          threshold: FAILURE
 {% if job in ["preview", "staging"] %}
       - trigger:
           project: functional-tests-{{ job }}
           threshold: SUCCESS
+{% else %}
+      - trigger:
+          project: apps-are-up-{{ job }}
+          threshold: FAILURE
 {% endif %}
 {% endfor %}
