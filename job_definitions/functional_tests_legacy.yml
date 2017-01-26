@@ -61,7 +61,7 @@
     builders:
       - shell: |
           rbenv install -s
-          which bundler || gem install bundler
+          gem install bundler --conservative
           bundle install
 
           export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_PREVIEW"
