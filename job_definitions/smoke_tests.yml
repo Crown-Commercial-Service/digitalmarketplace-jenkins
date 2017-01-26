@@ -50,7 +50,7 @@
     builders:
       - shell: |
           rbenv install -s
-          gem install bundler
+          gem install bundler --conservative
 
           export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
           export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
