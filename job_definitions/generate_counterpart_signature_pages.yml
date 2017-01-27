@@ -1,0 +1,30 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+{% set frameworks = ['g-cloud-8']%}
+---
+{% for environment in environments %}
+{% for framework in frameworks %}
+- job:
+    name: 'generate-counterpart-signature-pages-{{ environment }}'
+    display-name: 'Generate Counterpart Signature Pages - {{ environment }}'
+    project-type: freestyle
+    description: 'Generate framework agreement counterpart signature pages from supplier "about you" information for suppliers who applied to a framework.'
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+          wipe-workspace: false
+    triggers:
+      - timed: 'H 15 8 * *'
+    builders:
+      - shell: |
+          # Create and activate virtualenv and install reqs
+          [ -d venv ] || virtualenv venv
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+
+          # Run script
+          $LOCATION-DIGITALMARKETPLACE-SCRIPTS/scripts/gscripts/generate-framework-agreement-signature-pages.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" '{{ framework }}'  "TEMPLATE_FOLDER_PLACEHOLDER" "OUTPUT_FOLDER_PLACEHOLDER"
+{% endfor %}
+{% endfor %}
