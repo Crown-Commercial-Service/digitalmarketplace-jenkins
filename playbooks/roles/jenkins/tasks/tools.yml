@@ -8,6 +8,7 @@
     - libyaml-dev
     - libffi-dev
     - postgresql-client-9.3
+    - http://download.gna.org/wkhtmltopdf/0.12/0.12.4/wkhtmltox-0.12.4_linux-precise-amd64.deb
 
 - name: Install rbenv and pyenv
   sudo: yes
@@ -19,6 +20,15 @@
     - {repo: "https://github.com/carsomyr/rbenv-bundler.git", path: ".rbenv/plugins/bundler"}
     - {repo: "https://github.com/yyuu/pyenv.git", path: ".pyenv"}
     - {repo: "https://github.com/yyuu/pyenv-virtualenv.git", path: ".pyenv/plugins/pyenv-virtualenv"}
+
+- name: Clone github.gds repositories
+  sudo: yes
+  sudo_user: jenkins
+  git: repo=git@github.gds:gds/{{ item }}.git dest=/var/lib/jenkins/{{ item }}
+  with_items:
+     - digitalmarketplace-credentials
+     - digitalmarketplace-scripts
+     - digitalmarketplace-agreements
 
 - name: Add .rbenv and .pyenv to PATH
   lineinfile:
