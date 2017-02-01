@@ -34,6 +34,7 @@
           pip install -e .
 
           EXPORTDATA_PATH='./dumps/sql/exportdata.sql'
+          GDRIVE_EXPORTDATA_FOLDER_ID='{{ jenkins_gdrive_folder_id }}'
 
           AWS_PROFILE="production" dmaws migratedata production  \
             $TARGET_STAGE $TARGET_STAGE $EXPORTDATA_PATH \
@@ -54,9 +55,9 @@
           echo "Removing $EXPORTDATA_PATH." >&2
           rm $EXPORTDATA_PATH
 
-          # "0B9HQ_eYjd1zjWm9DaEpNUzZhRzg" is the id of the "/dumps" Google Drive folder
-          echo "Sync local file with GDrive sync folder." >&2
-          /usr/local/bin/gdrive --config "/var/lib/jenkins/.gdrive" sync upload --delete-extraneous ./dumps/sql 0B9HQ_eYjd1zjWm9DaEpNUzZhRzg
+          # $GDRIVE_EXPORTDATA_FOLDER_ID is the id of the "/dumps" Google Drive folder
+          echo "Sync local file with GDrive sync folder with id '$GDRIVE_EXPORTDATA_FOLDER_ID'." >&2
+          /usr/local/bin/gdrive --config "/var/lib/jenkins/.gdrive" sync upload --delete-extraneous ./dumps/sql $GDRIVE_EXPORTDATA_FOLDER_ID
 
           echo "Removing local ./dumps directory." >&2
           rm -r ./dumps
