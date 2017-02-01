@@ -28,6 +28,7 @@
     - unzip
     - ntp
     - jq
+    - wkhtmltopdf
 
 - name: Install rbenv and pyenv
   sudo: yes

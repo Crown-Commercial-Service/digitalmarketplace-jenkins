@@ -1,0 +1,80 @@
+{% set environments = ['production'] %}
+{% set frameworks = ['digital-outcomes-and-specialists-2'] %}
+---
+{% for environment in environments %}
+{% for framework in frameworks %}
+- job:
+    name: 'generate-upload-and-notify-counterpart-signature-pages-{{ environment }}'
+    display-name: 'Generate, Upload and Notify Counterpart Signature Pages - {{ environment }}'
+    project-type: pipeline
+    description: |
+        This job will run a series of scripts to
+        <ol>
+          <li>Generate framework agreement counterpart signature pages for suppliers approved for countersignature but
+              without a countersigned agreement</li>
+          <li>Upload the generated files to S3 and set the path in the relevant FrameworkAgreement record</li>
+          <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
+        </ol>
+    disabled: false
+    concurrent: false
+    triggers:
+      - timed: 'H 1 * * *'
+    pipeline:
+      script: |
+        node {
+            try {
+              stage('Prepare') {
+                dir('scripts/generated-countersignature-pdfs') {
+                  deleteDir()
+                }
+                dir('scripts') {
+                  git url: "git@github.com:alphagov/digitalmarketplace-scripts.git", branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+                  echo "Cleaning scripts repository"
+                  sh('pwd')
+                  sh("git clean -fdx")
+                  sh("git reset --hard origin/master")
+                }
+                dir('agreements') {
+                  git url: "git@github.gds:gds/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+                  echo "Cleaning agreements repository"
+                  sh('pwd')
+                  sh("git clean -fdx")
+                  sh("git reset --hard origin/master")
+                }
+              }
+              stage('Generate') {
+                dir('scripts') {
+                  echo "Generate with POWER in"
+                  sh('pwd')
+                  sh('[ -d venv ] || virtualenv venv')
+                  sh('source ./venv/bin/activate')
+                  sh('pip install --upgrade pip')
+                  sh('pip install -r requirements.txt')
+                  sh('python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
+                             {{ environment }} \
+                             "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
+                             {{ framework }} \
+                             ../agreements/documents/framework-agreement-signature-page \
+                             generated-countersignature-pdfs')
+                }
+              }
+              stage('Upload') {
+                echo "Upload the stuff in"
+                sh('pwd')
+              }
+              stage('Cleanup') {
+                dir('scripts/generated-pdfs') {
+                  echo "Deleting the stuff in..."
+                  sh('pwd')
+                  deleteDir()
+                }
+              }
+            } catch(err) {
+              currentBuild.result = 'FAILURE'
+              echo "Error: ${err}"
+            } finally {
+            }
+        }
+
+{% endfor %}
+{% endfor %}
