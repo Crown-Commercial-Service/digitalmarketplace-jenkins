@@ -60,9 +60,6 @@
 - name: Ensure Jenkins is started and runs on startup.
   service: name=jenkins state=started enabled=yes
 
-- name: Install curl
-  apt: pkg=curl state=installed
-
 - name: Remove existing Jenkins config
   file: path=/data/jenkins/{{ item }} state=absent
   notify: restart jenkins
@@ -102,3 +99,8 @@
 - include: jobs.yml tags=jobs
 - include: tools.yml tags=tools
 - include: gdrive.yml tags=gdrive
+- include: paas.yml
+  tags: [paas,cloudfoundry]
+
+- include: sops.yml
+  tags: [sops]

@@ -1,0 +1,4 @@
+/venv
+.envrc
+requirements.txt.md5
+*.retry

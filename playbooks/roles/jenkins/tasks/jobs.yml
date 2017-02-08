@@ -6,6 +6,15 @@
 - name: Install jenkins-job-builder
   pip: name=jenkins-job-builder state=present
 
+- name: Install jenkins-job-builder-pipeline
+  tags: [jenkins-job-builder-pipeline]
+  pip:
+    name: "git+https://github.com/rusty-dev/jenkins-job-builder-pipeline.git@{{ jenkins_job_builder_pipeline_version }}#egg=jenkins-job-builder-pipeline"
+    version: "{{ jenkins_job_builder_pipeline_version }}"
+    state: present
+    #editable: False # TODO: enabled this when upgrading to Ansible >2.0
+  changed_when: False # TODO: remove this when upgrading to Ansible >2.0
+
 - name: Create /etc/jenkins_jobs/definitions
   file: path=/etc/jenkins_jobs/definitions state=directory recurse=yes
 
@@ -13,6 +22,7 @@
   template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
 
 - name: Clone digitalmarketplace-credentials repository
+  tags: [credentials-repo]
   git:
     repo: "git@github.gds:gds/digitalmarketplace-credentials.git"
     dest: /var/lib/jenkins/digitalmarketplace-credentials

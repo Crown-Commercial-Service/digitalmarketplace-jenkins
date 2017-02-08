@@ -1,0 +1,14 @@
+---
+
+- name: Install SOPS
+  get_url:
+    url: https://s3-eu-west-1.amazonaws.com/digitalmarketplace-public/sops_linux_amd64
+    dest: /usr/local/bin/sops
+    mode: 0755
+
+- name: Install aws-auth
+  tags: [aws-auth]
+  get_url:
+    url: https://raw.githubusercontent.com/alphagov/aws-auth/master/aws-auth.sh
+    dest: /usr/local/bin/aws-auth
+    mode: 0755

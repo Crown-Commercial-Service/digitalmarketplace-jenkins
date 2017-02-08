@@ -87,3 +87,5 @@ app_urls:
     data_api: https://api.digitalmarketplace.service.gov.uk
     search_api: https://search-api.digitalmarketplace.service.gov.uk
     www: https://www.digitalmarketplace.service.gov.uk
+
+jenkins_job_builder_pipeline_version: f24b9f5b0de03edd59b94061fa5182d11887403d
