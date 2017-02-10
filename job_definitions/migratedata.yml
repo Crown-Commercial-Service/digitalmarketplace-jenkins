@@ -37,8 +37,9 @@
           GDRIVE_EXPORTDATA_FOLDER_ID='{{ jenkins_gdrive_folder_id }}'
 
           AWS_PROFILE="production" dmaws migratedata production  \
-            $TARGET_STAGE $TARGET_STAGE $EXPORTDATA_PATH \
+            $TARGET_STAGE $TARGET_STAGE \
             ~/digitalmarketplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
+            $EXPORTDATA_PATH \
             -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
 
           # we expect this file to be there after running migratedata
