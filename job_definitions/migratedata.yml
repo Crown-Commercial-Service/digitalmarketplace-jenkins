@@ -33,10 +33,35 @@
           . ./venv/bin/activate
           pip install -e .
 
+          EXPORTDATA_PATH='./dumps/sql/exportdata.sql'
+          GDRIVE_EXPORTDATA_FOLDER_ID='{{ jenkins_gdrive_folder_id }}'
+
           AWS_PROFILE="production" dmaws migratedata production  \
-            $TARGET_STAGE $TARGET_STAGE \
+            $TARGET_STAGE $TARGET_STAGE $EXPORTDATA_PATH \
             ~/digitalmarketplace-credentials/dmaws-vars-files/$TARGET_STAGE.yml \
             -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
+
+          # we expect this file to be there after running migratedata
+          if ! [ -f "$EXPORTDATA_PATH" ];then
+              rm -r ./dumps
+
+              echo "Exiting: can't find the $EXPORTDATA_PATH file." >&2
+              exit 1
+          fi
+
+          echo "Found $EXPORTDATA_PATH. Archiving..." >&2
+          zip ./dumps/sql/exportdata.zip $EXPORTDATA_PATH
+
+          echo "Removing $EXPORTDATA_PATH." >&2
+          rm $EXPORTDATA_PATH
+
+          # $GDRIVE_EXPORTDATA_FOLDER_ID is the id of the "/dumps" Google Drive folder
+          echo "Sync local file with GDrive sync folder with id '$GDRIVE_EXPORTDATA_FOLDER_ID'." >&2
+          /usr/local/bin/gdrive --config "/var/lib/jenkins/.gdrive" sync upload --delete-extraneous ./dumps/sql $GDRIVE_EXPORTDATA_FOLDER_ID
+
+          echo "Removing local ./dumps directory." >&2
+          rm -r ./dumps
+          exit 0
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
