@@ -51,7 +51,7 @@
           fi
 
           echo "Found $EXPORTDATA_PATH. Archiving..." >&2
-          zip ./dumps/sql/exportdata.zip $EXPORTDATA_PATH
+          tar -cvzf ./dumps/sql/exportdata.tar.gz $EXPORTDATA_PATH
 
           echo "Removing $EXPORTDATA_PATH." >&2
           rm $EXPORTDATA_PATH
