@@ -10,4 +10,4 @@
   file: path=/var/lib/jenkins/.gdrive state=directory owner=jenkins group=jenkins
 
 - name: Create token_v2.json file in .gdrive directory
-  template: src=gdrive_token_v2.json.j2 dest=/var/lib/jenkins/.gdrive/token_v2.json
+  template: src=gdrive_token_v2.json.j2 dest=/var/lib/jenkins/.gdrive/token_v2.json owner=jenkins group=jenkins mode=600
