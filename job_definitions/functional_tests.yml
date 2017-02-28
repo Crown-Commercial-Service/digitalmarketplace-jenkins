@@ -101,5 +101,5 @@
           export DM_ENVIRONMENT=example
 
           # Temporarily exclude brief response tests
-          make ARGS='--tags ~@brief-response' run || make rerun
+          make ARGS='--tags ~@brief-response --tags ~@requirements' run || make rerun
 {% endfor %}
