@@ -43,6 +43,7 @@
             -f ~/digitalmarketplace-credentials/dmaws-vars-files/production.yml
 
           # we expect this file to be there after running migratedata
+          # full filepath: "/data/jenkins/jobs/migrate-data/workspace/dumps/sql/exportdata.sql"
           if ! [ -f "$EXPORTDATA_PATH" ];then
               rm -r ./dumps
 
@@ -51,7 +52,7 @@
           fi
 
           echo "Found $EXPORTDATA_PATH. Archiving..." >&2
-          zip ./dumps/sql/exportdata.zip $EXPORTDATA_PATH
+          tar -cvzf ./dumps/sql/exportdata.tar.gz $EXPORTDATA_PATH
 
           echo "Removing $EXPORTDATA_PATH." >&2
           rm $EXPORTDATA_PATH
