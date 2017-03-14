@@ -22,7 +22,7 @@
             - master
           wipe-workspace: false
     triggers:
-      - timed: schedule
+      - timed: {{ schedule }}
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
