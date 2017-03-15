@@ -1,0 +1,49 @@
+{% set environments = ['production'] %}
+{% set frameworks = [('g-cloud-9', 'false')] %}
+{% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
+---
+{% for environment in environments %}
+{% for framework, disabled in frameworks %}
+{% for schedule, period in schedules %}
+- job:
+    name: 'performance-platform-stats-{{ framework }}-per-{{ period }}-{{ environment }}'
+    disabled: {{ disabled }}
+    display-name: "Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}"
+    project-type: freestyle
+    description: Sends a regular snapshot of framework stats to the performance platform
+    logrotate:
+      daysToKeep: 20
+      artifactDaysToKeep: 20
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+          wipe-workspace: false
+    triggers:
+      - timed: {{ schedule }}
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=snapshot-stats
+              JOB=Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          [ -d venv ] || virtualenv venv
+
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+
+          python ./scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} --{{ period }}
+
+{% endfor %}
+{% endfor %}
+{% endfor %}
