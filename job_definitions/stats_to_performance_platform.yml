@@ -42,7 +42,7 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          ./scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} --{{ period }}}
+          python ./scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} --{{ period }}
 
 {% endfor %}
 {% endfor %}
