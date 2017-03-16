@@ -30,7 +30,7 @@
             predefined-parameters: |
               USERNAME=snapshot-stats
               JOB=Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}
-              ICON=:alarm_clock:
+              ICON=:chart_with_downwards_trend:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
