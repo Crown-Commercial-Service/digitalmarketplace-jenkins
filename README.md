@@ -6,19 +6,18 @@ We use Jenkins job builder for managing jobs. The best documentation for this is
 
 ## To setup
 
-* Create a virtualenv and pip install
-* You may need to deactivate and reactivate the virtualenv before the `ansible-playbook` command is available.
+ * The DM_CREDENTIALS_REPO environment variable needs to be set to your credentials repo path. (E.g. put it in your bash profile)
 
 ## To deploy
 
 Run all ansible tasks
 ```bash
-$ ./scripts/provision.sh <path to digitalmarketplace-credentials>
+$ make jenkins
 ````
 
 Run just tasks tagged as `jobs`
 ```bash
-$ ./scripts/provision.sh <path to digitalmarketplace-credentials> -t jobs
+$ make jenkins ANSIBLE_TAGS=jobs
 ```
 
 ## To SSH onto the jenkins box
