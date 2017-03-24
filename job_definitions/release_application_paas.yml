@@ -64,7 +64,9 @@
                         withEnv(paas_credentials.tokenize("\n")) {
                             sh('make paas-login')
                         }
-                        sh('make paas-deploy')
+                        lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                            sh('make paas-deploy')
+                        }
                     }
                     stage('Post-build') {
                         dir(".app-repo/${APPLICATION_NAME}") {

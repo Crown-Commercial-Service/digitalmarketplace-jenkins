@@ -1,0 +1,75 @@
+{% set applications = [
+  "api"
+] %}
+- job:
+    name: database-migration-paas
+    display-name: Run database migration on PaaS
+    project-type: pipeline
+    description: Runs the database migration script on a newly deployed PaaS application
+    disabled: false
+    concurrent: true
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+            - production
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+            - {{ application }}
+      - string:
+          name: RELEASE_NUMBER
+          description: "The number of the application pull request to use"
+    pipeline:
+      script: |
+        node {
+            try {
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
+
+                withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]) {
+                    stage('Prepare') {
+                        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NUMBER}"
+
+                        sh('make paas-clean')
+                        sh('make build')
+                    }
+
+                    stage('Download') {
+                        sh('make download-deployment-zip')
+                    }
+
+                    stage('Run database migration') {
+                        paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/paas/credentials_env.enc', returnStdout: true).trim()
+                        withEnv(paas_credentials.tokenize("\n")) {
+                            sh('make paas-login')
+                        }
+                        lock("paas-${STAGE}-${APPLICATION_NAME}-db-migration") {
+                            sh "make paas-deploy-db-migration"
+                            timeout(2) {
+                                waitUntil {
+                                    sleep 5
+                                    def taskStatus = sh(
+                                        script: 'make paas-check-db-migration-task',
+                                        returnStdout: true
+                                    ).trim()
+                                    echo "Task status is ${taskStatus}"
+                                    if (taskStatus == 'FAILED') {
+                                        sh("cf logs --recent ${APPLICATION_NAME}-db-migration")
+                                        throw new Exception('Database migration task failed')
+                                    }
+                                    return (taskStatus == 'SUCCEEDED');
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch(err) {
+                currentBuild.result = 'FAILURE'
+                echo "Error: ${err}"
+            } finally {
+                sh('make paas-clean')
+            }
+        }

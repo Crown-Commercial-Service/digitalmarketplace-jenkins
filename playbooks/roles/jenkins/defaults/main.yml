@@ -26,6 +26,7 @@ jenkins_plugins:
   - greenballs
   - build-name-setter
   - extended-choice-parameter
+  - lockable-resources
 
 jenkins_config_templates:
   - config.xml
