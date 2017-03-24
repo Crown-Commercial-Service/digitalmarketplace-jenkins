@@ -1,6 +1,3 @@
-{% set applications = [
-  "api"
-] %}
 - job:
     name: database-migration-paas
     display-name: Run database migration on PaaS
@@ -19,7 +16,7 @@
       - choice:
           name: APPLICATION_NAME
           choices:
-            - {{ application }}
+            - api
       - string:
           name: RELEASE_NUMBER
           description: "The number of the application pull request to use"
