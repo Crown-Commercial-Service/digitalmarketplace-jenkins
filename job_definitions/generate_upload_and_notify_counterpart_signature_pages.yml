@@ -50,12 +50,13 @@
                   sh('source ./venv/bin/activate')
                   sh('pip install --upgrade pip')
                   sh('pip install -r requirements.txt')
-                  sh('python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
-                             {{ environment }} \
-                             "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
-                             {{ framework }} \
-                             ../agreements/documents/framework-agreement-signature-page \
-                             generated-countersignature-pdfs')
+                  sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
+                        python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
+                               {{ environment }} \
+                               "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
+                               {{ framework }} \
+                               ../agreements/documents/framework-agreement-signature-page \
+                               generated-countersignature-pdfs')
                 }
               }
               stage('Upload') {
