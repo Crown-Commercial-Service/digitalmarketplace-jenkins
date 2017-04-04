@@ -44,8 +44,6 @@
               }
               stage('Generate') {
                 dir('scripts') {
-                  echo "Generate with POWER in"
-                  sh('pwd')
                   sh('[ -d venv ] || virtualenv venv')
                   sh('source ./venv/bin/activate')
                   sh('pip install --upgrade pip')
@@ -60,19 +58,33 @@
                 }
               }
               stage('Upload') {
-                echo "Upload the stuff in"
-                sh('pwd')
+                dir('scripts') {
+                  sh('python ./scripts/upload-counterpart-agreements.py \
+                  {{ environment }} \
+                  "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
+                  generated-countersignature-pdfs \
+                  {{ framework }} \
+                  --notify-key="$NOTIFY_API_TOKEN" \
+                  --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
+                  --dry-run')
+                }
               }
               stage('Cleanup') {
-                dir('scripts/generated-pdfs') {
-                  echo "Deleting the stuff in..."
-                  sh('pwd')
+                dir('scripts/generated-countersignature-pdfs') {
                   deleteDir()
                 }
               }
             } catch(err) {
               currentBuild.result = 'FAILURE'
               echo "Error: ${err}"
+              build job: 'notify-slack', parameters: [
+                string(name: 'USERNAME', value: 'jenkins'),
+                string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
+                string(name: 'ICON', value: ':alarm_clock:'),
+                string(name: 'STAGE', value: '{{ environment }}'),
+                string(name: 'STATUS', value: 'FAILED'),
+                string(name: 'CHANNEL', value: '#dm-release')
+              ]
             } finally {
             }
         }
