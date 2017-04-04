@@ -19,6 +19,9 @@
     concurrent: false
     triggers:
       - timed: 'H 1 * * *'
+    logrotate:
+      daysToKeep: 7
+      artifactDaysToKeep: 7
     pipeline:
       script: |
         node {
