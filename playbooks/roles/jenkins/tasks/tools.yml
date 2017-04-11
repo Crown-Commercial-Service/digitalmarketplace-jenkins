@@ -14,7 +14,7 @@
 
 - name: Install tools
   tags: [apt]
-  apt: update_cache=true name={{ item }}
+  apt: update_cache=yes name={{ item }}
   with_items:
     - git
     - libpq-dev
@@ -28,6 +28,18 @@
     - unzip
     - ntp
     - jq
+    - xvfb
+
+- name: Add repository for newer wkhtmltopdf (the default version 0.9.9 is very old)
+  tags: [apt]
+  apt_repository:
+    repo: "ppa:ecometrica/servers"
+    state: present
+    update_cache: yes
+
+- name: Install wkhtmltopdf
+  tags: [apt]
+  apt: update_cache=yes state=latest name=wkhtmltopdf
 
 - name: Install rbenv and pyenv
   sudo: yes
