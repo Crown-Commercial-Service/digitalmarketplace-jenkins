@@ -62,7 +62,7 @@
               }
               stage('Upload') {
                 dir('scripts') {
-                  sh('python ./scripts/upload-counterpart-agreements.py \
+                  sh('AWS_PROFILE="{{ environment }}" python ./scripts/upload-counterpart-agreements.py \
                   {{ environment }} \
                   "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
                   generated-countersignature-pdfs \
