@@ -69,7 +69,7 @@
                   {{ framework }} \
                   --notify-key="$NOTIFY_API_TOKEN" \
                   --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
-                  --dry-run')
+                  )
                 }
               }
               stage('Cleanup') {
