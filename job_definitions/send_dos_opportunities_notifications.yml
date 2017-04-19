@@ -1,0 +1,38 @@
+{% set environments = ['production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "send-dos-opportunities-notifications-{{ environment }}"
+    display-name: "Notify suppliers of the latest DOS opportunities - {{ environment }}"
+    project-type: freestyle
+    description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_gds
+          branches:
+            - master
+          wipe-workspace: false
+    triggers:
+      - timed: "0 8 * * 1-5"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=dos-opportunities
+              JOB=Notify suppliers of the latest DOS opportunities - {{ environment }}
+              ICON=:briefs:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          [ -d venv ] || virtualenv venv
+
+          . ./venv/bin/activate
+          pip install -r requirements.txt
+
+          ./scripts/send_dos_opportunities_email.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "jenkins" "$MAILCHIMP_API_TOKEN" --list_id="096e52cebb"
+{% endfor %}
