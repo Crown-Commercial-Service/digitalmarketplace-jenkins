@@ -1,23 +1,23 @@
-{% set applications = [
-  "api", "search-api", "buyer-frontend", "admin-frontend", "supplier-frontend"
-] %}
-
-{% for application in applications %}
 - job:
-    name: build-{{ application }}
-    display-name: Build {{ application }}
+    name: build-app
+    display-name: Build application
     project-type: pipeline
     description: Builds the application artefact and uploads it to S3
     disabled: false
     concurrent: false
-    triggers:
-      - pollscm: "* * * * *"
+    parameters:
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+{% for application in dm_applications %}
+            - {{ application }}
+{% endfor %}
     pipeline:
       script: |
         node {
             try {
                 stage('Prepare') {
-                    git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git", branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+                    git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_gds'
                     echo "Cleaning repository"
                     sh("git clean -fdx")
                     sh("git reset --hard origin/master")
@@ -31,7 +31,7 @@
                         throw new Exception('Release number can not be found')
                     }
                     echo "Release number: ${releaseNumber}"
-                    currentBuild.displayName = "#${BUILD_NUMBER} - release-${releaseNumber}"
+                    currentBuild.displayName = "#${BUILD_NUMBER} - ${APPLICATION_NAME} - ${releaseNumber}"
                     sh("git archive --format=zip HEAD > release-${releaseNumber}.zip")
                     if (fileExists('scripts/build.sh')) {
                         echo "Running build script.."
@@ -52,7 +52,7 @@
                     sh("zip release-${releaseNumber}.zip version_sha")
                 }
                 stage('Upload') {
-                    sh("aws s3 cp --only-show-errors release-${releaseNumber}.zip s3://digitalmarketplace-deployment/{{ application }}/release-${releaseNumber}.zip")
+                    sh("aws s3 cp --only-show-errors release-${releaseNumber}.zip s3://digitalmarketplace-deployment/${APPLICATION_NAME}/release-${releaseNumber}.zip")
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'
@@ -60,5 +60,3 @@
             } finally {
             }
         }
-
-{% endfor %}

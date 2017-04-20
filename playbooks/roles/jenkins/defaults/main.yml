@@ -12,6 +12,13 @@ jenkins_connection_retries: 60
 jenkins_hostname: localhost
 jenkins_jar_location: /opt/jenkins-cli.jar
 
+dm_applications:
+  - api
+  - search-api
+  - buyer-frontend
+  - supplier-frontend
+  - admin-frontend
+
 jenkins_plugins:
   - git
   - github
