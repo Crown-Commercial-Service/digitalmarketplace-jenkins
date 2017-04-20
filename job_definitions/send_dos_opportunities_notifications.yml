@@ -6,6 +6,27 @@
     display-name: "Notify suppliers of the latest DOS opportunities - {{ environment }}"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
+    parameters:
+      - choice:
+          name: LOTS
+          choices:
+            - all
+            - digital-specialists
+            - digital-outcomes
+            - user-research-participants
+      - choice:
+          name: MAILCHIMP_LIST_ID
+          choices:
+            - production-list
+            - test-list
+          description: "To send the email to the briefs team instead of production users then choose 'test-list'"
+      - choice:
+          name: NUMBER_OF_DAYS
+          choices:
+            - default
+            - "1"
+            - "3"
+          description: "How many days worth of briefs to include in the email. By default will send 3 days worth on a Monday and 1 days worth on Tue-Fri"
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-scripts.git
@@ -34,5 +55,20 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          ./scripts/send_dos_opportunities_email.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "jenkins" "$MAILCHIMP_API_TOKEN" --list_id="096e52cebb"
+          # Temporarily only send to test list during QA period. This line will be removed when happy to go to production users
+          FLAGS = "--list_id='096e52cebb'"
+
+          if [ "$MAILCHIMP_LIST_ID" = "test-list" ]; then
+            FLAGS="--list_id='096e52cebb'"
+          fi
+
+          if [ "$LOTS" != "all" ]; then
+            FLAGS="$FLAGS --lot_slug=$LOTS"
+          fi
+
+          if [ "$NUMBER_OF_DAYS" != "default" ]; then
+            FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
+          fi
+
+          ./scripts/send_dos_opportunities_email.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
 {% endfor %}
