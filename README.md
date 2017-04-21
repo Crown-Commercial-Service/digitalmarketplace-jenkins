@@ -17,7 +17,12 @@ $ make jenkins
 
 Run just tasks tagged as `jobs`
 ```bash
-$ make jenkins ANSIBLE_TAGS=jobs
+$ make jenkins TAGS=jobs
+```
+
+To only update a specific Jenkins job
+```bash
+$ make jenkins TAGS=jobs JOBS=index_services
 ```
 
 ## To SSH onto the jenkins box

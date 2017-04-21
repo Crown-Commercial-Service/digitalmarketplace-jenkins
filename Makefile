@@ -2,7 +2,8 @@
 SHELL := /bin/bash
 VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
 
-ANSIBLE_TAGS ?= all
+TAGS ?= all
+JOBS ?= '*'
 
 .PHONY: help
 help: ## List available commands
@@ -28,4 +29,4 @@ jenkins: venv ## Run Jenkins playbook
 		-i playbooks/hosts playbooks/jenkins_playbook.yml \
 		--private-key ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem \
 		-e @<(${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml) \
-		--tags "${ANSIBLE_TAGS}"
+		--tags "${TAGS}" -e "jobs=${JOBS}"
