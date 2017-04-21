@@ -2,8 +2,8 @@
 ---
 {% for environment in environments %}
 - job:
-    name: "send-suppliers-dos-opportunities-{{ environment }}"
-    display-name: "Send suppliers DOS opportunities - {{ environment }}"
+    name: "notify-suppliers-of-dos-opportunities-{{ environment }}"
+    display-name: "Notify suppliers of DOS opportunities - {{ environment }}"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
     parameters:
