@@ -1,0 +1,69 @@
+---
+{% for application in dm_applications %}
+- job:
+    name: release-{{ application }}
+    display-name: "[Pipeline] {{ application }}"
+    project-type: pipeline
+    description: Promote {{ application }} through environments
+    disabled: false
+    concurrent: true
+    triggers:
+      - pollscm: "* * * * *"
+    pipeline:
+      script: |
+        node {
+          stage('Create release tag') {
+            git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
+                branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+            releaseNumber = sh(
+                script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
+                returnStdout: true
+            ).trim()
+
+            if (releaseNumber == "") {
+                throw new Exception('Release number can not be found')
+            }
+
+            releaseName = "release-${releaseNumber}"
+
+            try {
+              sh("git config user.name 'Jenkins'")
+              sh("git config user.email '{{ jenkins_github_email }}'")
+              sh("git tag -a ${releaseName} -m ${releaseName} -f")
+              sh("git push origin ${releaseName} -f")
+            } catch(e) {
+              echo "${releaseName} tag already exists"
+            }
+
+            echo "Release number: ${releaseNumber}"
+            currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
+
+          }
+          stage('Build') {
+            build job: "build-app", parameters: [
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+          stage('Release to preview') {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+
+        stage('Release to staging') {
+          milestone()
+          input(message: "Release to staging?")
+          milestone()
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+{% endfor %}
