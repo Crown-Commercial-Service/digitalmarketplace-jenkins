@@ -1,6 +1,3 @@
-{% set applications = [
-  "api", "search-api", "buyer-frontend", "admin-frontend", "supplier-frontend"
-] %}
 - job:
     name: release-app-paas
     display-name: Release application to PaaS
@@ -20,61 +17,37 @@
           name: APPLICATION_NAME
           choices:
             - Select one
-{% for application in applications %}
+{% for application in dm_applications %}
             - {{ application }}
 {% endfor %}
       - string:
-          name: RELEASE_NUMBER
-          description: "The number of the application pull request to release, leave it empty for staging/production to automatically deploy the previous stage"
+          name: RELEASE_NAME
+          description: "Release name (eg 'release-42') to deploy"
     pipeline:
       script: |
         node {
             try {
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
 
-                withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]) {
-                    stage('Prepare') {
-                        sh("mkdir -p .app-repo/${APPLICATION_NAME}")
-                        dir(".app-repo/${APPLICATION_NAME}") {
-                            git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_gds'
+                stage('Prepare') {
+                    currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
+                    sh('make paas-clean')
+                    sh('make requirements')
+                }
 
-                            if (RELEASE_NUMBER == '' && (STAGE == 'staging' || STAGE == 'production')) {
-                                previousStage = [staging: 'preview', production: 'staging'][STAGE]
-                                releaseTags = sh(script: "git tag --points-at paas-deployed-to-${previousStage} | grep -v 'paas-deployed'", returnStdout: true).trim().split("\n")
-                                if (releaseTags.size() != 1) {
-                                  throw new Exception('Multiple release tags found, please specific release number manually!')
-                                }
-                                RELEASE_NUMBER = releaseTags[0].replaceAll('release-', '')
-                                env.RELEASE_NUMBER = RELEASE_NUMBER
-                                echo "Found release number for ${previousStage}: ${RELEASE_NUMBER}"
-                            }
-                        }
-
-                        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NUMBER}"
-
-                        sh('make paas-clean')
-                        sh('make build')
+                stage('Download') {
+                    sh('make download-deployment-zip')
+                }
+                stage('Deploy') {
+                  withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
+                    paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/paas/credentials_env.enc', returnStdout: true).trim()
+                    withEnv(paas_credentials.tokenize("\n")) {
+                        sh('make paas-login')
                     }
-
-                    stage('Download') {
-                        sh('make download-deployment-zip')
+                    lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                        sh('make paas-deploy')
                     }
-                    stage('Deploy') {
-                        paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/paas/credentials_env.enc', returnStdout: true).trim()
-                        withEnv(paas_credentials.tokenize("\n")) {
-                            sh('make paas-login')
-                        }
-                        lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                            sh('make paas-deploy')
-                        }
-                    }
-                    stage('Post-build') {
-                        dir(".app-repo/${APPLICATION_NAME}") {
-                            tagRef = sh(script: 'cat ../../tmp/version_sha', returnStdout: true).trim()
-                            sh("git tag -f paas-deployed-to-${STAGE} ${tagRef}")
-                            sh("git push -f origin paas-deployed-to-${STAGE}")
-                        }
-                    }
+                  }
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'

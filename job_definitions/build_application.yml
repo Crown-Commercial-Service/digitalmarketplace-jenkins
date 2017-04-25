@@ -1,38 +1,44 @@
-{% set applications = [
-  "api", "search-api", "buyer-frontend", "admin-frontend", "supplier-frontend"
-] %}
-
-{% for application in applications %}
 - job:
-    name: build-{{ application }}
-    display-name: Build {{ application }}
+    name: build-app
+    display-name: Build application
     project-type: pipeline
     description: Builds the application artefact and uploads it to S3
     disabled: false
-    concurrent: false
-    triggers:
-      - pollscm: "* * * * *"
+    concurrent: true
+    parameters:
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+{% for application in dm_applications %}
+            - {{ application }}
+{% endfor %}
+      - string:
+          name: RELEASE_NAME
+          description: "Application tag (eg 'release-42') to checkout for building the artefact"
     pipeline:
       script: |
         node {
             try {
+                stage('Check previous builds') {
+                  currentBuild.displayName = "#${BUILD_NUMBER} - ${APPLICATION_NAME} - ${RELEASE_NAME}"
+                  existingRelease = sh(script: "aws s3 ls s3://digitalmarketplace-deployment/${APPLICATION_NAME}/${RELEASE_NAME}.zip", returnStatus: true)
+                }
+
+                if (existingRelease == 0) {
+                  echo "Release ${RELEASE_NAME} already exists"
+                  currentBuild.result = 'SUCCESS'
+                  return
+                }
+
                 stage('Prepare') {
-                    git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git", branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+                    git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_gds'
                     echo "Cleaning repository"
                     sh("git clean -fdx")
-                    sh("git reset --hard origin/master")
+                    echo "Checking out ${RELEASE_NAME}"
+                    sh("git reset --hard ${RELEASE_NAME}")
                 }
                 stage('Build') {
-                    releaseNumber = sh(
-                        script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
-                        returnStdout: true
-                    ).trim()
-                    if (releaseNumber == "") {
-                        throw new Exception('Release number can not be found')
-                    }
-                    echo "Release number: ${releaseNumber}"
-                    currentBuild.displayName = "#${BUILD_NUMBER} - release-${releaseNumber}"
-                    sh("git archive --format=zip HEAD > release-${releaseNumber}.zip")
+                    sh("git archive --format=zip HEAD > ${RELEASE_NAME}.zip")
                     if (fileExists('scripts/build.sh')) {
                         echo "Running build script.."
                         def includeDirs = sh(
@@ -41,18 +47,17 @@
                         ).trim()
                         echo "Adding directories to the build artefact:\n${includeDirs}"
                         for (dir in includeDirs.tokenize("\n")) {
-                            sh("zip -r release-${releaseNumber}.zip ${dir}")
+                            sh("zip -r ${RELEASE_NAME}.zip ${dir}")
                         }
                     }
-                    def version_label = "release-${releaseNumber}"
-                    echo "Version label: ${version_label}"
-                    sh("echo '${version_label}' > version_label")
-                    sh("zip release-${releaseNumber}.zip version_label")
+                    echo "Version label: ${RELEASE_NAME}"
+                    sh("echo '${RELEASE_NAME}' > version_label")
+                    sh("zip ${RELEASE_NAME}.zip version_label")
                     sh("git rev-parse HEAD > version_sha")
-                    sh("zip release-${releaseNumber}.zip version_sha")
+                    sh("zip ${RELEASE_NAME}.zip version_sha")
                 }
                 stage('Upload') {
-                    sh("aws s3 cp --only-show-errors release-${releaseNumber}.zip s3://digitalmarketplace-deployment/{{ application }}/release-${releaseNumber}.zip")
+                    sh("aws s3 cp --only-show-errors ${RELEASE_NAME}.zip s3://digitalmarketplace-deployment/${APPLICATION_NAME}/${RELEASE_NAME}.zip")
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'
@@ -60,5 +65,3 @@
             } finally {
             }
         }
-
-{% endfor %}

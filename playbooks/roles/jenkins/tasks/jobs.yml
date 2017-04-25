@@ -29,10 +29,19 @@
   sudo: yes
   sudo_user: jenkins
 
+- name: Remove deleted or renamed definitions
+  synchronize:
+    src: '../../../../job_definitions/'
+    dest: '/etc/jenkins_jobs/definitions/'
+    delete: yes
+    archive: no
+    recursive: yes
+    rsync_opts: ['--ignore-existing']
+
 - name: Upload jenkins jobs definitions
   template: src={{ item }} dest=/etc/jenkins_jobs/definitions/
   with_fileglob:
-    - '../../../../job_definitions/*.yml'
+    - '../../../../job_definitions/{{ jobs }}.yml'
 
 - name: Test job definitions before updating
   command: su - jenkins -c "jenkins-jobs test /etc/jenkins_jobs/definitions"
