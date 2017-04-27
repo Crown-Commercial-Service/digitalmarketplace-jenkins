@@ -12,12 +12,14 @@
   apt_key:
     url: "{{ jenkins_repo_key_url }}"
     state: present
+  tags: jenkins
 
 - name: Add Jenkins apt repository.
   apt_repository:
     repo: "{{ jenkins_repo_url }}"
     state: present
     update_cache: yes
+  tags: jenkins
 
 - name: Set Jenkins service boot config
   template: src=jenkins_defaults.j2
@@ -26,7 +28,8 @@
   tags: config
 
 - name: Ensure latest release of Jenkins is installed.
-  apt: pkg=jenkins state=latest
+  apt: pkg=jenkins state=latest update_cache=yes
+  notify: restart jenkins
   tags: jenkins
 
 - name: Copy Github keys for jenkins user
