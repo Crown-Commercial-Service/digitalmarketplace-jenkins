@@ -1,0 +1,9 @@
+[Unit]
+Description=openconnect
+Wants=network.target
+Before=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c "cat /etc/openconnect/network.passwd | /usr/sbin/openconnect -u {{ vpn_user }} --no-cert-check -b --pid-file=/run/myvpn.pid {{ vpn_url }}"

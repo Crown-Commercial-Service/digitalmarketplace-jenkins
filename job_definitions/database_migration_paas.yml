@@ -44,12 +44,12 @@
                         sh('make paas-login')
                     }
                     lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                        sh "make paas-deploy-db-migration"
+                        sh "make deploy-db-migration"
                         timeout(2) {
                             waitUntil {
                                 sleep 5
                                 def taskStatus = sh(
-                                    script: 'make paas-check-db-migration-task',
+                                    script: 'make check-db-migration-task',
                                     returnStdout: true
                                 ).trim()
                                 echo "Task status is ${taskStatus}"

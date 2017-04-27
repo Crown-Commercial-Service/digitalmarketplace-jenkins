@@ -8,7 +8,7 @@
 - name: Add postgres repository
   tags: [apt]
   apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
     state: present
     update_cache: yes
 
@@ -98,7 +98,7 @@
 - name: Add NodeJS apt repository
   tags: [apt]
   apt_repository:
-    repo: "deb https://deb.nodesource.com/node_4.x trusty main"
+    repo: "deb https://deb.nodesource.com/node_4.x xenial main"
     state: present
     update_cache: yes
 

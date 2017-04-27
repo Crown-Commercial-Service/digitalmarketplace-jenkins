@@ -45,7 +45,7 @@
                         sh('make paas-login')
                     }
                     lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                        sh('make paas-deploy')
+                        sh('make ${STAGE} deploy-app')
                     }
                   }
                 }
