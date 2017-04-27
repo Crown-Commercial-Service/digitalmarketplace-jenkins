@@ -55,9 +55,6 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          # Temporarily only send to test list during QA period. This line will be removed when happy to go to production users
-          FLAGS="--list_id=096e52cebb"
-
           if [ "$MAILCHIMP_LIST_ID" = "test-list" ]; then
             FLAGS="--list_id=096e52cebb"
           fi
