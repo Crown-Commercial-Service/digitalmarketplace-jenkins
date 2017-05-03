@@ -100,5 +100,5 @@
           # Example environment uses ENV variables values when possible
           export DM_ENVIRONMENT=example
 
-          make ARGS='--tags ~@skip' run || make rerun
+          make run || make rerun
 {% endfor %}
