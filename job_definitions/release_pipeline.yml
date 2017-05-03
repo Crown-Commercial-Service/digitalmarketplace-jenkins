@@ -11,6 +11,18 @@
       - pollscm: "* * * * *"
     pipeline:
       script: |
+
+        def tag_release(tag) {
+          try {
+            sh("git config user.name 'Jenkins'")
+            sh("git config user.email '{{ jenkins_github_email }}'")
+            sh("git tag -a ${tag} -m ${tag}")
+            sh("git push origin ${tag} -f")
+          } catch(e) {
+            echo "${tag} tag already exists"
+          }
+        }
+
         node {
           stage('Create release tag') {
             git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
@@ -26,14 +38,7 @@
 
             releaseName = "release-${releaseNumber}"
 
-            try {
-              sh("git config user.name 'Jenkins'")
-              sh("git config user.email '{{ jenkins_github_email }}'")
-              sh("git tag -a ${releaseName} -m ${releaseName} -f")
-              sh("git push origin ${releaseName} -f")
-            } catch(e) {
-              echo "${releaseName} tag already exists"
-            }
+            tag_release(releaseName)
 
             echo "Release number: ${releaseNumber}"
             currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
@@ -45,6 +50,17 @@
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+
+          {% if application in dm_db_applications %}
+          stage('DB migration on preview') {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+          {% endif %}
+
           stage('Release to preview') {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "preview"),
@@ -54,6 +70,21 @@
           }
         }
 
+        {% if application in dm_db_applications %}
+        stage('DB migration on staging') {
+          milestone()
+          input(message: "Run DB migration on staging?")
+          milestone()
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+        {% endif %}
+
         stage('Release to staging') {
           milestone()
           input(message: "Release to staging?")
@@ -61,6 +92,35 @@
           node {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+
+        {% if application in dm_db_applications %}
+        stage('DB migration on production') {
+          milestone()
+          input(message: "Run DB migration on production?")
+          milestone()
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+        {% endif %}
+
+
+        stage('Release to production') {
+          milestone()
+          input(message: "Release to production?")
+          milestone()
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "production"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]

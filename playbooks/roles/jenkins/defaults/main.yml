@@ -21,6 +21,9 @@ dm_applications:
   - supplier-frontend
   - admin-frontend
 
+dm_db_applications:
+  - api
+
 jenkins_plugins:
   - git
   - github
