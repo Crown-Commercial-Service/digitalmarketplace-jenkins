@@ -78,8 +78,7 @@
 
           export DM_PAGINATION_LIMIT=100
 
-          # Example environment uses ENV variables values when possible
-          export DM_ENVIRONMENT=example
+          export DM_ENVIRONMENT={{ environment }}
 
           make smoke-tests || make rerun
 
