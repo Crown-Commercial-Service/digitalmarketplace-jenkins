@@ -102,6 +102,7 @@
 - include: jobs.yml tags=jobs
 - include: tools.yml tags=tools
 - include: gdrive.yml tags=gdrive
+- include: docker.yml tags=docker
 - include: paas.yml
   tags: [paas,cloudfoundry]
 
