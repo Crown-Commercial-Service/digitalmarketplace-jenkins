@@ -15,16 +15,20 @@
       - string:
           name: RELEASE_NAME
           description: "Application tag (eg 'release-42') to checkout for building the artefact"
+      - bool:
+          name: REBUILD
+          default: false
+          description: "Rerun the build even if the release already exists"
     pipeline:
       script: |
         node {
             try {
                 stage('Check previous builds') {
                   currentBuild.displayName = "#${BUILD_NUMBER} - ${APPLICATION_NAME} - ${RELEASE_NAME}"
-                  existingRelease = sh(script: "curl -f https://index.docker.io/v1/repositories/digitalmarketplace/${APPLICATION_NAME}/tags/${RELEASE_NAME}", returnStatus: true)
+                  existingRelease = sh(script: "curl -fs https://index.docker.io/v1/repositories/digitalmarketplace/${APPLICATION_NAME}/tags/${RELEASE_NAME}", returnStatus: true)
                 }
 
-                if (existingRelease == 0) {
+                if (existingRelease == 0 && (REBUILD.toString() == "false")) {
                   echo "Release ${RELEASE_NAME} already exists"
                   currentBuild.result = 'SUCCESS'
                   return
