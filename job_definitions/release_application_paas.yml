@@ -30,6 +30,7 @@
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
 
                 stage('Prepare') {
+                    build job: "update-credentials"
                     currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
                     sh('make paas-clean')
                     sh('make requirements')
