@@ -15,16 +15,20 @@
       - string:
           name: RELEASE_NAME
           description: "Application tag (eg 'release-42') to checkout for building the artefact"
+      - bool:
+          name: REBUILD
+          default: false
+          description: "Rerun the build even if the release already exists"
     pipeline:
       script: |
         node {
             try {
                 stage('Check previous builds') {
                   currentBuild.displayName = "#${BUILD_NUMBER} - ${APPLICATION_NAME} - ${RELEASE_NAME}"
-                  existingRelease = sh(script: "aws s3 ls s3://digitalmarketplace-deployment/${APPLICATION_NAME}/${RELEASE_NAME}.zip", returnStatus: true)
+                  existingRelease = sh(script: "curl -fs https://index.docker.io/v1/repositories/digitalmarketplace/${APPLICATION_NAME}/tags/${RELEASE_NAME}", returnStatus: true)
                 }
 
-                if (existingRelease == 0) {
+                if (existingRelease == 0 && (REBUILD.toString() == "false")) {
                   echo "Release ${RELEASE_NAME} already exists"
                   currentBuild.result = 'SUCCESS'
                   return
@@ -38,26 +42,16 @@
                     sh("git reset --hard ${RELEASE_NAME}")
                 }
                 stage('Build') {
-                    sh("git archive --format=zip HEAD > ${RELEASE_NAME}.zip")
-                    if (fileExists('scripts/build.sh')) {
-                        echo "Running build script.."
-                        def includeDirs = sh(
-                            script: "./scripts/build.sh",
-                            returnStdout: true
-                        ).trim()
-                        echo "Adding directories to the build artefact:\n${includeDirs}"
-                        for (dir in includeDirs.tokenize("\n")) {
-                            sh("zip -r ${RELEASE_NAME}.zip ${dir}")
-                        }
-                    }
-                    echo "Version label: ${RELEASE_NAME}"
-                    sh("echo '${RELEASE_NAME}' > version_label")
-                    sh("zip ${RELEASE_NAME}.zip version_label")
-                    sh("git rev-parse HEAD > version_sha")
-                    sh("zip ${RELEASE_NAME}.zip version_sha")
+                    sh("docker build --pull -t digitalmarketplace/${APPLICATION_NAME} --build-arg release_name=${RELEASE_NAME} .")
+                    sh("docker tag digitalmarketplace/${APPLICATION_NAME} digitalmarketplace/${APPLICATION_NAME}:${RELEASE_NAME}")
                 }
                 stage('Upload') {
-                    sh("aws s3 cp --only-show-errors ${RELEASE_NAME}.zip s3://digitalmarketplace-deployment/${APPLICATION_NAME}/${RELEASE_NAME}.zip")
+                    docker_credentials = sh(script: '/var/lib/jenkins/digitalmarketplace-credentials/sops-wrapper -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
+                    withEnv(docker_credentials.tokenize("\n")) {
+                        sh("docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
+                    }
+
+                    sh("docker push digitalmarketplace/${APPLICATION_NAME}:${RELEASE_NAME}")
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'
