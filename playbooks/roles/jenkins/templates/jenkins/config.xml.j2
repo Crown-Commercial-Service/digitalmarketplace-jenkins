@@ -27,11 +27,11 @@
   </authorizationStrategy>
   <securityRealm class="org.jenkinsci.plugins.GithubSecurityRealm">
     <!-- GitHub authorization app, belongs to the dm-ssp-jenkins user -->
-    <githubWebUri>https://github.gds</githubWebUri>
-    <githubApiUri>https://github.gds/api/v3</githubApiUri>
+    <githubWebUri>https://github.com</githubWebUri>
+    <githubApiUri>https://api.github.com</githubApiUri>
     <clientID>{{ jenkins_github_auth_client_id }}</clientID>
     <clientSecret>{{ jenkins_github_auth_client_secret }}</clientSecret>
-    <oauthScopes>read:org,user:email</oauthScopes>
+    <oauthScopes>user:email</oauthScopes>
   </securityRealm>
   <disableRememberMe>false</disableRememberMe>
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
