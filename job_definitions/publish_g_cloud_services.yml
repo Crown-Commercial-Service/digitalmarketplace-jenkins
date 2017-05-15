@@ -36,5 +36,5 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          ./scripts/make-g-cloud-live.py $FRAMEWORKS '{{ environment }}' $DM_DATA_API_TOKEN_{{ environment|upper }}" digitalmarketplace-submissions-production-production digitalmarketplace-documents-{{ environment }}-{{ environment }}
+          ./scripts/make-g-cloud-live.py $FRAMEWORKS '{{ environment }}' $DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace-submissions-production-production digitalmarketplace-documents-{{ environment }}-{{ environment }}
 {% endfor %}
