@@ -6,7 +6,7 @@
     description: "Automatically publish digitalmarketplace manual to gh pages."
     scm:
       - git:
-          url: git@github.gds:gds/digitalmarketplace-manual.git
+          url: git@github.digital.cabinet-office.gov.uk:gds/digitalmarketplace-manual.git
           credentials-id: github_com_and_gds
           branches:
             - master

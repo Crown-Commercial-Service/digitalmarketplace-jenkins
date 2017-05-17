@@ -89,13 +89,13 @@ jenkins_list_views:
 
 app_urls:
   preview:
-    data_api: https://preview-api.development.digitalmarketplace.service.gov.uk
-    search_api: https://preview-search-api.development.digitalmarketplace.service.gov.uk
-    www: https://preview.development.digitalmarketplace.service.gov.uk
+    data_api: https://api.preview.marketplace.team
+    search_api: https://search-api.preview.marketplace.team
+    www: https://www.preview.marketplace.team
   staging:
-    data_api: https://staging-api.digitalmarketplace.service.gov.uk
-    search_api: https://staging-search-api.digitalmarketplace.service.gov.uk
-    www: https://staging.digitalmarketplace.service.gov.uk
+    data_api: https://api.staging.marketplace.team
+    search_api: https://search-api.staging.marketplace.team
+    www: https://www.staging.marketplace.team
   production:
     data_api: https://api.digitalmarketplace.service.gov.uk
     search_api: https://search-api.digitalmarketplace.service.gov.uk

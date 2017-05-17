@@ -24,7 +24,7 @@
 - name: Clone digitalmarketplace-credentials repository
   tags: [credentials-repo]
   git:
-    repo: "git@github.gds:gds/digitalmarketplace-credentials.git"
+    repo: "git@github.digital.cabinet-office.gov.uk:gds/digitalmarketplace-credentials.git"
     dest: /var/lib/jenkins/digitalmarketplace-credentials
   sudo: yes
   sudo_user: jenkins
