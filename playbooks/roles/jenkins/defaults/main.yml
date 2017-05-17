@@ -48,6 +48,18 @@ jenkins_config_templates:
   - jenkins.model.DownloadSettings.xml
   - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
 
+build_monitor_jobs:
+  - apps-are-up-preview
+  - apps-are-up-production
+  - functional-tests-preview
+  - functional-tests-preview-legacy
+  - functional-tests-preview-service-submissions
+  - functional-tests-staging
+  - index-services-preview
+  - index-services-production
+  - notify-buyers-when-requirements-close-production
+  - notify-suppliers-of-dos-opportunities-production
+
 jenkins_list_views:
   - name: "Data"
     jobs:
@@ -63,13 +75,6 @@ jenkins_list_views:
       - apps-are-up-preview
       - apps-are-up-production
       - apps-are-up-staging
-  - name: "Performance tests"
-    jobs:
-      - performance-testing-buyer-app
-      - performance-testing-data-api-services
-      - performance-testing-data-api-suppliers
-      - performance-testing-data-api-users
-      - performance-testing-supplier-app
   - name: "Utils and toolkit"
     jobs:
       - publish-toolkit-documentation
@@ -78,14 +83,13 @@ jenkins_list_views:
       - tag-toolkit
   - name: "Release"
     jobs:
-      - release-app-preview
-      - release-app-production
-      - release-app-staging
-  - name: "Infrastructure"
-    jobs:
-      - close-developer-access
-      - open-developer-access
-      - update-infrastructure
+      - release-api
+      - release-admin-frontend
+      - release-buyer-frontend
+      - release-search-api
+      - release-supplier-frontend
+      - database-migration-paas
+      - release-app-paas
 
 app_urls:
   preview:
