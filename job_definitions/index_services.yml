@@ -6,7 +6,6 @@
     display-name: "Index services - {{ environment }}"
     project-type: freestyle
     description: "This imports all services in the current API database into the current Elasticsearch index."
-    disabled: true
     parameters:
       - string:
           name: INDEX
