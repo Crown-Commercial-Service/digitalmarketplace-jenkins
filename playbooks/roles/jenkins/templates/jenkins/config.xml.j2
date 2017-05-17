@@ -62,7 +62,7 @@
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
         <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        {% for job in view.jobs %}
+        {% for job in view.jobs|sort %}
         <string>{{ job }}</string>
         {% endfor %}
       </jobNames>
@@ -87,16 +87,9 @@
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
         <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        <string>apps-are-up-preview</string>
-        <string>apps-are-up-production</string>
-        <string>functional-tests-preview</string>
-        <string>functional-tests-preview-legacy</string>
-        <string>functional-tests-preview-service-submissions</string>
-        <string>functional-tests-staging</string>
-        <string>index-services-preview</string>
-        <string>index-services-production</string>
-        <string>notify-buyers-when-requirements-close-production</string>
-        <string>notify-suppliers-of-dos-opportunities-production</string>
+        {% for job in build_monitor_jobs|sort %}
+        <string>{{ job }}</string>
+        {% endfor %}
       </jobNames>
       <jobFilters/>
       <columns/>
