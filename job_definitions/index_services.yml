@@ -1,11 +1,12 @@
-{% set environments = ['preview', 'staging', 'production'] %}
+{% set environments = [('preview', 'g-cloud-9'), ('staging', 'g-cloud-9'), ('production', 'g-cloud-7,g-cloud-8')] %}
 ---
-{% for environment in environments %}
+{% for environment, frameworks in environments %}
 - job:
     name: "index-services-{{ environment }}"
     display-name: "Index services - {{ environment }}"
     project-type: freestyle
     description: "This imports all services in the current API database into the current Elasticsearch index."
+    disabled: true
     parameters:
       - string:
           name: INDEX
@@ -13,7 +14,7 @@
           description: "Index name to use (eg 'g-cloud-2015-10-30')"
       - string:
           name: FRAMEWORKS
-          default: g-cloud-7,g-cloud-8
+          default: {{ frameworks }}
           description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-6,g-cloud-7'). If no frameworks are specified then all currently published services will be indexed."
     scm:
       - git:
