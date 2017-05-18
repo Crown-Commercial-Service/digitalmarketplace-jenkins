@@ -3,7 +3,7 @@
     name: tag-stage-released-to
     display-name: "Tag stage released to"
     project-type: pipeline
-    description: Tag repo's with their current release positions for preview, staging and production. Useful for the deploy lag radiator.
+    description: Tag repos with their current release positions for preview, staging and production. Useful for the deploy lag radiator.
     disabled: false
     concurrent: false
     parameters:
