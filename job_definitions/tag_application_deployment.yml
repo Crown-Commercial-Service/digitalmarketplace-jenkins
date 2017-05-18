@@ -1,0 +1,46 @@
+---
+- job:
+    name: tag-application-deloyment
+    display-name: "Tag application deployment"
+    project-type: pipeline
+    description: Tag repos with their current release positions for preview, staging and production. Useful for the deploy lag radiator.
+    disabled: false
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+            - production
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+            - Select one
+{% for application in dm_applications %}
+            - {{ application }}
+{% endfor %}
+      - string:
+          name: RELEASE_NAME
+          description: "Release name (eg 'release-42') to deploy"
+    pipeline:
+      script: |
+        node {
+          stage('Pull repo') {
+            dir("${APPLICATION_NAME}") {
+              git url: 'git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git',
+                  branch: 'master',
+                  credentialsId: 'github_com_and_gds'
+            }
+          }
+
+          stage('Move release tag') {
+            dir("${APPLICATION_NAME}") {
+              sh("git config user.name 'Jenkins'")
+              sh("git config user.email '{{ jenkins_github_email }}'")
+              sh("git tag -a -f -m deployed-to-${STAGE} deployed-to-${STAGE} ${RELEASE_NAME}" )
+              sh("git push --force origin refs/tags/deployed-to-${STAGE}:refs/tags/deployed-to-${STAGE}")
+            }
+          }
+        }

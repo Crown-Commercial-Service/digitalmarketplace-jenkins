@@ -67,6 +67,11 @@
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
+            build job: "tag-application-deloyment", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
           }
         }
 
@@ -95,6 +100,11 @@
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
+            build job: "tag-application-deloyment", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
           }
         }
 
@@ -113,13 +123,17 @@
         }
         {% endif %}
 
-
         stage('Release to production') {
           milestone()
           input(message: "Release to production?")
           milestone()
           node {
             build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deloyment", parameters: [
               string(name: "STAGE", value: "production"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
