@@ -26,8 +26,10 @@
         def run_functional_tests(stage) {
           waitUntil {
             try {
-              build job: "function-tests-${stage}"
-              return true
+              node {
+                build job: "function-tests-${stage}"
+                return true
+              }
             } catch(error) {
               echo "Functinal tests failed: ${error}"
               timeout(time:1, unit:'DAYS') {
@@ -56,8 +58,8 @@
           }
         }
 
-        node {
-          stage('Create release tag') {
+        stage('Create release tag') {
+          node {
             git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
                 branch: 'master', credentialsId: 'github_com_and_gds', poll: true
             releaseNumber = sh(
@@ -75,29 +77,36 @@
 
             echo "Release number: ${releaseNumber}"
             currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
-
           }
-          stage('Build') {
+        }
+
+        stage('Build') {
+          node {
             build job: "build-app", parameters: [
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+        }
 
-          {% if application in dm_db_applications %}
-          stage('DB migration on preview') {
+        {% if application in dm_db_applications %}
+        stage('DB migration on preview') {
+          node {
             build job: "database-migration-paas", parameters: [
               string(name: "STAGE", value: "preview"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
-          stage('Functional tests - preview') {
-            run_functional_tests("preview")
-          }
-          {% endif %}
+        }
 
-          stage('Release to preview') {
+        stage('Functional tests - preview') {
+          run_functional_tests("preview")
+        }
+        {% endif %}
+
+        stage('Release to preview') {
+          node {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "preview"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
@@ -109,9 +118,10 @@
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
-          stage('Functional tests - preview') {
-            run_functional_tests("preview")
-          }
+        }
+
+        stage('Functional tests - preview') {
+          run_functional_tests("preview")
         }
 
         {% if application in dm_db_applications %}
@@ -127,10 +137,9 @@
             ]
           }
         }
+
         stage('Functional tests - staging') {
-          node {
-            run_functional_tests("staging")
-          }
+          run_functional_tests("staging")
         }
         {% endif %}
 
@@ -151,10 +160,9 @@
             ]
           }
         }
+
         stage('Functional tests - staging') {
-          node {
-            run_functional_tests("staging")
-          }
+          run_functional_tests("staging")
         }
 
         {% if application in dm_db_applications %}
