@@ -24,7 +24,7 @@
       - text:
           name: STAGE
       - text:
-          name: RELEASE
+          name: RELEASE_NAME
       - string:
           name: STATUS
       - string:
@@ -35,7 +35,7 @@
       - shell: |
           #!/usr/bin/env python
           # encoding: utf-8
-          
+
           import json
           import os
           import urllib2
@@ -104,4 +104,3 @@
 
 
           urllib2.urlopen(SLACK_URL, data=json.dumps(build_message()))
-
