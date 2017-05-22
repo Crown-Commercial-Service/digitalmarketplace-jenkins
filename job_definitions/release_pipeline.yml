@@ -27,11 +27,11 @@
           waitUntil {
             try {
               node {
-                build job: "function-tests-${stage}"
+                build job: "functional-tests-${stage}"
                 return true
               }
             } catch(error) {
-              echo "Functinal tests failed: ${error}"
+              echo "Functional tests failed: ${error}"
               timeout(time:1, unit:'DAYS') {
                 script {
                   env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
