@@ -1,4 +1,4 @@
-{% set environments = [('preview', 'g-cloud-9'), ('staging', 'g-cloud-9'), ('production', 'g-cloud-7,g-cloud-8')] %}
+{% set environments = [('preview', 'g-cloud-9'), ('staging', 'g-cloud-9'), ('production', 'g-cloud-9')] %}
 ---
 {% for environment, frameworks in environments %}
 - job:
@@ -10,11 +10,11 @@
       - string:
           name: INDEX
           default: g-cloud
-          description: "Index name to use (eg 'g-cloud-2015-10-30')"
+          description: "Index name to use (eg 'g-cloud-2017-05-22')"
       - string:
           name: FRAMEWORKS
           default: {{ frameworks }}
-          description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-6,g-cloud-7'). If no frameworks are specified then all currently published services will be indexed."
+          description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8'). If no frameworks are specified then all currently published services will be indexed."
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-scripts.git
