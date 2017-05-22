@@ -25,32 +25,52 @@
           description: "Release name (eg 'release-42') to deploy"
     pipeline:
       script: |
-        node {
-            try {
-                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
 
-                stage('Prepare') {
-                    build job: "update-credentials"
-                    currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
-                    sh('make paas-clean')
-                    sh('make requirements')
-                }
+          def notify_slack(icon, status) {
+            build job: "notify-slack",
+                  parameters: [
+                    string(name: 'USERNAME', value: "release-application-to-paas"),
+                    string(name: 'ICON', value: icon),
+                    string(name: 'JOB', value: "Release ${APPLICATION_NAME} to ${STAGE}"),
+                    string(name: 'CHANNEL', value: "#dm-release"),
+                    string(name: 'PROJECT', value: "${APPLICATION_NAME}"),
+                    text(name: 'STAGE', value: "${STAGE}"),
+                    text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/releases/tag/${RELEASE_NAME}|${RELEASE_NAME}>"),
+                    text(name: 'STATUS', value: status),
+                    text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                  ]
+          }
 
-                stage('Deploy') {
-                  withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
-                    paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
-                    withEnv(paas_credentials.tokenize("\n")) {
-                        sh('make paas-login')
-                    }
-                    lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                        sh('make ${STAGE} deploy-app')
-                    }
+          try {
+            node {
+              git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
+
+              stage('Prepare') {
+                  build job: "update-credentials"
+                  currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
+                  sh('make paas-clean')
+                  sh('make requirements')
+              }
+
+              stage('Deploy') {
+                withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
+                  paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
+                  withEnv(paas_credentials.tokenize("\n")) {
+                      sh('make paas-login')
+                  }
+                  lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                      sh('make ${STAGE} deploy-app')
                   }
                 }
-            } catch(err) {
-                currentBuild.result = 'FAILURE'
-                echo "Error: ${err}"
-            } finally {
-                sh('make paas-clean')
+              }
             }
-        }
+
+            notify_slack(':passenger_ship:', 'SUCCESS')
+            
+          } catch(err) {
+              currentBuild.result = 'FAILURE'
+              echo "Error: ${err}"
+              notify_slack(':kaboom:', 'FAILED')
+          } finally {
+              sh('make paas-clean')
+          }
