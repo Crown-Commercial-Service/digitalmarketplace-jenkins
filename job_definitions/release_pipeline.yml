@@ -51,6 +51,7 @@
                 return false
               }
               if (env.FAILED_TEST_ACTION == 'Skip') {
+                input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
                 echo "Skipping failed functional tests on ${stage}."
                 return true
               }
