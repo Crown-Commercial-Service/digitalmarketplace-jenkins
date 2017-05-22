@@ -23,8 +23,44 @@
           }
         }
 
-        node {
-          stage('Create release tag') {
+        def run_functional_tests(stage) {
+          waitUntil {
+            try {
+              node {
+                build job: "function-tests-${stage}"
+                return true
+              }
+            } catch(error) {
+              echo "Functinal tests failed: ${error}"
+              timeout(time:1, unit:'DAYS') {
+                script {
+                  env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
+                    parameters: [
+                      [
+                        $class: 'ChoiceParameterDefinition',
+                        choices: 'Retry\nSkip',
+                        description: 'Failed functional tests action',
+                        name: 'action'
+                      ]
+                    ]
+                }
+                echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+              }
+              if (env.FAILED_TEST_ACTION == 'Retry') {
+                echo "Retrying functional tests on ${stage}."
+                return false
+              }
+              if (env.FAILED_TEST_ACTION == 'Skip') {
+                input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
+                echo "Skipping failed functional tests on ${stage}."
+                return true
+              }
+            }
+          }
+        }
+
+        stage('Create release tag') {
+          node {
             git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
                 branch: 'master', credentialsId: 'github_com_and_gds', poll: true
             releaseNumber = sh(
@@ -42,26 +78,38 @@
 
             echo "Release number: ${releaseNumber}"
             currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
-
           }
-          stage('Build') {
+        }
+
+        stage('Build') {
+          node {
             build job: "build-app", parameters: [
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+        }
 
-          {% if application in dm_db_applications %}
-          stage('DB migration on preview') {
+        {% if application in dm_db_applications %}
+        stage('DB migration on preview') {
+          node {
             build job: "database-migration-paas", parameters: [
               string(name: "STAGE", value: "preview"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
-          {% endif %}
+        }
 
-          stage('Release to preview') {
+        stage('Functional tests - preview') {
+          milestone()
+          run_functional_tests("preview")
+          milestone()
+        }
+        {% endif %}
+
+        stage('Release to preview') {
+          node {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "preview"),
               string(name: "APPLICATION_NAME", value: "{{ application }}"),
@@ -73,6 +121,12 @@
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+        }
+
+        stage('Functional tests - preview') {
+          milestone()
+          run_functional_tests("preview")
+          milestone()
         }
 
         {% if application in dm_db_applications %}
@@ -87,6 +141,12 @@
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+        }
+
+        stage('Functional tests - staging') {
+          milestone()
+          run_functional_tests("staging")
+          milestone()
         }
         {% endif %}
 
@@ -106,6 +166,12 @@
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
+        }
+
+        stage('Functional tests - staging') {
+          milestone()
+          run_functional_tests("staging")
+          milestone()
         }
 
         {% if application in dm_db_applications %}
