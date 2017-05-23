@@ -72,5 +72,7 @@
               echo "Error: ${err}"
               notify_slack(':kaboom:', 'FAILED')
           } finally {
+            node {
               sh('make paas-clean')
+            }
           }
