@@ -35,7 +35,7 @@
                     string(name: 'CHANNEL', value: "#dm-release"),
                     string(name: 'PROJECT', value: "${APPLICATION_NAME}"),
                     text(name: 'STAGE', value: "${STAGE}"),
-                    text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/releases/tag/${RELEASE_NAME}|${RELEASE_NAME}>"),
+                    text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/tree/${RELEASE_NAME}|${RELEASE_NAME}>"),
                     text(name: 'STATUS', value: status),
                     text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
                   ]
