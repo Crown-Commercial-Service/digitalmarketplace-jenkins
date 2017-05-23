@@ -65,8 +65,8 @@
               }
             }
 
-            notify_slack(':passenger_ship:', 'SUCCESS')
-            
+            notify_slack(':sheep:', 'SUCCESS')
+
           } catch(err) {
               currentBuild.result = 'FAILURE'
               echo "Error: ${err}"
