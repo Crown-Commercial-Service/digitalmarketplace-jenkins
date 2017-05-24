@@ -1,9 +1,6 @@
-{% set environments = ['production'] %}
----
-{% for environment in environments %}
 - job:
-    name: "notify-suppliers-of-dos-opportunities-{{ environment }}"
-    display-name: "Notify suppliers of DOS opportunities - {{ environment }}"
+    name: "notify-suppliers-of-dos-opportunities-production"
+    display-name: "Notify suppliers of DOS opportunities - production"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
     parameters:
@@ -42,9 +39,9 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=dos-opportunities
-              JOB=Notify suppliers of the latest DOS opportunities - {{ environment }}
+              JOB=Notify suppliers of the latest DOS opportunities - production
               ICON=:briefs:
-              STAGE={{ environment }}
+              STAGE=production
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-release
@@ -67,5 +64,4 @@
             FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
           fi
 
-          ./scripts/send_dos_opportunities_email.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
-{% endfor %}
+          ./scripts/send_dos_opportunities_email.py "production" "$DM_DATA_API_TOKEN_PRODUCTION" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS

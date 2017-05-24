@@ -59,6 +59,7 @@ build_monitor_jobs:
   - index-services-production
   - notify-buyers-when-requirements-close-production
   - notify-suppliers-of-dos-opportunities-production
+  - upload-dos-opportunities-email-list-production
 
 jenkins_list_views:
   - name: "Data"
