@@ -15,7 +15,6 @@
           <li>Upload the generated files to S3 and set the path in the relevant FrameworkAgreement record</li>
           <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
         </ol>
-    disabled: true
     concurrent: false
     logrotate:
       daysToKeep: 7
