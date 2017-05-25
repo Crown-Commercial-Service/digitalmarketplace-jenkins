@@ -3,7 +3,7 @@
   group: gid=111 name=jenkins
 
 - name: Create Jenkins user
-  user: uid=106 name=jenkins group=jenkins createhome=no home=/var/lib/jenkins
+  user: uid=106 name=jenkins group=jenkins createhome=no home=/var/lib/jenkins append=yes
 
 - include: volume.yml tags=volume
 - include: vpn.yml tags=vpn
