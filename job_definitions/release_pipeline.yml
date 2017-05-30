@@ -189,6 +189,41 @@
             ]
           }
         }
+        stage('Smoke tests - production') {
+          waitUntil {
+            try {
+              node {
+                build job: "apps-are-up-production"
+                return true
+              }
+            } catch(error) {
+              echo "Smoke tests failed: ${error}"
+              timeout(time:1, unit:'DAYS') {
+                script {
+                  env.FAILED_TEST_ACTION = input message: 'Smoke tests failed. Retry, skip or abort?',
+                    parameters: [
+                      [
+                        $class: 'ChoiceParameterDefinition',
+                        choices: 'Retry\nSkip',
+                        description: 'Failed smoke tests action',
+                        name: 'action'
+                      ]
+                    ]
+                }
+                echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+              }
+              if (env.FAILED_TEST_ACTION == 'Retry') {
+                echo "Retrying smoke tests on production."
+                return false
+              }
+              if (env.FAILED_TEST_ACTION == 'Skip') {
+                input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
+                echo "Skipping failed smoke tests on production."
+                return true
+              }
+            }
+          }
+        }
         {% endif %}
 
         stage('Release to production') {
