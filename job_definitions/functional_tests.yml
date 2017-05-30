@@ -61,11 +61,6 @@
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
-{% if job.environment == 'preview' %}
-      - trigger:
-          project: functional-tests-preview-legacy
-          threshold: SUCCESS
-{% endif %}
     builders:
       - shell: |
           rbenv install -s
