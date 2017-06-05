@@ -1,6 +1,6 @@
 # Ansible project to manage Jenkins
 
-[jenkins URL](https://ci.beta.digitalmarketplace.service.gov.uk/)
+[jenkins URL](https://ci.marketplace.team/)
 
 We use Jenkins job builder for managing jobs. The best documentation for this is [here](https://jenkins-job-builder.readthedocs.org/en/latest/index.html)
 
@@ -33,5 +33,5 @@ You need a private key file, a username, and the hostname.
 ssh -i [path/to/identity/file] {username}@{hostname}
 
 # eg
-ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.beta.digitalmarketplace.service.gov.uk
+ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
 ```
