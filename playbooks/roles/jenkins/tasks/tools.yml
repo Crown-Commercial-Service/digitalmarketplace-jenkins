@@ -120,7 +120,7 @@
     copy: no
 
 - name: Install PhantomJS binary
-  command: "cp /usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs"
+  file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
 
 - name: Install AWS cli
   tags: [awscli]
