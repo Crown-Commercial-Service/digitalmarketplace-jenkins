@@ -35,7 +35,7 @@
                 }
 
                 stage('Prepare') {
-                    git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_gds'
+                    git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
                     echo "Cleaning repository"
                     sh("git clean -fdx")
                     echo "Checking out ${RELEASE_NAME}"

@@ -18,7 +18,7 @@
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-scripts.git
-          credentials-id: github_com_and_gds
+          credentials-id: github_com_and_enterprise
           branches:
             - master
           wipe-workspace: false
@@ -39,9 +39,9 @@
     builders:
       - shell: |
           [ -d venv ] || virtualenv venv
-          
+
           . ./venv/bin/activate
           pip install -r requirements.txt
-          
+
           ./scripts/index-services.py '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}"
 {% endfor %}

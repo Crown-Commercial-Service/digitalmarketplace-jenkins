@@ -62,7 +62,7 @@
         stage('Create release tag') {
           node {
             git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
-                branch: 'master', credentialsId: 'github_com_and_gds', poll: true
+                branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
             releaseNumber = sh(
                 script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
                 returnStdout: true

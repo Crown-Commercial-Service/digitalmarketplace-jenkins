@@ -12,7 +12,7 @@
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-{{ package }}.git
-          credentials-id: github_com_and_gds
+          credentials-id: github_com_and_enterprise
           branches:
             - master
           skip-tag: true

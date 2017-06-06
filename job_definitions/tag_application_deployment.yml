@@ -31,7 +31,7 @@
             dir("${APPLICATION_NAME}") {
               git url: 'git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git',
                   branch: 'master',
-                  credentialsId: 'github_com_and_gds'
+                  credentialsId: 'github_com_and_enterprise'
             }
           }
 

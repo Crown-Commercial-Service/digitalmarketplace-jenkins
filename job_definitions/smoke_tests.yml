@@ -20,7 +20,7 @@
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
-          credentials-id: github_com_and_gds
+          credentials-id: github_com_and_enterprise
           branches:
             - master
           wipe-workspace: false
