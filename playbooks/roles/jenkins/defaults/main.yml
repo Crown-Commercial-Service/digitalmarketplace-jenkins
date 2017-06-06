@@ -6,7 +6,7 @@ jenkins_logs_dir: /data/logs
 jenkins_repo_url: deb http://pkg.jenkins-ci.org/debian binary/
 jenkins_repo_key_url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
 
-jenkins_connection_delay: 5
+jenkins_connection_delay: 1
 jenkins_connection_retries: 60
 
 jenkins_hostname: localhost
