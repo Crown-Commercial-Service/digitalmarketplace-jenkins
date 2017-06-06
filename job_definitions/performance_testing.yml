@@ -74,7 +74,7 @@
     scm:
       - git:
           url: git@github.digital.cabinet-office.gov.uk:gds/digitalmarketplace-performance-testing.git
-          credentials-id: github_com_and_gds
+          credentials-id: github_com_and_enterprise
           branches:
             - master
     parameters:

@@ -24,7 +24,7 @@
       script: |
         node {
             try {
-                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_gds'
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
 
                 stage('Prepare') {
                     build job: "update-credentials"
