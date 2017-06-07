@@ -16,6 +16,8 @@
           <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
         </ol>
     concurrent: false
+    triggers:
+      - timed: 'H 1 * * *'
     logrotate:
       daysToKeep: 7
       artifactDaysToKeep: 7
