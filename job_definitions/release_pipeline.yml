@@ -104,6 +104,7 @@
         stage('Functional tests - preview') {
           milestone()
           run_functional_tests("preview")
+          run_functional_tests("preview-legacy")
           milestone()
         }
         {% endif %}
@@ -126,13 +127,14 @@
         stage('Functional tests - preview') {
           milestone()
           run_functional_tests("preview")
+          run_functional_tests("preview-legacy")
           milestone()
         }
 
         {% if application in dm_db_applications %}
         stage('DB migration on staging') {
           milestone()
-          input(message: "Run DB migration on staging?")
+          input(message: "Release to staging?")
           milestone()
           node {
             build job: "database-migration-paas", parameters: [
@@ -151,9 +153,11 @@
         {% endif %}
 
         stage('Release to staging') {
+          {% if application not in dm_db_applications %}
           milestone()
           input(message: "Release to staging?")
           milestone()
+          {% endif %}
           node {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "staging"),
@@ -177,7 +181,7 @@
         {% if application in dm_db_applications %}
         stage('DB migration on production') {
           milestone()
-          input(message: "Run DB migration on production?")
+          input(message: "Release to production?")
           milestone()
           node {
             build job: "database-migration-paas", parameters: [
@@ -190,9 +194,11 @@
         {% endif %}
 
         stage('Release to production') {
+          {% if application not in dm_db_applications %}
           milestone()
           input(message: "Release to production?")
           milestone()
+          {% endif %}
           node {
             build job: "release-app-paas", parameters: [
               string(name: "STAGE", value: "production"),
