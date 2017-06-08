@@ -35,7 +35,7 @@
                   sh("git reset --hard origin/master")
                 }
                 dir('agreements') {
-                  git url: "git@github.digital.cabinet-office.gov.uk:gds/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+                  git url: "git@github.com:alphagov/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
                   echo "Cleaning agreements repository"
                   sh('pwd')
                   sh("git clean -fdx")
