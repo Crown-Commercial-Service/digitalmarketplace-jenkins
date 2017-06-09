@@ -6,7 +6,6 @@
   user: uid=106 name=jenkins group=jenkins createhome=no home=/var/lib/jenkins append=yes
 
 - include: volume.yml tags=volume
-- include: vpn.yml tags=vpn
 
 - name: Add Jenkins apt repository key.
   apt_key:
