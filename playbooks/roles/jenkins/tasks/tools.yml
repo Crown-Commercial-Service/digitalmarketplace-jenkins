@@ -29,17 +29,7 @@
     - ntp
     - jq
     - xvfb
-
-- name: Add repository for newer wkhtmltopdf (the default version 0.9.9 is very old)
-  tags: [apt]
-  apt_repository:
-    repo: "ppa:ecometrica/servers"
-    state: present
-    update_cache: yes
-
-- name: Install wkhtmltopdf
-  tags: [apt]
-  apt: update_cache=yes state=latest name=wkhtmltopdf
+    - wkhtmltopdf
 
 - name: Install rbenv and pyenv
   sudo: yes
@@ -120,7 +110,7 @@
     copy: no
 
 - name: Install PhantomJS binary
-  command: "cp /usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/phantomjs"
+  file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
 
 - name: Install AWS cli
   tags: [awscli]
