@@ -17,6 +17,7 @@ jobs: '*'
 dm_applications:
   - api
   - search-api
+  - briefs-frontend
   - buyer-frontend
   - supplier-frontend
   - admin-frontend
@@ -86,6 +87,7 @@ jenkins_list_views:
     jobs:
       - release-api
       - release-admin-frontend
+      - release-briefs-frontend
       - release-buyer-frontend
       - release-search-api
       - release-supplier-frontend
