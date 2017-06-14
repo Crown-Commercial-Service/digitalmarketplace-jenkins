@@ -30,6 +30,7 @@
     - jq
     - xvfb
     - wkhtmltopdf
+    - fonts-liberation
 
 - name: Install rbenv and pyenv
   sudo: yes
