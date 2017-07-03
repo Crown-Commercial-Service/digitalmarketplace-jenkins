@@ -52,6 +52,7 @@
                     }
 
                     sh("docker push digitalmarketplace/${APPLICATION_NAME}:${RELEASE_NAME}")
+                    sh("docker push digitalmarketplace/${APPLICATION_NAME}:latest")
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'
