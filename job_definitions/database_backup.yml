@@ -1,0 +1,84 @@
+- job:
+    name: database-backup
+    display-name: Create offsite backup of database
+    project-type: pipeline
+    description: Takes a snapshot of the database, compresses it, encrypts it and uploads to S3.
+    disabled: false
+    concurrent: true
+    pipeline:
+      script: |
+        node {
+            try {
+              dir('aws') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+
+                stage('Prepare') {
+                  build job: "update-credentials"
+                }
+
+                stage('Create compressed, encrypted DB dump') {
+                  withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=preview"]) {
+                    paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
+                    withEnv(paas_credentials.tokenize("\n")) {
+                      sh('make paas-login')
+                    }
+
+                  echo "Logged in to PaaS"
+
+                  sh('''
+                    cf create-service-key digitalmarketplace_api_db DATA_MIGRATION_KEY
+                    KEY_DATA=$(cf curl /v2/service_keys/$(cf service-key digitalmarketplace_api_db DATA_MIGRATION_KEY --guid))
+                    DB_HOST=$(echo $KEY_DATA | jq -r \'.entity.credentials.host\')
+                    DB_PASSWORD=$(echo $KEY_DATA | jq -r \'.entity.credentials.password\')
+                    DB_USERNAME=$(echo $KEY_DATA | jq -r \'.entity.credentials.username\')
+                    DB_NAME=$(echo $KEY_DATA | jq -r \'.entity.credentials.name\')
+                    cf ssh api -N -L 63306:$DB_HOST:5432 &
+                    SSH_PID=$!
+                    sleep 10
+                    OUTFILE_NAME=$(date +"%Y%m%d%H%M")
+                    pg_dump postgres://$DB_USERNAME:$DB_PASSWORD@localhost:63306/$DB_NAME --no-acl --no-owner | gzip | \
+                      openssl smime -encrypt -aes256 -binary -outform DEM -out ${OUTFILE_NAME}.gzip.ssl ${DM_CREDENTIALS_REPO}/jenkins-vars/db-dump-encryption-keypair/backup_key.pem.pub
+                    kill "$SSH_PID"
+                    cf delete-service-key -f digitalmarketplace_api_db DATA_MIGRATION_KEY
+                  ''')
+
+                  echo "Post dump generation"
+
+                  }
+                }
+              }
+
+              stage('Upload to S3') {
+                echo "Starting upload"
+                dir('scripts') {
+                  git url: "git@github.com:alphagov/digitalmarketplace-scripts.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
+                  sh('''
+                    [ -d venv ] || virtualenv venv
+                    source ./venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    python ./scripts/upload-db-dump-to-s3.py preview "../aws/${OUTFILE_NAME}"
+                  ''')
+                }
+              }
+
+              stage('Cleanup') {
+                dir('aws') {
+                  rm ${OUTFILE_NAME}.gzip.ssl
+                }
+              }
+
+
+            } catch(err) {
+                echo "Error caught"
+                dir('aws') {
+                  rm ${OUTFILE_NAME}.gzip.ssl
+                }
+                echo "Gonna clean the PaaS"
+                sh('make paas-clean')
+                currentBuild.result = 'FAILURE'
+                echo "Error: ${err}"
+            } finally {
+                sh('make paas-clean')
+            }
+        }
