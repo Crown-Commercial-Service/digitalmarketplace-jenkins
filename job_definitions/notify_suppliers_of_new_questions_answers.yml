@@ -21,8 +21,10 @@
           branches:
             - master
           wipe-workspace: false
+{% if environment == 'production' %}
     triggers:
       - timed: "0 8 * * *"
+{% endif %}
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
