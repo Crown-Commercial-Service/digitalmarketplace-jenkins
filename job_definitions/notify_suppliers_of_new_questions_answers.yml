@@ -8,8 +8,8 @@
     description: "Send email notifications to supplier users about new questions and answers."
     parameters:
       - string:
-          name: EXCLUDE_SUPPLIER_IDS
-          description: "List of supplier IDs to be excluded from the email notification"
+          name: SUPPLIER_IDS
+          description: "List of supplier IDs to be emailed e.g. 3,4,6"
       - bool:
           name: DRY_RUN
           default: false
@@ -28,9 +28,9 @@
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
-              USERNAME=notify-suppliers
-              JOB=Notify suppliers of new questions answers {{ environment }}
-              ICON=:alarm_clock:
+              USERNAME=question-and-answers
+              JOB=Notify suppliers of new questions and answers {{ environment }}
+              ICON=:question:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -42,8 +42,8 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          if [ -n "EXCLUDE_SUPPLIER_IDS" ]; then
-            FLAGS="--exclude-supplier-ids=$EXCLUDE_SUPPLIER_IDS"
+          if [ -n "SUPPLIER_IDS" ]; then
+            FLAGS="--supplier-ids=$SUPPLIER_IDS"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
