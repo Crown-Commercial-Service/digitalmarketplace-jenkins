@@ -1,4 +1,4 @@
-{% set environments = ['preview', 'production'] %}
+{% set environments = ['production'] %}
 ---
 {% for environment in environments %}
 - job:
