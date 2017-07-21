@@ -32,7 +32,7 @@
             - master
           wipe-workspace: false
     triggers:
-      - timed: "0 8 * * 1-5"
+      - timed: "H 8 * * 1-5"
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack

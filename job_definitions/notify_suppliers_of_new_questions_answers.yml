@@ -2,14 +2,14 @@
 ---
 {% for environment in environments %}
 - job:
-    name: "notify-buyers-when-requirements-close-{{ environment }}"
-    display-name: "Notify buyers when requirements close - {{ environment }}"
+    name: "notify-suppliers-of-new-questions-answers-{{ environment }}"
+    display-name: "Notify suppliers of new questions and answers - {{ environment }}"
     project-type: freestyle
-    description: "Send email notifications to buyer users about closed requirements."
+    description: "Send email notifications to supplier users about new questions and answers."
     parameters:
       - string:
-          name: DATE_CLOSED
-          description: "Notify about requirements that closed on the given date (date format: YYYY-MM-DD)"
+          name: SUPPLIER_IDS
+          description: "List of supplier IDs to be emailed e.g. 3,4,6"
       - bool:
           name: DRY_RUN
           default: false
@@ -22,15 +22,15 @@
             - master
           wipe-workspace: false
     triggers:
-      - timed: "H 5 * * *"
+      - timed: "H 8 * * *"
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
-              USERNAME=notify-buyers
-              JOB=Notify buyers when requirements close {{ environment }}
-              ICON=:alarm_clock:
+              USERNAME=question-and-answers
+              JOB=Notify suppliers of new questions and answers {{ environment }}
+              ICON=:question:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -42,13 +42,13 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          if [ -n "$DATE_CLOSED" ]; then
-            FLAGS="--date-closed=$DATE_CLOSED"
+          if [ -n "$SUPPLIER_IDS" ]; then
+            FLAGS="--supplier-ids=$SUPPLIER_IDS"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
 
-          ./scripts/notify-buyers-when-requirements-close.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --email-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
+          ./scripts/notify-suppliers-of-new-questions-answers.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --mandrill-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
 {% endfor %}
