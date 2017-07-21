@@ -23,7 +23,7 @@
           wipe-workspace: false
 {% if environment == 'production' %}
     triggers:
-      - timed: "0 8 * * *"
+      - timed: "H 8 * * *"
 {% endif %}
     publishers:
       - trigger-parameterized-builds:
