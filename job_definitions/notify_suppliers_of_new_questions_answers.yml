@@ -44,7 +44,7 @@
           . ./venv/bin/activate
           pip install -r requirements.txt
 
-          if [ -n "SUPPLIER_IDS" ]; then
+          if [ -n "$SUPPLIER_IDS" ]; then
             FLAGS="--supplier-ids=$SUPPLIER_IDS"
           fi
 
