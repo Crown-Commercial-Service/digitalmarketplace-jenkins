@@ -2,7 +2,7 @@
     name: database-backup
     display-name: Create offsite backup of database
     project-type: pipeline
-    description: Takes a snapshot of the database, compresses it, encrypts it and uploads to S3.
+    description: Takes a dump of the database, compresses it, encrypts it and uploads to S3.
     disabled: false
     concurrent: true
     pipeline:
@@ -28,18 +28,18 @@
                   [ -d venv ] || virtualenv venv
                   . ./venv/bin/activate
                   pip install -r requirements.txt
-                  make preview deploy-db-snapshot
+                  make preview deploy-db-backup-app
                 ''')
                 timeout(2) {
                   waitUntil {
                     sleep 5
                     def taskStatus = sh(
-                        script: 'make check-db-snapshot-task',
+                        script: 'make check-db-backup-task',
                         returnStdout: true
                     ).trim()
                     echo "Task status is ${taskStatus}"
                     if (taskStatus == 'FAILED') {
-                        sh("cf logs --recent db-snapshot")
+                        sh("cf logs --recent db-backup")
                         throw new Exception('Create db dump task failed')
                     }
                     return (taskStatus == 'SUCCEEDED');
@@ -52,7 +52,7 @@
                 echo "Error: ${err}"
             } finally {
               stage('Cleanup') {
-                sh('make cleanup-db-snapshot')
+                sh('make cleanup-db-backup')
                 sh('make paas-clean')
               }
             }
