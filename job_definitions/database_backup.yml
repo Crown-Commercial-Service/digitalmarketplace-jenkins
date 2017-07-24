@@ -4,11 +4,19 @@
     project-type: pipeline
     description: Takes a dump of the database, compresses it, encrypts it and uploads to S3.
     disabled: false
-    concurrent: true
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - Select one
+            - preview
+            - staging
+            - production
     pipeline:
       script: |
         node {
-          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=preview"]) {
+          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=${STAGE}"]) {
             try {
               git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'db_backups_from_live_db', credentialsId: 'github_com_and_enterprise'
 
@@ -28,7 +36,7 @@
                   [ -d venv ] || virtualenv venv
                   . ./venv/bin/activate
                   pip install -r requirements.txt
-                  make preview deploy-db-backup-app
+                  make ${STAGE} deploy-db-backup-app
                 ''')
                 timeout(10) {
                   waitUntil {
