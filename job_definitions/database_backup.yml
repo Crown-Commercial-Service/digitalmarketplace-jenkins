@@ -6,16 +6,13 @@
     disabled: false
     concurrent: false
     triggers:
-      - parameterized-timer:
-          cron: "0 3 * * * % STAGE=preview"
+      - timed: "0 3 * * *"
     parameters:
-      - choice:
+      - extended-choice:
           name: STAGE
-          choices:
-            - Select one
-            - preview
-            - staging
-            - production
+          type: radio
+          default-value: preview
+          value: preview,staging,production
     pipeline:
       script: |
 
