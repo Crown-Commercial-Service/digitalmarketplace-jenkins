@@ -18,6 +18,20 @@
             - production
     pipeline:
       script: |
+
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+                parameters: [
+                  string(name: 'USERNAME', value: "database-backup"),
+                  string(name: 'ICON', value: icon),
+                  string(name: 'JOB', value: "Backup ${STAGE} database to S3"),
+                  string(name: 'CHANNEL', value: "#dm-release"),
+                  text(name: 'STAGE', value: "${STAGE}"),
+                  text(name: 'STATUS', value: status),
+                  text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                ]
+        }
+
         node {
           withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=${STAGE}"]) {
             try {
@@ -55,9 +69,11 @@
                     }
                     return (taskStatus == 'SUCCEEDED');
                   }
+                  notify_slack(':file_cabinet:', 'SUCCESS')
                 }
               }
             } catch(err) {
+                notify_slack(':-1:', 'FAILURE')
                 echo "Error caught"
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
