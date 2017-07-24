@@ -31,6 +31,7 @@
     - xvfb
     - wkhtmltopdf
     - fonts-liberation
+    - gnupg2
 
 - name: Install rbenv and pyenv
   sudo: yes
