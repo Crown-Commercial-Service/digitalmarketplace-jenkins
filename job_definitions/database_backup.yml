@@ -30,7 +30,7 @@
                   pip install -r requirements.txt
                   make preview deploy-db-backup-app
                 ''')
-                timeout(2) {
+                timeout(10) {
                   waitUntil {
                     sleep 5
                     def taskStatus = sh(
