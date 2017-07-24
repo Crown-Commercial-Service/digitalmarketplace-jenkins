@@ -5,6 +5,9 @@
     description: Takes a dump of the database, compresses it, encrypts it and uploads to S3.
     disabled: false
     concurrent: false
+    triggers:
+      - parameterized-timer:
+          cron: "0 3 * * * % STAGE=preview"
     parameters:
       - choice:
           name: STAGE
