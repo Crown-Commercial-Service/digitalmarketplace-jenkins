@@ -30,6 +30,7 @@
         }
 
         node {
+        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
           withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=${STAGE}"]) {
             try {
               git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'db_backups_from_live_db', credentialsId: 'github_com_and_enterprise'
