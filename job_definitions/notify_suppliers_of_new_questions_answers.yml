@@ -50,5 +50,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          ./scripts/notify-suppliers-of-new-questions-answers.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --mandrill-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
+          ./scripts/notify-suppliers-of-new-questions-answers.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} $MANDRILL_API_KEY_{{ environment|upper }} $FLAGS
 {% endfor %}
