@@ -33,9 +33,9 @@
         currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
           withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=${STAGE}"]) {
             try {
-              git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'db_backups_from_live_db', credentialsId: 'github_com_and_enterprise'
 
               stage('Prepare') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'db_backups_from_live_db', credentialsId: 'github_com_and_enterprise'
                 build job: "update-credentials"
               }
 
@@ -67,9 +67,14 @@
                     }
                     return (taskStatus == 'SUCCEEDED');
                   }
-                  notify_slack(':file_cabinet:', 'SUCCESS')
                 }
               }
+
+              stage('Check decryption') {
+                sh('./scripts/check-db-dump-is-decryptable.sh')
+                notify_slack(':file_cabinet:', 'SUCCESS')
+              }
+
             } catch(err) {
                 notify_slack(':-1:', 'FAILURE')
                 echo "Error caught"
