@@ -76,6 +76,12 @@
 - name: Add AWS credentials file
   template: src=aws_credentials.j2 dest=/var/lib/jenkins/.aws/credentials
 
+- name: Add gpg-agent conf file
+  file: path=/var/lib/jenkins/.gnupg/gpg-agent.conf owner=jenkins group=jenkins
+
+- name: Kill gpg-agent
+  command: gpgconf --kill gpg-agent
+
 - name: Copy the NodeSource GPG key to the remote
   copy:
     src: ../files/nodesource.gpg.key
