@@ -11,7 +11,7 @@
       - extended-choice:
           name: STAGE
           type: radio
-          default-value: preview
+          default-value: production
           value: preview,staging,production
     pipeline:
       script: |
