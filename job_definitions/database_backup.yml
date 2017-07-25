@@ -30,16 +30,20 @@
         }
 
         node {
-        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
-          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}", "STAGE=${STAGE}"]) {
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
+
+          withEnv([
+            "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
+            "CF_HOME=${pwd()}",
+            "DUMP_FILE_NAME=${STAGE}-${new java.text.SimpleDateFormat('yyyyMMddHHmm').format(new Date())}.sql.gz.gpg"
+          ]) {
+
             try {
 
               stage('Prepare') {
+                echo "Getting ready to create ${DUMP_FILE_NAME}"
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'db_backups_from_live_db', credentialsId: 'github_com_and_enterprise'
                 build job: "update-credentials"
-              }
-
-              stage('Login to Cloud Foundry') {
                 paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
                 withEnv(paas_credentials.tokenize("\n")) {
                   sh('make paas-login')
@@ -49,7 +53,7 @@
               stage('Connect to service, create dump and upload to S3') {
                 sh('''
                   make requirements
-                  make ${STAGE} deploy-db-backup-app
+                  DUMP_FILE_NAME=${DUMP_FILE_NAME} make ${STAGE} deploy-db-backup-app
                 ''')
                 timeout(10) {
                   waitUntil {
@@ -69,7 +73,7 @@
               }
 
               stage('Check decryption') {
-                sh('./scripts/check-db-dump-is-decryptable.sh')
+                sh('DUMP_FILE_NAME=${DUMP_FILE_NAME} ./scripts/check-db-dump-is-decryptable.sh')
                 notify_slack(':file_cabinet:', 'SUCCESS')
               }
 
