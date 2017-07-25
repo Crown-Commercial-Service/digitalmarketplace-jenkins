@@ -48,9 +48,7 @@
 
               stage('Connect to service, create dump and upload to S3') {
                 sh('''
-                  [ -d venv ] || virtualenv venv
-                  . ./venv/bin/activate
-                  pip install -r requirements.txt
+                  make requirements
                   make ${STAGE} deploy-db-backup-app
                 ''')
                 timeout(10) {
@@ -76,7 +74,7 @@
               }
 
             } catch(err) {
-                notify_slack(':-1:', 'FAILURE')
+                notify_slack(':-1:', 'FAILED')
                 echo "Error caught"
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
