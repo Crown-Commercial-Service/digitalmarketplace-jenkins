@@ -70,21 +70,22 @@
             }
 
             if ("${TARGET_STAGE}" == 'preview' || "${TARGET_STAGE}" == 'staging') {
-              def index_name = "g-cloud-${new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())}"
-              stage('Index target stage'){
-                build job: "index-services-${TARGET_STAGE}"
-                  parameters: [
-                    string(name: 'INDEX', value: index_name),
-                  ]
-              }
-              stage('Update index alias'){
-                build job: update_index_alias
-                  parameters: [
-                    string(name: 'ALIAS', value: 'g-cloud'),
-                    string(name: 'TARGET', value: index_name),
-                    string(name: 'STAGE', value: ${TARGET_STAGE}),
-                    string(name: 'DELETE_OLD_INDEXES', value: 'yes')
-                  ]
+              withEnv(["INDEX_NAME=g-cloud-${new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())}"]){
+                stage('Index target stage'){
+                  build job: "index-services-${TARGET_STAGE}"
+                    parameters: [
+                      string(name: 'INDEX', value: ${INDEX_NAME}),
+                    ]
+                }
+                stage('Update index alias'){
+                  build job: 'update-index-alias',
+                    parameters: [
+                      string(name: 'ALIAS', value: 'g-cloud'),
+                      string(name: 'TARGET', value: "${INDEX_NAME}"),
+                      string(name: 'STAGE', value: "${TARGET_STAGE}"),
+                      string(name: 'DELETE_OLD_INDEXES', value: 'yes')
+                    ]
+                }
               }
             }
           }
