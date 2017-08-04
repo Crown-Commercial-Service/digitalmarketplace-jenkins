@@ -74,7 +74,7 @@
                 stage('Index target stage'){
                   build job: "index-services-${TARGET_STAGE}"
                     parameters: [
-                      string(name: 'INDEX', value: ${INDEX_NAME}),
+                      string(name: 'INDEX', value: "${INDEX_NAME}"),
                     ]
                 }
                 stage('Update index alias'){
