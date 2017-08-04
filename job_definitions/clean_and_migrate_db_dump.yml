@@ -4,6 +4,8 @@
     project-type: pipeline
     description: Takes the latest production database dump, cleans it, and migrates to target stage. Also Google Drive.
     concurrent: false
+    triggers:
+      - timed: "0 4 * * 0"
     parameters:
       - extended-choice:
           name: TARGET_STAGE
