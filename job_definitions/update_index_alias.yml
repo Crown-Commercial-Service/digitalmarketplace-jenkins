@@ -1,0 +1,49 @@
+- job:
+    name: update-index-alias
+    display-name: Update index alias
+    description: Apply a given alias to a given elasticsearch index
+    project-type: pipeline
+    concurrent: false
+    parameters:
+      - string:
+          name: ALIAS
+          default: g-cloud
+          description: "The name of the alias you're applying."
+      - string:
+          name: TARGET
+          description: "The name of the index you're applying the alias to."
+      - extended-choice:
+          name: STAGE
+          type: radio
+          value: preview,staging,production
+      - extended-choice:
+          name: DELETE_OLD_INDEXES
+          type: radio
+          default: no
+          value: yes,no
+          description: "Delete indexes with no aliases when update complete"
+    pipeline:
+      script: |
+        node {
+          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]){
+            stage('Update alias'){
+              git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'update-index-alias', credentialsId: 'github_com_and_enterprise'
+              sh('''
+                VIRTUALENV_ROOT=$([ -z ${VIRTUAL_ENV} ] && echo $(pwd)/venv || echo ${VIRTUAL_ENV})
+                [ -z "${VIRTUAL_ENV}" ] && [ ! -d venv ] && virtualenv venv || true
+                source ${VIRTUALENV_ROOT}/bin/activate
+                ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
+
+                if [ $STAGE == 'preview']; then
+                  ENDPOINT="search-api.preview.marketplace.team"
+                elif [ $STAGE == 'staging' ]; then
+                  ENDPOINT="search-api.staging.marketplace.team"
+                elif [ $STAGE == 'production' ]; then
+                  ENDPOINT="search-api.digitalmarketplace.service.gov.uk"
+                fi
+
+                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "${STAGE}" "${ENDPOINT}" --delete-old-indexes=${DELETE_OLD_INDEXES}
+              ''')
+            }
+          }
+        }
