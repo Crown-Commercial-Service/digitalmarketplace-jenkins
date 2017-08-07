@@ -31,6 +31,10 @@
                 sh('make paas-login')
                 sh('cf target -s db-cleanup')
               }
+              env.TARGET_STAGE_ALEMBIC_VERSION = sh(
+                script: "curl -s https://www.${TARGET_STAGE}.marketplace.team/_status | jq -r '.api_status.db_version'",
+                returnStdout: true
+              )
             }
 
             stage('Create cleanup postgres service') {
@@ -61,10 +65,25 @@
                 make requirements
                 make import-and-clean-db-dump
               ''')
+              env.DUMP_ALEMBIC_VERSION = sh(
+                script: './scripts/get-alembic-version.sh',
+                returnStdout: true
+              )
             }
 
             stage('Migrate data to target stage and google drive') {
               sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make migrate-cleaned-db-dump')
+            }
+
+            stage('Check if migrations required and run'){
+              if (("${TARGET_STAGE}" == 'preview' || "${TARGET_STAGE}" == 'staging') && (env.DUMP_ALEMBIC_VERSION.toInteger() < env.TARGET_STAGE_ALEMBIC_VERSION.toInteger())) {
+                build job: "database-migration-paas",
+                  parameters: [
+                    string(name: 'STAGE', value: "${TARGET_STAGE}"),
+                    string(name: 'APPLICATION_NAME', value: 'api'),
+                    string(name: 'RELEASE_NAME', value: 'db-cleanup')
+                  ]
+              }
             }
 
             stage('Cleanup app and service') {
