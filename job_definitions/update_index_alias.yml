@@ -17,11 +17,11 @@
           type: radio
           value: preview,staging,production
       - extended-choice:
-          name: DELETE_OLD_INDEXES
+          name: DELETE_OLD_INDEX
           type: radio
           default: no
           value: yes,no
-          description: "Delete indexes with no aliases when update complete"
+          description: "Delete the index that's losing the '<alias>-old' alias"
     pipeline:
       script: |
         node {
@@ -34,7 +34,7 @@
                 source ${VIRTUALENV_ROOT}/bin/activate
                 ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
 
-                if [ $STAGE == 'preview']; then
+                if [ $STAGE == 'preview' ]; then
                   ENDPOINT="search-api.preview.marketplace.team"
                 elif [ $STAGE == 'staging' ]; then
                   ENDPOINT="search-api.staging.marketplace.team"
@@ -42,7 +42,7 @@
                   ENDPOINT="search-api.digitalmarketplace.service.gov.uk"
                 fi
 
-                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "${STAGE}" "${ENDPOINT}" --delete-old-indexes=${DELETE_OLD_INDEXES}
+                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "${STAGE}" "${ENDPOINT}" --delete-old-index=${DELETE_OLD_INDEX}
               ''')
             }
           }
