@@ -1,8 +1,8 @@
 - job:
-    name: clean-and-migrate-db-dump
-    display-name: Clean and migrate database dump
+    name: clean-and-apply-db-dump
+    display-name: Clean and apply database dump
     project-type: pipeline
-    description: Takes the latest production database dump, cleans it, and migrates to target stage. Also Google Drive.
+    description: Takes the latest production database dump, cleans it, and applies it to target stage. Also Google Drive.
     concurrent: false
     triggers:
       - timed: "0 4 * * 0"
@@ -53,8 +53,8 @@
                 )
               }
 
-              stage('Migrate data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make db-cleanup migrate-cleaned-db-dump')
+              stage('Apply data to target stage and google drive') {
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make db-cleanup apply-cleaned-db-dump')
               }
 
               stage('Check if migrations required and run'){
