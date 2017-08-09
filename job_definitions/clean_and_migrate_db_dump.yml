@@ -38,25 +38,6 @@
                 )
               }
 
-              stage('Create cleanup postgres service') {
-                sh('make create-db-cleanup-service')
-                timeout(60) {
-                  waitUntil {
-                    sleep 5
-                    def taskStatus = sh(
-                      script: 'make check-db-cleanup-service',
-                      returnStdout: true
-                    ).trim()
-                    echo "Task status is ${taskStatus}"
-                    if (taskStatus == 'CREATE FAILED' || taskStatus == 'DELETE IN PROGRESS') {
-                        sh("cf logs --recent db-backup")
-                        throw new Exception('Create cleanup service failed')
-                    }
-                    return (taskStatus == 'CREATE SUCCEEDED');
-                  }
-                }
-              }
-
               stage('Deploy db-cleanup app') {
                 sh('make deploy-db-cleanup-app')
               }
