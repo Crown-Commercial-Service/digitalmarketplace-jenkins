@@ -1,6 +1,9 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
 - job:
-    name: update-index-alias
-    display-name: Update index alias
+    name: "update-{{ environment }}-index-alias"
+    display-name: "Update {{ environment }} index alias"
     description: Apply a given alias to a given elasticsearch index
     project-type: pipeline
     concurrent: false
@@ -12,10 +15,6 @@
       - string:
           name: TARGET
           description: "The name of the index you're applying the alias to."
-      - extended-choice:
-          name: STAGE
-          type: radio
-          value: preview,staging,production
       - extended-choice:
           name: DELETE_OLD_INDEX
           type: radio
@@ -34,16 +33,9 @@
                 source ${VIRTUALENV_ROOT}/bin/activate
                 ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
 
-                if [ $STAGE == 'preview' ]; then
-                  ENDPOINT="search-api.preview.marketplace.team"
-                elif [ $STAGE == 'staging' ]; then
-                  ENDPOINT="search-api.staging.marketplace.team"
-                elif [ $STAGE == 'production' ]; then
-                  ENDPOINT="search-api.digitalmarketplace.service.gov.uk"
-                fi
-
-                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "${STAGE}" "${ENDPOINT}" --delete-old-index=${DELETE_OLD_INDEX}
+                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "{{ app_urls[environment].search_api }}" --stage="{{ environment }}" --delete-old-index=${DELETE_OLD_INDEX}
               ''')
             }
           }
         }
+{% endfor %}
