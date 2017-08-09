@@ -52,6 +52,7 @@ jenkins_config_templates:
 build_monitor_jobs:
   - apps-are-up-preview
   - apps-are-up-production
+  - database-backup
   - functional-tests-preview
   - functional-tests-preview-legacy
   - functional-tests-preview-service-submissions
