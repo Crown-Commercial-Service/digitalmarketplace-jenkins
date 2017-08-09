@@ -8,14 +8,14 @@
       - timed: "0 4 * * 0"
     parameters:
       - extended-choice:
-          name: TARGET_STAGE
+          name: TARGET
           type: radio
           default-value: staging
           value: google-drive,preview,staging
     pipeline:
       script: |
         node {
-          currentBuild.displayName = "#${BUILD_NUMBER} - ${TARGET_STAGE}"
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${TARGET}"
 
             withEnv([
               "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
@@ -32,8 +32,8 @@
                   sh('make paas-login')
                   sh('cf target -s db-cleanup')
                 }
-                env.TARGET_STAGE_ALEMBIC_VERSION = sh(
-                  script: "curl -s https://www.${TARGET_STAGE}.marketplace.team/_status | jq -r '.api_status.db_version'",
+                env.TARGET_ALEMBIC_VERSION = sh(
+                  script: "curl -s https://www.${TARGET}.marketplace.team/_status | jq -r '.api_status.db_version'",
                   returnStdout: true
                 )
               }
@@ -58,20 +58,20 @@
               }
 
               stage('Check if migrations required and run'){
-                if (("${TARGET_STAGE}" == 'preview' || "${TARGET_STAGE}" == 'staging') && (env.DUMP_ALEMBIC_VERSION.toInteger() < env.TARGET_STAGE_ALEMBIC_VERSION.toInteger())) {
+                if (("${TARGET}" == 'preview' || "${TARGET}" == 'staging') && (env.DUMP_ALEMBIC_VERSION.toInteger() < env.TARGET_ALEMBIC_VERSION.toInteger())) {
                   build job: "database-migration-paas",
                     parameters: [
-                      string(name: 'STAGE', value: "${TARGET_STAGE}"),
+                      string(name: 'STAGE', value: "${TARGET}"),
                       string(name: 'APPLICATION_NAME', value: 'api'),
                       string(name: 'RELEASE_NAME', value: 'db-cleanup')
                     ]
                 }
               }
 
-              if ("${TARGET_STAGE}" == 'preview' || "${TARGET_STAGE}" == 'staging') {
+              if ("${TARGET}" == 'preview' || "${TARGET}" == 'staging') {
                 withEnv(["INDEX_NAME=g-cloud-${new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())}"]){
                   stage('Index target stage'){
-                    build job: "index-services-${TARGET_STAGE}",
+                    build job: "index-services-${TARGET}",
                       parameters: [
                         string(name: 'INDEX', value: "${INDEX_NAME}"),
                       ]
@@ -81,7 +81,7 @@
                       parameters: [
                         string(name: 'ALIAS', value: 'g-cloud'),
                         string(name: 'TARGET', value: "${INDEX_NAME}"),
-                        string(name: 'STAGE', value: "${TARGET_STAGE}"),
+                        string(name: 'STAGE', value: "${TARGET}"),
                         string(name: 'DELETE_OLD_INDEX', value: 'yes')
                       ]
                   }
