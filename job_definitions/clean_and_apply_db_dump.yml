@@ -30,7 +30,6 @@
                 paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
                 withEnv(paas_credentials.tokenize("\n")) {
                   sh('make paas-login')
-                  sh('cf target -s db-cleanup')
                 }
                 env.TARGET_ALEMBIC_VERSION = sh(
                   script: "curl -s https://www.${TARGET}.marketplace.team/_status | jq -r '.api_status.db_version'",
@@ -38,23 +37,23 @@
                 )
               }
 
-              stage('Deploy db-cleanup app') {
-                sh('make db-cleanup deploy-db-cleanup-app')
+              stage('Run postgres container') {
+                sh('make run-postgres-container')
               }
 
               stage('Import and clean lastest production db-dump') {
                 sh('''
                   make requirements
-                  make db-cleanup import-and-clean-db-dump
+                  make import-and-clean-db-dump
                 ''')
                 env.DUMP_ALEMBIC_VERSION = sh(
-                  script: './scripts/get-alembic-version.sh',
+                  script: "psql -qtA -d postgres://postgres:@localhost:63306/postgres -c 'SELECT version_num FROM alembic_version ORDER BY version_num DESC LIMIT 1'",
                   returnStdout: true
                 )
               }
 
               stage('Apply data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make db-cleanup apply-cleaned-db-dump')
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}" make apply-cleaned-db-dump')
               }
 
               stage('Check if migrations required and run'){
@@ -91,8 +90,8 @@
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
             } finally {
-                stage('Cleanup app and service') {
-                  sh('make db-cleanup cleanup-db-cleanup')
+                stage('Cleanup') {
+                  sh('make cleanup-postgres-container')
                   sh('make paas-clean')
                 }
             }
