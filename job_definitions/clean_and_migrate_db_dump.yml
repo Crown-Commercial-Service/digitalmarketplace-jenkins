@@ -39,13 +39,13 @@
               }
 
               stage('Deploy db-cleanup app') {
-                sh('make deploy-db-cleanup-app')
+                sh('make db-cleanup deploy-db-cleanup-app')
               }
 
               stage('Import and clean lastest production db-dump') {
                 sh('''
                   make requirements
-                  make import-and-clean-db-dump
+                  make db-cleanup import-and-clean-db-dump
                 ''')
                 env.DUMP_ALEMBIC_VERSION = sh(
                   script: './scripts/get-alembic-version.sh',
@@ -54,7 +54,7 @@
               }
 
               stage('Migrate data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make migrate-cleaned-db-dump')
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}"  make db-cleanup migrate-cleaned-db-dump')
               }
 
               stage('Check if migrations required and run'){
@@ -94,7 +94,7 @@
               echo "Error: ${err}"
           } finally {
               stage('Cleanup app and service') {
-                sh('make cleanup-db-cleanup')
+                sh('make db-cleanup cleanup-db-cleanup')
                 sh('make paas-clean')
               }
           }
