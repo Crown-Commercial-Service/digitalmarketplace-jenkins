@@ -58,7 +58,7 @@
               }
 
               stage('Check if migrations required and run'){
-                if (("${TARGET}" == 'preview' || "${TARGET}" == 'staging') && (env.DUMP_ALEMBIC_VERSION.toInteger() < env.TARGET_ALEMBIC_VERSION.toInteger())) {
+                if (("${TARGET}" == 'preview' || "${TARGET}" == 'staging') && (env.DUMP_ALEMBIC_VERSION != env.TARGET_ALEMBIC_VERSION)) {
                   build job: "database-migration-paas",
                     parameters: [
                       string(name: 'STAGE', value: "${TARGET}"),
