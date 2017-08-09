@@ -17,13 +17,13 @@
         node {
           currentBuild.displayName = "#${BUILD_NUMBER} - ${TARGET_STAGE}"
 
-          try {
             withEnv([
               "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
               "CF_HOME=${pwd()}",
               "STAGE=db-cleanup"
             ]) {
 
+            try {
               stage('Prepare') {
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'make-db-dumps-clean', credentialsId: 'github_com_and_enterprise'
                 build job: "update-credentials"
@@ -87,15 +87,15 @@
                   }
                 }
               }
+            } catch(err) {
+                echo "Error caught"
+                currentBuild.result = 'FAILURE'
+                echo "Error: ${err}"
+            } finally {
+                stage('Cleanup app and service') {
+                  sh('make db-cleanup cleanup-db-cleanup')
+                  sh('make paas-clean')
+                }
             }
-          } catch(err) {
-              echo "Error caught"
-              currentBuild.result = 'FAILURE'
-              echo "Error: ${err}"
-          } finally {
-              stage('Cleanup app and service') {
-                sh('make db-cleanup cleanup-db-cleanup')
-                sh('make paas-clean')
-              }
           }
         }
