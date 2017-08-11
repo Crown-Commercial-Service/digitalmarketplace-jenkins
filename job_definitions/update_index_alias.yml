@@ -26,7 +26,7 @@
         node {
           withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]){
             stage('Update alias'){
-              git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'update-index-alias', credentialsId: 'github_com_and_enterprise'
+              git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
               sh('''
                 VIRTUALENV_ROOT=$([ -z ${VIRTUAL_ENV} ] && echo $(pwd)/venv || echo ${VIRTUAL_ENV})
                 [ -z "${VIRTUAL_ENV}" ] && [ ! -d venv ] && virtualenv venv || true

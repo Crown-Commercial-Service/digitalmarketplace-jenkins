@@ -19,13 +19,12 @@
 
             withEnv([
               "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
-              "CF_HOME=${pwd()}",
-              "STAGE=db-cleanup"
+              "CF_HOME=${pwd()}"
             ]) {
 
             try {
               stage('Prepare') {
-                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'make-db-dumps-clean', credentialsId: 'github_com_and_enterprise'
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
                 build job: "update-credentials"
                 paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
                 withEnv(paas_credentials.tokenize("\n")) {
