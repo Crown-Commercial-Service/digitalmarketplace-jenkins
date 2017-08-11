@@ -1,0 +1,41 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "update-{{ environment }}-index-alias"
+    display-name: "Update {{ environment }} index alias"
+    description: Apply a given alias to a given elasticsearch index
+    project-type: pipeline
+    concurrent: false
+    parameters:
+      - string:
+          name: ALIAS
+          default: g-cloud
+          description: "The name of the alias you're applying."
+      - string:
+          name: TARGET
+          description: "The name of the index you're applying the alias to."
+      - extended-choice:
+          name: DELETE_OLD_INDEX
+          type: radio
+          default: no
+          value: yes,no
+          description: "Delete the index that's losing the '<alias>-old' alias"
+    pipeline:
+      script: |
+        node {
+          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]){
+            stage('Update alias'){
+              git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+              sh('''
+                VIRTUALENV_ROOT=$([ -z ${VIRTUAL_ENV} ] && echo $(pwd)/venv || echo ${VIRTUAL_ENV})
+                [ -z "${VIRTUAL_ENV}" ] && [ ! -d venv ] && virtualenv venv || true
+                source ${VIRTUALENV_ROOT}/bin/activate
+                ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
+
+                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "{{ app_urls[environment].search_api }}" --stage="{{ environment }}" --delete-old-index=${DELETE_OLD_INDEX}
+              ''')
+            }
+          }
+        }
+{% endfor %}

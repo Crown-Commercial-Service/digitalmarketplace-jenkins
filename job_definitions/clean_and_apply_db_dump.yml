@@ -1,0 +1,98 @@
+- job:
+    name: clean-and-apply-db-dump
+    display-name: Clean and apply database dump
+    project-type: pipeline
+    description: Takes the latest production database dump, cleans it, and applies it to target stage. Also Google Drive.
+    concurrent: false
+    triggers:
+      - timed: "0 4 * * 0"
+    parameters:
+      - extended-choice:
+          name: TARGET
+          type: radio
+          default-value: staging
+          value: google-drive,preview,staging
+    pipeline:
+      script: |
+        node {
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${TARGET}"
+
+            withEnv([
+              "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
+              "CF_HOME=${pwd()}"
+            ]) {
+
+            try {
+              stage('Prepare') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+                build job: "update-credentials"
+                paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
+                withEnv(paas_credentials.tokenize("\n")) {
+                  sh('make paas-login')
+                }
+                env.TARGET_ALEMBIC_VERSION = sh(
+                  script: "curl -s https://www.${TARGET}.marketplace.team/_status | jq -r '.api_status.db_version'",
+                  returnStdout: true
+                )
+              }
+
+              stage('Run postgres container') {
+                sh('make run-postgres-container')
+              }
+
+              stage('Import and clean lastest production db-dump') {
+                sh('''
+                  make requirements
+                  make import-and-clean-db-dump
+                ''')
+                env.DUMP_ALEMBIC_VERSION = sh(
+                  script: "psql -qtA -d postgres://postgres:@localhost:63306/postgres -c 'SELECT version_num FROM alembic_version ORDER BY version_num DESC LIMIT 1'",
+                  returnStdout: true
+                )
+              }
+
+              stage('Apply data to target stage and google drive') {
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}" make apply-cleaned-db-dump')
+              }
+
+              stage('Check if migrations required and run'){
+                if (("${TARGET}" == 'preview' || "${TARGET}" == 'staging') && (env.DUMP_ALEMBIC_VERSION != env.TARGET_ALEMBIC_VERSION)) {
+                  build job: "database-migration-paas",
+                    parameters: [
+                      string(name: 'STAGE', value: "${TARGET}"),
+                      string(name: 'APPLICATION_NAME', value: 'api'),
+                      string(name: 'RELEASE_NAME', value: 'db-cleanup')
+                    ]
+                }
+              }
+
+              if ("${TARGET}" == 'preview' || "${TARGET}" == 'staging') {
+                withEnv(["INDEX_NAME=g-cloud-${new java.text.SimpleDateFormat('yyyy-MM-dd').format(new Date())}"]){
+                  stage('Index target stage'){
+                    build job: "index-services-${TARGET}",
+                      parameters: [
+                        string(name: 'INDEX', value: "${INDEX_NAME}"),
+                      ]
+                  }
+                  stage('Update index alias'){
+                    build job: "update-${TARGET}-index-alias",
+                      parameters: [
+                        string(name: 'ALIAS', value: 'g-cloud'),
+                        string(name: 'TARGET', value: "${INDEX_NAME}"),
+                        string(name: 'DELETE_OLD_INDEX', value: 'yes')
+                      ]
+                  }
+                }
+              }
+            } catch(err) {
+                echo "Error caught"
+                currentBuild.result = 'FAILURE'
+                echo "Error: ${err}"
+            } finally {
+                stage('Cleanup') {
+                  sh('make cleanup-postgres-container')
+                  sh('make paas-clean')
+                }
+            }
+          }
+        }
