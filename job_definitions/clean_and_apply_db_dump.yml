@@ -14,12 +14,27 @@
           value: google-drive,preview,staging
     pipeline:
       script: |
+
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+                parameters: [
+                  string(name: 'USERNAME', value: "clean-prod-db-dump-and-apply"),
+                  string(name: 'ICON', value: icon),
+                  string(name: 'JOB', value: "Clean and apply database dump to ${TARGET}"),
+                  string(name: 'CHANNEL', value: "#dm-release"),
+                  text(name: 'STAGE', value: "${TARGET}"),
+                  text(name: 'STATUS', value: status),
+                  text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                ]
+        }
+
         node {
           currentBuild.displayName = "#${BUILD_NUMBER} - ${TARGET}"
 
             withEnv([
               "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
-              "CF_HOME=${pwd()}"
+              "CF_HOME=${pwd()}",
+              "PAAS_SPACE=${TARGET}"
             ]) {
 
             try {
@@ -84,7 +99,11 @@
                   }
                 }
               }
+
+              notify_slack(':clean:', 'SUCCESS')
+
             } catch(err) {
+                notify_slack(':sadparrot:', 'FAILURE')
                 echo "Error caught"
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
