@@ -4,7 +4,7 @@
 - job:
     name: "apps-are-up-{{ environment }}"
     display-name: "Apps are up - {{ environment }}"
-    project-type: freestyle
+    project-type: pipeline
     description: |
       Check that the five Digital Marketplace apps are up and running in the {{ environment|upper }} environment:
       <ul>
@@ -17,13 +17,6 @@
     logrotate:
       daysToKeep: 4
       artifactDaysToKeep: 4
-    scm:
-      - git:
-          url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
-          credentials-id: github_com_and_enterprise
-          branches:
-            - master
-          wipe-workspace: false
     triggers:
       - timed: "H/5 * * * *"
     wrappers:
@@ -36,64 +29,86 @@
           keep-all: true
           allow-missing: true
           link-to-last-build: true
-      - trigger-parameterized-builds:
-          - project: notify-slack
-            condition: UNSTABLE_OR_WORSE
-            predefined-parameters: |
-              USERNAME=smoke-tests
-              JOB=Apps are up - {{ environment }}
-              ICON=:fire:
-              STAGE={{ environment }}
-              STATUS=FAILED
-              URL=<${BUILD_URL}smoke_test_report|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-release
-    builders:
-      - shell: |
-          rbenv install -s
-          gem install bundler --conservative
+    pipeline:
+      script: |
 
-          export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
-          export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+                parameters: [
+                  string(name: 'USERNAME', value: 'smoke-tests'),
+                  string(name: 'ICON', value: icon),
+                  string(name: 'JOB', value: "Apps are up - {{ environment }}"),
+                  string(name: 'CHANNEL', value: "#dm-release"),
+                  text(name: 'STAGE', value: "{{ environment }}"),
+                  text(name: 'STATUS', value: status),
+                  text(name: 'URL', value: "<${BUILD_URL}smoke_test_report|${BUILD_DISPLAY_NAME}>")
+                ]
+        }
 
-          export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
-          export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
+        node {
+          git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+          stage('Run smoke tests') {
+            try {
+              sh('''
+                rbenv install -s
+                gem install bundler --conservative
 
-          export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+                export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
+                export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
 
-          export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
-          export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
-          export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[environment].supplier_id }}"
+                export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
+                export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
 
-          export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[environment].buyer_email }}"
-          export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[environment].buyer_password }}"
+                export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
-          export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ smoke_test_variables[environment].admin_email }}"
-          export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ smoke_test_variables[environment].admin_password }}"
+                export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
+                export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
+                export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[environment].supplier_id }}"
 
-          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_category_email }}"
-          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_category_password }}"
+                export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[environment].buyer_email }}"
+                export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[environment].buyer_password }}"
 
-          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_sourcing_email }}"
-          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_sourcing_password }}"
+                export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ smoke_test_variables[environment].admin_email }}"
+                export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ smoke_test_variables[environment].admin_password }}"
 
-          export DM_PAGINATION_LIMIT=100
+                export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_category_email }}"
+                export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_category_password }}"
 
-          export DM_ENVIRONMENT={{ environment }}
+                export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_sourcing_email }}"
+                export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_sourcing_password }}"
 
-          make smoke-tests || make rerun
+                export DM_PAGINATION_LIMIT=100
 
-      - conditional-step:
-          condition-kind: build-cause
-          cause: UPSTREAM_CAUSE
-          steps:
-              - trigger-builds:
-                - project: notify-slack
-                  predefined-parameters: |
-                    USERNAME=smoke-tests
-                    JOB=Apps are up - {{ environment }}
-                    ICON=:green_heart:
-                    STAGE={{ environment }}
-                    STATUS=SUCCESS
-                    URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
-                    CHANNEL=#dm-release
+                export DM_ENVIRONMENT={{ environment }}
+
+                make smoke-tests || make rerun
+              ''')
+
+              if (currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause) != null) {
+                notify_slack(':green_heart:', 'SUCCESS')
+              }
+
+            } catch(err) {
+              def migrations_being_run = sh(
+                script: "curl -s https://{{ jenkins_api_user }}:{{ jenkins_api_token }}@ci.marketplace.team/job/clean-and-apply-db-dump/lastBuild/api/json?tree=building | jq -r '.building'",
+                returnStdout: true
+              ).trim()
+
+              def stage_migrations_run_on = sh(
+                script: "curl -s https://{{ jenkins_api_user }}:{{ jenkins_api_token }}@ci.marketplace.team/job/clean-and-apply-db-dump/lastBuild/api/json | \
+                  jq '.actions[] | select(.parameters) | .parameters[] | select(.name == \"TARGET\") | .value'",
+                returnStdout: true
+              ).trim()
+
+              if (migrations_being_run == 'false' || (migrations_being_run == 'true' && stage_migrations_run_on != '{{ environment }}')) {
+                notify_slack(':fire:', 'FAILED')
+              }
+              echo "Error caught"
+              currentBuild.result = 'FAILURE'
+              echo "Error: ${err}"
+            }
+          }
+
+        }
+
 {% endfor %}
