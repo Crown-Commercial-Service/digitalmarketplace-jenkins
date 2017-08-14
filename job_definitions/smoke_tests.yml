@@ -21,14 +21,6 @@
       - timed: "H/5 * * * *"
     wrappers:
       - ansicolor
-    publishers:
-      - html-publisher:
-          name: "smoke test report"
-          dir: reports
-          files: index.html
-          keep-all: true
-          allow-missing: true
-          link-to-last-build: true
     pipeline:
       script: |
 
@@ -106,6 +98,15 @@
               echo "Error caught"
               currentBuild.result = 'FAILURE'
               echo "Error: ${err}"
+            } finally {
+              publishHTML(target: [
+                allowMissing: true,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'index.html',
+                reportName: 'smoke test report'
+              ])
             }
           }
 
