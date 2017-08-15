@@ -88,7 +88,7 @@
 
               def stage_migrations_run_on = sh(
                 script: "curl -s https://{{ jenkins_api_user }}:{{ jenkins_api_token }}@ci.marketplace.team/job/clean-and-apply-db-dump/lastBuild/api/json | \
-                  jq '.actions[] | select(.parameters) | .parameters[] | select(.name == \"TARGET\") | .value'",
+                  jq -r '.actions[] | select(.parameters) | .parameters[] | select(.name == \"TARGET\") | .value'",
                 returnStdout: true
               ).trim()
 
