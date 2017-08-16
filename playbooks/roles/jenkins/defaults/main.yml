@@ -18,6 +18,7 @@ dm_applications:
   - api
   - search-api
   - briefs-frontend
+  - brief-responses-frontend
   - buyer-frontend
   - supplier-frontend
   - admin-frontend
@@ -66,6 +67,8 @@ build_monitor_jobs:
 jenkins_list_views:
   - name: "Data"
     jobs:
+      - clean-and-apply-db-dump
+      - database-backup
       - index-services-preview
       - index-services-production
       - index-services-staging
@@ -73,6 +76,9 @@ jenkins_list_views:
       - notify-buyers-when-requirements-close-production
       - snapshot-g7-stats-preview
       - snapshot-g7-stats-production
+      - update-preview-index-alias
+      - update-staging-index-alias
+      - update-production-index-alias
   - name: "Smoke tests"
     jobs:
       - apps-are-up-preview
@@ -84,11 +90,13 @@ jenkins_list_views:
       - tag-dmapiclient
       - tag-dmutils
       - tag-toolkit
+      - update-credentials
   - name: "Release"
     jobs:
       - release-api
       - release-admin-frontend
       - release-briefs-frontend
+      - release-brief-responses-frontend
       - release-buyer-frontend
       - release-search-api
       - release-supplier-frontend
