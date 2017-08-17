@@ -85,18 +85,20 @@
                   message.update({"text": TEXT})
                   return message
 
+              fields_def = (
+                  ("Project", PROJECT, False),
+                  ("Stage", STAGE, True),
+                  ("Release", RELEASE_NAME, True),
+                  ("Status", STATUS, True),
+                  ("Build URL", URL, True),
+              )
+
               message.update({
                   "text": "{} finished".format(JOB),
                   "attachments": [{
-                      "fallback": "{} ",
+                      "fallback": "\n".join("{}: {}".format(key, val) for key, val, short in fields_def),
                       "color": color_from_status(STATUS),
-                      "fields": build_fields([
-                          ("Project", PROJECT, False),
-                          ("Stage", STAGE, True),
-                          ("Release", RELEASE_NAME, True),
-                          ("Status", STATUS, True),
-                          ("Build URL", URL, True),
-                      ])
+                      "fields": build_fields(fields_def),
                   }],
               })
 
