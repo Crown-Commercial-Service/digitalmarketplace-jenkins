@@ -15,13 +15,6 @@
           name: FRAMEWORKS
           default: {{ frameworks }}
           description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8'). If no frameworks are specified then all currently published services will be indexed."
-    scm:
-      - git:
-          url: git@github.com:alphagov/digitalmarketplace-scripts.git
-          credentials-id: github_com_and_enterprise
-          branches:
-            - master
-          wipe-workspace: false
     triggers:
       - timed: "H 2 * * *"
     publishers:
@@ -38,10 +31,5 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          [ -d venv ] || virtualenv venv
-
-          . ./venv/bin/activate
-          pip install -r requirements.txt
-
-          ./scripts/index-services.py '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}"
+          docker run digitalmarketplace/scripts scripts/index-services.py '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}"
 {% endfor %}
