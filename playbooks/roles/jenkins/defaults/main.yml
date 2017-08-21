@@ -69,6 +69,8 @@ jenkins_list_views:
     jobs:
       - clean-and-apply-db-dump
       - database-backup
+      - export-data-preview
+      - export-data-production
       - index-services-preview
       - index-services-production
       - index-services-staging
@@ -86,6 +88,7 @@ jenkins_list_views:
       - apps-are-up-staging
   - name: "Utils and toolkit"
     jobs:
+      - build-scripts
       - publish-toolkit-documentation
       - tag-dmapiclient
       - tag-dmutils

@@ -1,17 +1,18 @@
 - job:
-    name: build-app
-    display-name: Build application
+    name: build-image
+    display-name: Build Docker image
     project-type: pipeline
-    description: Builds the application artefact and uploads it to S3
+    description: Builds the docker image from a repository release tag
     disabled: false
     concurrent: true
     parameters:
       - choice:
-          name: APPLICATION_NAME
+          name: REPOSITORY
           choices:
 {% for application in dm_applications %}
             - {{ application }}
 {% endfor %}
+            - scripts
       - string:
           name: RELEASE_NAME
           description: "Application tag (eg 'release-42') to checkout for building the artefact"
@@ -24,8 +25,8 @@
         node {
             try {
                 stage('Check previous builds') {
-                  currentBuild.displayName = "#${BUILD_NUMBER} - ${APPLICATION_NAME} - ${RELEASE_NAME}"
-                  existingRelease = sh(script: "curl -fs https://index.docker.io/v1/repositories/digitalmarketplace/${APPLICATION_NAME}/tags/${RELEASE_NAME}", returnStatus: true)
+                  currentBuild.displayName = "#${BUILD_NUMBER} - ${REPOSITORY} - ${RELEASE_NAME}"
+                  existingRelease = sh(script: "curl -fs https://index.docker.io/v1/repositories/digitalmarketplace/${REPOSITORY}/tags/${RELEASE_NAME}", returnStatus: true)
                 }
 
                 if (existingRelease == 0 && (REBUILD.toString() == "false")) {
@@ -35,15 +36,15 @@
                 }
 
                 stage('Prepare') {
-                    git url: "git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
+                    git url: "git@github.com:alphagov/digitalmarketplace-${REPOSITORY}.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
                     echo "Cleaning repository"
                     sh("git clean -fdx")
                     echo "Checking out ${RELEASE_NAME}"
                     sh("git reset --hard ${RELEASE_NAME}")
                 }
                 stage('Build') {
-                    sh("docker build --pull -t digitalmarketplace/${APPLICATION_NAME} --build-arg release_name=${RELEASE_NAME} .")
-                    sh("docker tag digitalmarketplace/${APPLICATION_NAME} digitalmarketplace/${APPLICATION_NAME}:${RELEASE_NAME}")
+                    sh("docker build --pull -t digitalmarketplace/${REPOSITORY} --build-arg release_name=${RELEASE_NAME} .")
+                    sh("docker tag digitalmarketplace/${REPOSITORY} digitalmarketplace/${REPOSITORY}:${RELEASE_NAME}")
                 }
                 stage('Upload') {
                     docker_credentials = sh(script: '/var/lib/jenkins/digitalmarketplace-credentials/sops-wrapper -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
@@ -51,8 +52,8 @@
                         sh("docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
                     }
 
-                    sh("docker push digitalmarketplace/${APPLICATION_NAME}:${RELEASE_NAME}")
-                    sh("docker push digitalmarketplace/${APPLICATION_NAME}:latest")
+                    sh("docker push digitalmarketplace/${REPOSITORY}:${RELEASE_NAME}")
+                    sh("docker push digitalmarketplace/${REPOSITORY}:latest")
                 }
             } catch(err) {
                 currentBuild.result = 'FAILURE'

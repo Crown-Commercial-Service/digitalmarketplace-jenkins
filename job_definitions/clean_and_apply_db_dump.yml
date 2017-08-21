@@ -67,7 +67,7 @@
               }
 
               stage('Apply data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_folder_id }}" make apply-cleaned-db-dump')
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}" make apply-cleaned-db-dump')
               }
 
               stage('Check if migrations required and run'){

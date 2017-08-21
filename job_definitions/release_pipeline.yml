@@ -83,8 +83,8 @@
 
         stage('Build') {
           node {
-            build job: "build-app", parameters: [
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            build job: "build-image", parameters: [
+              string(name: "REPOSITORY", value: "{{ application }}"),
               string(name: "RELEASE_NAME", value: "${releaseName}"),
             ]
           }
