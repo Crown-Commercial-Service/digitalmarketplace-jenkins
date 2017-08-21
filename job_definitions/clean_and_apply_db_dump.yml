@@ -103,7 +103,7 @@
               notify_slack(':clean:', 'SUCCESS')
 
             } catch(err) {
-                notify_slack(':sadparrot:', 'FAILURE')
+                notify_slack(':sadparrot:', 'FAILED')
                 echo "Error caught"
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
