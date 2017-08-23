@@ -1,6 +1,4 @@
-{% set environments = ['preview', 'staging', 'production'] %}
----
-{% for environment in environments %}
+{% for environment in ['preview', 'staging', 'production'] %}
 - job:
     name: "update-{{ environment }}-index-alias"
     display-name: "Update {{ environment }} index alias"
@@ -10,7 +8,7 @@
     parameters:
       - string:
           name: ALIAS
-          default: g-cloud
+          default: {{ search_config[environment].default_index }}
           description: "The name of the alias you're applying."
       - string:
           name: TARGET
