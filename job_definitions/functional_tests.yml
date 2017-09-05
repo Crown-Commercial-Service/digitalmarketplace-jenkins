@@ -94,5 +94,5 @@
 
           export DM_ENVIRONMENT={{ job.environment }}
 
-          make run || make rerun
+          make run-parallel || make rerun
 {% endfor %}
