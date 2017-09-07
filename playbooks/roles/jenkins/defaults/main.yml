@@ -68,7 +68,9 @@ build_monitor_jobs:
 jenkins_list_views:
   - name: "Data"
     jobs:
-      - clean-and-apply-db-dump
+      - clean-and-apply-db-dump-google-drive
+      - clean-and-apply-db-dump-preview
+      - clean-and-apply-db-dump-staging
       - database-backup
       - export-data-preview
       - export-data-production
