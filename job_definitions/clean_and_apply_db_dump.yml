@@ -45,11 +45,16 @@
                 withEnv(paas_credentials.tokenize("\n")) {
                   sh('make paas-login')
                 }
+
                 env.TARGET_ALEMBIC_VERSION = sh(
-                  script: "curl -s https://www.{{ environment }}.marketplace.team/_status | jq -r '.api_status.db_version'",
+                  script: "curl -s https://api.{{ environment }}.marketplace.team/_status | jq -r '.db_version'",
                   returnStdout: true
                 )
 
+                env.TARGET_RELEASE_VERSION = sh(
+                  script: "curl -s https://api.{{ environment }}.marketplace.team/_status | jq -r '.version'",
+                  returnStdout: true
+                ).trim()
 {% endif %}
 
               }
@@ -81,7 +86,7 @@
                   parameters: [
                     string(name: 'STAGE', value: "{{ environment }}"),
                     string(name: 'APPLICATION_NAME', value: 'api'),
-                    string(name: 'RELEASE_NAME', value: 'db-cleanup')
+                    string(name: 'RELEASE_NAME', value: "${env.TARGET_RELEASE_VERSION}")
                   ]
                 }
               }
