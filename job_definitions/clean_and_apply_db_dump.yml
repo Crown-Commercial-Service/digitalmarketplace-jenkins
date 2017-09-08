@@ -76,7 +76,7 @@
               }
 
               stage('Apply data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}" make apply-cleaned-db-dump')
+                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}" TARGET="{{ environment }}" make apply-cleaned-db-dump')
               }
 
 {% if environment in ['preview', 'staging'] %}
@@ -109,7 +109,7 @@
               }
 {% endif %}
 
-              notify_slack(':clean:', 'SUCCESS')
+              notify_slack(':shower:', 'SUCCESS')
 
             } catch(err) {
               notify_slack(':sadparrot:', 'FAILED')
