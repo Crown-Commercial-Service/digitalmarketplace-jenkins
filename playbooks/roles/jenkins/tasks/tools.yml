@@ -70,6 +70,9 @@
 - name: Install pyenv python
   shell: "sudo su jenkins -c 'source $HOME/.bash_profile && pyenv install -s 2.7.9 && pyenv global 2.7.9 && $HOME/.pyenv/shims/pip install virtualenv'"
 
+- name: Install pyenv python3
+  shell: "sudo su jenkins -c 'source $HOME/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && $HOME/.pyenv/shims/pip install virtualenv'"
+
 - name: Add .aws config directory
   file: path=/var/lib/jenkins/.aws state=directory owner=jenkins group=jenkins
 
