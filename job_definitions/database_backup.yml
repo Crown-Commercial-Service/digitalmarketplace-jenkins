@@ -52,6 +52,7 @@
 
               stage('Connect to service, create dump and upload to S3') {
                 sh('''
+                  pyenv local 3.6.2
                   make requirements
                   DUMP_FILE_NAME=${DUMP_FILE_NAME} make ${STAGE} deploy-db-backup-app
                 ''')
