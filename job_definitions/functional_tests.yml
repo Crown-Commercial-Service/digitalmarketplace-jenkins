@@ -74,6 +74,8 @@
 
           export DM_FRONTEND_DOMAIN="{{ app_urls[job.environment].www }}"
 
+          export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY"
+
           export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[job.environment].supplier_email }}"
           export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[job.environment].supplier_password }}"
           export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[job.environment].supplier_id }}"
