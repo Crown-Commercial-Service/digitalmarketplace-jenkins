@@ -9,7 +9,7 @@
   <!-- GitHub usernames -->
 
   {% for user in jenkins_github_users %}
-    <permission>hudson.model.Hudson.Administer:{{ user }}</permission>
+    <permission>hudson.model.Hudson.Administer:{{ user.name }}</permission>
   {% endfor %}
 
     <!-- Jenkins Github user used for jenkins-job-builder -->
