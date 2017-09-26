@@ -100,8 +100,10 @@
 
 - name: Add dev's public ssh keys to temp authorized_keys file
   shell: >
+    executable=/bin/bash
+    set -o pipefail &&
     curl -s https://api.github.com/users/{{ item.name }}/keys |
-    jq -r '.[] | select(.id=={{ item.key_id }}) | .key' |
+    jq -er '.[] | select(.id=={{ item.key_id }}) | .key' |
     awk '{print $0 " {{ item.name }}"}' >>
     /home/ubuntu/.ssh/authorized_keys_temp
   with_items: jenkins_github_users
