@@ -25,11 +25,7 @@ clean: ## Clean workspace (delete all generated files)
 .PHONY: jenkins
 jenkins: venv ## Run Jenkins playbook
 	$(if ${TAGS},,$(error Must specify a list of ansible tags in TAGS))
-	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem
-	chmod 600 ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem
 	ANSIBLE_CONFIG=playbooks/ansible.cfg ${VIRTUALENV_ROOT}/bin/ansible-playbook \
 		-i playbooks/hosts playbooks/jenkins_playbook.yml \
-		--private-key ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem \
 		-e @<(${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml) \
 		--tags "${TAGS}" -e "jobs=${JOBS}"
-	rm ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem
