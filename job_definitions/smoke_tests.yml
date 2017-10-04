@@ -93,7 +93,7 @@
                   if (migrations_being_run == 'false') {
                     notify_slack(':fire:', 'FAILED')
                   }
-                } catch(err) {
+                } catch(err2) {
                   notify_slack(':fire:', 'FAILED')
                 }
               {% endif %}
