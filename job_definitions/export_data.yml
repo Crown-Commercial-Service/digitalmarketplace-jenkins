@@ -7,7 +7,7 @@
     project-type: freestyle
     description: "Runs the get-model-data.py script and saves the generated CSV files to Google Drive"
     triggers:
-      - timed: "H 3 * * 1"
+      - timed: "H 5 * * *"
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
