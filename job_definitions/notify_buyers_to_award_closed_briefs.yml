@@ -54,11 +54,6 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          [ -d venv ] || virtualenv venv
-
-          . ./venv/bin/activate
-          pip install -r requirements.txt
-
           if [ -n "$OFFSET_DAYS" ]; then
             FLAGS="--offset-days=$OFFSET_DAYS"
           fi
@@ -75,6 +70,6 @@
             FLAGS="$FLAGS --buyer-ids=$BUYER_IDS"
           fi
 
-          ./scripts/notify-buyers-to-award-closed-briefs.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} $NOTIFY_API_TOKEN $NOTIFY_TEMPLATE_ID $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-buyers-to-award-closed-briefs.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} $NOTIFY_API_TOKEN $NOTIFY_TEMPLATE_ID $FLAGS
 {% endfor %}
 {% endfor %}
