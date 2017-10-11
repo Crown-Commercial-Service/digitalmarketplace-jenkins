@@ -1,7 +1,7 @@
 {% set environments = ['production'] %}
 {% set reminders = [
-    {"weeks": "4", "notify_template_id": "204d2bf5-5dd3-44c8-a68f-9111e040e831"},
-    {"weeks": "8", "notify_template_id": "bc1f93a8-9529-48b6-9a82-af61bc6da332"}
+    {"weeks": 4, "notify_template_id": "204d2bf5-5dd3-44c8-a68f-9111e040e831"},
+    {"weeks": 8, "notify_template_id": "bc1f93a8-9529-48b6-9a82-af61bc6da332"}
   ]
 %}
 ---
