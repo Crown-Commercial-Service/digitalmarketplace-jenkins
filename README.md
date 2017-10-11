@@ -35,3 +35,15 @@ ssh -i [path/to/identity/file] {username}@{hostname}
 # eg
 ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
 ```
+
+## Running scripts with Python3 via a Jenkins job
+
+To run a script with Python3 inside a Docker container, call the script as follows:
+
+```bash
+docker run digitalmarketplace/scripts scripts/my-amazing-script.py arg1 arg2 ...
+```
+
+This removes the need for activating a virtualenv or installing requirements with pip.
+
+[More information on running scripts with Docker](https://github.com/alphagov/digitalmarketplace-scripts#running-scripts-with-docker)

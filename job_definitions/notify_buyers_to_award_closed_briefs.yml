@@ -1,0 +1,75 @@
+{% set environments = ['production'] %}
+{% set reminders = [
+    {"weeks": "4", "notify_template_id": "204d2bf5-5dd3-44c8-a68f-9111e040e831"},
+    {"weeks": "8", "notify_template_id": "bc1f93a8-9529-48b6-9a82-af61bc6da332"}
+  ]
+%}
+---
+{% for environment in environments %}
+{% for reminder in reminders %}
+- job:
+    name: "notify-buyers-to-award-closed-briefs-{{ reminder.weeks }}-weeks-{{ environment }}"
+    display-name: "Notify buyers to award closed briefs (after {{ reminder.weeks }} weeks) - {{ environment }}"
+    project-type: freestyle
+    description: "Send email notification to buyer users to award closed briefs, after {{ reminder.weeks }} weeks."
+    parameters:
+      - string:
+          name: NOTIFY_TEMPLATE_ID
+          default: "{{ reminder.notify_template_id }}"
+          description: "Notify template ID for {{ reminder.weeks }}-week email"
+      - string:
+          name: OFFSET_DAYS
+          default: "{{ reminder.weeks * 7 }}"
+          description: "Notify buyers for briefs that closed X days ago"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "List notifications that would be sent without sending the emails"
+      - string:
+          name: DATE_CLOSED
+          description: "Notify buyers for briefs on a specific closing date (YYYY-MM-DD) - must be earlier than the offset days (28 or 56)"
+      - string:
+          name: BUYER_IDS
+          description: "List of buyer IDs to be emailed e.g. 3,4,6"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_enterprise
+          branches:
+            - master
+          wipe-workspace: false
+    triggers:
+      - timed: "H 8 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=award-closed-briefs-{{ reminder.weeks }}-weeks
+              JOB=Notify buyers to award closed briefs after {{ reminder.weeks }} weeks {{ environment }}
+              ICON=:spaghetti:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ -n "$OFFSET_DAYS" ]; then
+            FLAGS="--offset-days=$OFFSET_DAYS"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run=true"
+          fi
+
+          if [ -n "$DATE_CLOSED" ]; then
+            FLAGS="$FLAGS --date-closed=$DATE_CLOSED"
+          fi
+
+          if [ -n "$BUYER_IDS" ]; then
+            FLAGS="$FLAGS --buyer-ids=$BUYER_IDS"
+          fi
+
+          docker run digitalmarketplace/scripts scripts/notify-buyers-to-award-closed-briefs.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} $NOTIFY_API_TOKEN $NOTIFY_TEMPLATE_ID $FLAGS
+{% endfor %}
+{% endfor %}
