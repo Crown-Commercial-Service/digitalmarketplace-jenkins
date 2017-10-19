@@ -90,132 +90,126 @@
           }
         }
 
-        lock('{{ application }}-preview-pipe') {
-          {% if application in dm_db_applications %}
-          stage('DB migration on preview') {
-            node {
-              build job: "database-migration-paas", parameters: [
-                string(name: "STAGE", value: "preview"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
-          }
-
-          stage('Functional tests - preview') {
-            milestone()
-            run_functional_tests("preview")
-            run_functional_tests("preview-legacy")
-            milestone()
-          }
-          {% endif %}
-
-          stage('Release to preview') {
-            node {
-              build job: "release-app-paas", parameters: [
-                string(name: "STAGE", value: "preview"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-              build job: "tag-application-deloyment", parameters: [
-                string(name: "STAGE", value: "preview"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
-          }
-
-          stage('Functional tests - preview') {
-            milestone()
-            run_functional_tests("preview")
-            run_functional_tests("preview-legacy")
-            milestone()
+        {% if application in dm_db_applications %}
+        stage('DB migration on preview') {
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
           }
         }
 
-        lock('{{ application }}-staging-pipe') {
-          {% if application in dm_db_applications %}
-          stage('DB migration on staging') {
-            milestone()
-            input(message: "Release to staging?")
-            milestone()
-            node {
-              build job: "database-migration-paas", parameters: [
-                string(name: "STAGE", value: "staging"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
-          }
+        stage('Functional tests - preview') {
+          milestone()
+          run_functional_tests("preview")
+          run_functional_tests("preview-legacy")
+          milestone()
+        }
+        {% endif %}
 
-          stage('Functional tests - staging') {
-            milestone()
-            run_functional_tests("staging")
-            milestone()
-          }
-          {% endif %}
-
-          stage('Release to staging') {
-            {% if application not in dm_db_applications %}
-            milestone()
-            input(message: "Release to staging?")
-            milestone()
-            {% endif %}
-            node {
-              build job: "release-app-paas", parameters: [
-                string(name: "STAGE", value: "staging"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-              build job: "tag-application-deloyment", parameters: [
-                string(name: "STAGE", value: "staging"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
-          }
-
-          stage('Functional tests - staging') {
-            milestone()
-            run_functional_tests("staging")
-            milestone()
+        stage('Release to preview') {
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deloyment", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
           }
         }
 
-        lock('{{ application }}-production-pipe') {
-          {% if application in dm_db_applications %}
-          stage('DB migration on production') {
-            milestone()
-            input(message: "Release to production?")
-            milestone()
-            node {
-              build job: "database-migration-paas", parameters: [
-                string(name: "STAGE", value: "production"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
-          }
-          {% endif %}
+        stage('Functional tests - preview') {
+          milestone()
+          run_functional_tests("preview")
+          run_functional_tests("preview-legacy")
+          milestone()
+        }
 
-          stage('Release to production') {
-            {% if application not in dm_db_applications %}
-            milestone()
-            input(message: "Release to production?")
-            milestone()
-            {% endif %}
-            node {
-              build job: "release-app-paas", parameters: [
-                string(name: "STAGE", value: "production"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-              build job: "tag-application-deloyment", parameters: [
-                string(name: "STAGE", value: "production"),
-                string(name: "APPLICATION_NAME", value: "{{ application }}"),
-                string(name: "RELEASE_NAME", value: "${releaseName}"),
-              ]
-            }
+        {% if application in dm_db_applications %}
+        stage('DB migration on staging') {
+          milestone()
+          input(message: "Release to staging?")
+          milestone()
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+
+        stage('Functional tests - staging') {
+          milestone()
+          run_functional_tests("staging")
+          milestone()
+        }
+        {% endif %}
+
+        stage('Release to staging') {
+          {% if application not in dm_db_applications %}
+          milestone()
+          input(message: "Release to staging?")
+          milestone()
+          {% endif %}
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deloyment", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+
+        stage('Functional tests - staging') {
+          milestone()
+          run_functional_tests("staging")
+          milestone()
+        }
+
+        {% if application in dm_db_applications %}
+        stage('DB migration on production') {
+          milestone()
+          input(message: "Release to production?")
+          milestone()
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
+        }
+        {% endif %}
+
+        stage('Release to production') {
+          {% if application not in dm_db_applications %}
+          milestone()
+          input(message: "Release to production?")
+          milestone()
+          {% endif %}
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deloyment", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
           }
         }
 {% endfor %}
