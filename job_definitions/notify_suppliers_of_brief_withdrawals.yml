@@ -2,7 +2,7 @@
 ---
 {% for environment in environments %}
 - job:
-    name: "notify-suppliers-of-brief_withdrawals-{{ environment }}"
+    name: "notify-suppliers-of-brief-withdrawals-{{ environment }}"
     display-name: "Notify suppliers that their responses have been cancelled when a brief has been withdrawn - {{ environment }}"
     project-type: freestyle
     description: "Send email notifications to supplier users if they have a completed application to a brief that has been withdrawn."
@@ -28,7 +28,7 @@
             predefined-parameters: |
               USERNAME=brief-withdrawals
               JOB=Notify suppliers of brief withdrawals {{ environment }}
-              ICON=:question:
+              ICON=:briefs:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -36,10 +36,8 @@
     builders:
       - shell: |
 
-          FLAGS=""
-
           if [ -n "$WITHDRAWN_DATE" ]; then
-            FLAGS="$FLAGS --withdrawn_date=$WITHDRAWN_DATE"
+            FLAGS="--withdrawn_date=$WITHDRAWN_DATE"
           fi
 
           if [ -n "$BRIEF_ID" ]; then
@@ -50,5 +48,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run --user $(id -u) digitalmarketplace/scripts scripts/notify-suppliers-of-brief-withdrawal.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" $NOTIFY_API_TOKEN 3e43a131-8399-4674-89d3-b4f80d2e07d4 $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-suppliers-of-brief-withdrawal.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" $NOTIFY_API_TOKEN 3e43a131-8399-4674-89d3-b4f80d2e07d4 $FLAGS
 {% endfor %}
