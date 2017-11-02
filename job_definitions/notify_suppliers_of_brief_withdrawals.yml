@@ -1,0 +1,52 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "notify-suppliers-of-brief-withdrawals-{{ environment }}"
+    display-name: "Notify suppliers that their responses have been cancelled when a brief has been withdrawn - {{ environment }}"
+    project-type: freestyle
+    description: "Send email notifications to supplier users if they have a completed application to a brief that has been withdrawn."
+    parameters:
+      - string:
+          name: WITHDRAWN_DATE
+          default: null
+          description: "Specify a given date, send all emails for that date"
+      - string:
+          name: BRIEF_ID
+          default: null
+          description: "Specify a single brief, requires withdrawn_date"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "List notifications that would be sent without sending the emails"
+    triggers:
+      - timed: "H 8 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=brief-withdrawals
+              JOB=Notify suppliers of brief withdrawals {{ environment }}
+              ICON=:briefs:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+
+          if [ -n "$WITHDRAWN_DATE" ]; then
+            FLAGS="--withdrawn_date=$WITHDRAWN_DATE"
+          fi
+
+          if [ -n "$BRIEF_ID" ]; then
+            FLAGS="$FLAGS --brief_id=$BRIEF_ID"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+
+          docker run digitalmarketplace/scripts scripts/notify-suppliers-of-brief-withdrawal.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" $NOTIFY_API_TOKEN 3e43a131-8399-4674-89d3-b4f80d2e07d4 $FLAGS
+{% endfor %}
