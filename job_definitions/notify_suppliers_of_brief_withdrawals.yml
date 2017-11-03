@@ -1,4 +1,5 @@
 {% set environments = ['preview', 'staging', 'production'] %}
+{% set NOTIFY_TEMPLATE_ID = '3e43a131-8399-4674-89d3-b4f80d2e07d4' %}
 ---
 {% for environment in environments %}
 - job:
@@ -10,7 +11,7 @@
       - string:
           name: WITHDRAWN_DATE
           default: null
-          description: "Specify a given date, send all emails for that date"
+          description: "Specify a given date, send all emails for that date (format: YYYY-MM-DD)"
       - string:
           name: BRIEF_ID
           default: null
@@ -28,7 +29,7 @@
             predefined-parameters: |
               USERNAME=brief-withdrawals
               JOB=Notify suppliers of brief withdrawals {{ environment }}
-              ICON=:briefs:
+              ICON=:streak:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -37,16 +38,16 @@
       - shell: |
 
           if [ -n "$WITHDRAWN_DATE" ]; then
-            FLAGS="--withdrawn_date=$WITHDRAWN_DATE"
+            PARAMS="$WITHDRAWN_DATE"
           fi
 
           if [ -n "$BRIEF_ID" ]; then
-            FLAGS="$FLAGS --brief_id=$BRIEF_ID"
+            PARAMS="$PARAMS $BRIEF_ID"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run digitalmarketplace/scripts scripts/notify-suppliers-of-brief-withdrawal.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" $NOTIFY_API_TOKEN 3e43a131-8399-4674-89d3-b4f80d2e07d4 $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-suppliers-of-brief-withdrawal.py '{{ environment }}' "$DM_DATA_API_TOKEN_{{ environment|upper }}" $NOTIFY_API_TOKEN {{ NOTIFY_TEMPLATE_ID }} $PARAMS $FLAGS --verbose
 {% endfor %}
