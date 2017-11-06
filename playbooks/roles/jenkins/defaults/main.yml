@@ -23,6 +23,7 @@ dm_applications:
   - buyer-frontend
   - supplier-frontend
   - admin-frontend
+  - router
 
 dm_db_applications:
   - api
@@ -104,6 +105,7 @@ jenkins_list_views:
       - release-briefs-frontend
       - release-brief-responses-frontend
       - release-buyer-frontend
+      - release-router
       - release-search-api
       - release-supplier-frontend
       - release-user-frontend
