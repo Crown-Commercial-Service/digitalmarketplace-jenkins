@@ -85,17 +85,38 @@ jenkins_list_views:
       - update-preview-index-alias
       - update-staging-index-alias
       - update-production-index-alias
-  - name: "Smoke tests"
+  - name: "Functional and smoke tests"
     jobs:
       - apps-are-up-preview
       - apps-are-up-production
       - apps-are-up-staging
+      - functional-tests-preview
+      - functional-tests-preview-legacy
+      - functional-tests-preview-service-submissions
+      - functional-tests-staging
+  - name: "Emails"
+    jobs:
+      - notify-buyers-to-award-closed-briefs-4-weeks-preview
+      - notify-buyers-to-award-closed-briefs-4-weeks-production
+      - notify-buyers-to-award-closed-briefs-8-weeks-preview
+      - notify-buyers-to-award-closed-briefs-8-weeks-production
+      - notify-buyers-when-requirements-close-preview
+      - notify-buyers-when-requirements-close-production
+      - notify-suppliers-of-dos-opportunities-production
+      - notify-suppliers-of-new-questions-answers-production
+      - notify-suppliers-of-brief-withdrawals-preview
+      - notify-suppliers-of-brief-withdrawals-production
+      - notify-suppliers-of-brief-withdrawals-staging
+      - upload-dos-opportunities-email-list-production
   - name: "Utils and toolkit"
     jobs:
       - build-scripts
       - publish-toolkit-documentation
+      - tag-application-deloyment
       - tag-dmapiclient
+      - tag-dmcontent-loader
       - tag-dmutils
+      - tag-frameworks
       - tag-toolkit
       - update-credentials
   - name: "Release"

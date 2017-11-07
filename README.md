@@ -10,15 +10,12 @@ We use Jenkins job builder for managing jobs. The best documentation for this is
 
 ## To deploy
 
-Run all ansible tasks
-```bash
-$ make jenkins
-````
-
-Run just tasks tagged as `jobs`
+To deploy changes, you must define the tags for which you wish to deploy e.g. Run tasks tagged as `jobs`
 ```bash
 $ make jenkins TAGS=jobs
 ```
+
+Available tags are defined in `/playbooks/roles/jenkins/tasks/main.yml`.
 
 To only update a specific Jenkins job
 ```bash
