@@ -85,6 +85,8 @@
           mkdir -p reports
           rm -f screenshot*
 
+          ./scripts/create_users.sh example
+
           bundle exec cucumber features --tags ~@wip {% for tag in job.tags %} --tags {{ tag }} {% endfor %} --color --format html --out reports/index.html --format pretty
       - conditional-step:
           condition-kind: build-cause
