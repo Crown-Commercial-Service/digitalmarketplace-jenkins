@@ -1,0 +1,128 @@
+{% set environment = "preview" %}
+---
+- job:
+    name: "visual-regression-{{ environment }}"
+    display-name: "Visual regression - {{ environment }}"
+    project-type: freestyle
+    description: "Run visual regression tests against {{ environment }}"
+    logrotate:
+      daysToKeep: 14
+      numToKeep: 50
+      artifactDaysToKeep: 14
+      artifactNumToKeep: 50
+    parameters:
+      - choice:
+          name: COMMAND
+          description: "Run the visual regression tests against {{ environment }}, or approve the last test run and make them the new reference images for the Digital Marketplace."
+          choices:
+            - test
+            - approve
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-visual-regression.git
+          credentials-id: github_com_and_enterprise
+          branches:
+            - "master"
+          wipe-workspace: false
+    wrappers:
+      - ansicolor
+    publishers:
+      - html-publisher:
+          name: "Visual Regression Test Report"
+          dir: backstop_data
+          files: html_report/index.html
+          keep-all: true
+          allow-missing: false
+          link-to-last-build: true
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=visual-regression
+              JOB=Visual regression tests
+              ICON=:sleuth_or_spy:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+    builders:
+      - conditional-step:
+          condition-kind: strings-match
+          condition-string1: ${ENV, var="COMMAND"}
+          condition-string2: test
+          condition-case-insensitive: true
+          steps:
+            - shell: rm -rf backstop_data/bitmaps_test
+
+      - shell: |
+
+          export DM_ENVIRONMENT="{{ environment }}"
+          export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+
+          export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
+          export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
+
+          export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ smoke_test_variables[environment].admin_email }}"
+          export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ smoke_test_variables[environment].admin_password }}"
+
+          export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[environment].buyer_email }}"
+          export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[environment].buyer_password }}"
+
+          curl ${DM_FRONTEND_DOMAIN}/_status
+          curl ${DM_FRONTEND_DOMAIN}/buyers/_status
+          curl ${DM_FRONTEND_DOMAIN}/suppliers/_status
+          curl ${DM_FRONTEND_DOMAIN}/suppliers/opportunities/_status
+          curl ${DM_FRONTEND_DOMAIN}/admin/_status
+          curl ${DM_FRONTEND_DOMAIN}/user/_status
+
+          docker run --rm -v $(pwd):/src \
+            -e DM_ENVIRONMENT -e DM_FRONTEND_DOMAIN \
+            -e DM_PRODUCTION_SUPPLIER_USER_EMAIL -e DM_PRODUCTION_SUPPLIER_USER_PASSWORD \
+            -e DM_PRODUCTION_BUYER_USER_EMAIL -e DM_PRODUCTION_BUYER_USER_PASSWORD \
+            -e DM_PRODUCTION_ADMIN_USER_EMAIL -e DM_PRODUCTION_ADMIN_USER_PASSWORD \
+            digitalmarketplace/backstopjs:1.0.0 $COMMAND --configPath=config.js
+
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            - condition-kind: current-status
+              condition-worst: SUCCESS
+              condition-best: SUCCESS
+            - condition-kind: strings-match
+              condition-string1: ${ENV, var="COMMAND"}
+              condition-string2: test
+              condition-case-insensitive: true
+          steps:
+            - trigger-builds:
+              - project: notify-slack
+                predefined-parameters: |
+                  USERNAME=visual-regression
+                  JOB=Visual regression tests
+                  ICON=:green_tick:
+                  STAGE={{ environment }}
+                  STATUS=SUCCESS
+                  URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
+                  CHANNEL=#dm-release
+
+      - conditional-step:
+          condition-kind: and
+          condition-operands:
+            - condition-kind: current-status
+              condition-worst: SUCCESS
+              condition-best: SUCCESS
+            - condition-kind: strings-match
+              condition-string1: ${ENV, var="COMMAND"}
+              condition-string2: approve
+              condition-case-insensitive: true
+          steps:
+            - trigger-builds:
+              - project: notify-slack
+                predefined-parameters: |
+                  USERNAME=visual-regression
+                  JOB=Visual regression tests
+                  ICON=:verified:
+                  STAGE={{ environment }}
+                  STATUS=APPROVED
+                  URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
+                  CHANNEL=#dm-release
+

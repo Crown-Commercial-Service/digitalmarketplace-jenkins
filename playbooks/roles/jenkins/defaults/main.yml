@@ -88,7 +88,7 @@ jenkins_list_views:
       - update-preview-index-alias
       - update-staging-index-alias
       - update-production-index-alias
-  - name: "Functional and smoke tests"
+  - name: "Functional, visual, and smoke tests"
     jobs:
       - apps-are-up-preview
       - apps-are-up-production
@@ -97,6 +97,7 @@ jenkins_list_views:
       - functional-tests-preview-legacy
       - functional-tests-preview-service-submissions
       - functional-tests-staging
+      - visual-regression-preview
   - name: "Emails"
     jobs:
       - notify-buyers-to-award-closed-briefs-4-weeks-preview
