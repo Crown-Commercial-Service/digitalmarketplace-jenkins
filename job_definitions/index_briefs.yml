@@ -11,7 +11,6 @@
           description: "Index name or alias to use (eg 'briefs-digital-outcomes-and-specialists')"
       - string:
           name: FRAMEWORKS
-          default: {{ search_config['briefs'][environment].frameworks }}
           description: >
             Comma-separated list of framework slugs that should be indexed
             (eg 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'). If
@@ -22,7 +21,7 @@
             Specify a mapping to create the index if it doesn't exist. If it does
             exist, the mapping for the index will be updated. There's no default here
             because using potentially-changed mappings should be done under manual control,
-            on a Production environment.
+            on the Production environment.
     triggers:
       - timed: "H 3 * * *"
     publishers:
