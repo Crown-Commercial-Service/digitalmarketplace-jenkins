@@ -8,11 +8,14 @@
     parameters:
       - string:
           name: ALIAS
-          default: {{ search_config[environment].default_index }}
+          default:
           description: "The name of the alias you're applying."
       - string:
           name: TARGET
-          description: "The name of the index you're applying the alias to."
+          description: >
+            The name of the index you're applying the alias to, e.g.
+            '{{search_config['briefs'][environment].default_index}}' or
+            '{{search_config['services'][environment].default_index}}'.
       - extended-choice:
           name: DELETE_OLD_INDEX
           type: radio

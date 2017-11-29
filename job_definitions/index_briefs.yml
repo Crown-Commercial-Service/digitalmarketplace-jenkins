@@ -1,0 +1,43 @@
+{% for environment in ['preview'] %}
+- job:
+    name: "index-briefs-{{ environment }}"
+    display-name: "Index briefs - {{ environment }}"
+    project-type: freestyle
+    description: "This imports all briefs (opportunities) in the current API database into the current Elasticsearch index."
+    parameters:
+      - string:
+          name: INDEX
+          default: {{ search_config['briefs'][environment].default_index }}
+          description: "Index name or alias to use (eg 'briefs-digital-outcomes-and-specialists')"
+      - string:
+          name: FRAMEWORKS
+          default: {{ search_config['briefs'][environment].frameworks }}
+          description: >
+            Comma-separated list of framework slugs that should be indexed
+            (eg 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'). If
+            no frameworks are specified then all currently published briefs will be indexed.
+      - string:
+          name: CREATE_WITH_MAPPING
+          description: >
+            Specify a mapping to create the index if it doesn't exist. If it does
+            exist, the mapping for the index will be updated. There's no default here
+            because using potentially-changed mappings should be done under manual control,
+            on a Production environment.
+    triggers:
+      - timed: "H 3 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=index-briefs
+              JOB=Index briefs {{ environment }} :jenkins_parrot:
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          docker run digitalmarketplace/scripts scripts/index-to-search-service.py briefs '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}" --create-with-mapping="${CREATE_WITH_MAPPING}"
+{% endfor %}
