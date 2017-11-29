@@ -154,13 +154,10 @@ search_config:
   briefs:
     preview:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks:
     staging:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks:
     production:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks:
   services:
     preview:
       default_index: g-cloud-9
