@@ -18,7 +18,6 @@
             no frameworks are specified then all currently published briefs will be indexed.
       - string:
           name: CREATE_WITH_MAPPING
-          default:
           description: >
             Specify a mapping to create the index if it doesn't exist. If it does
             exist, the mapping for the index will be updated. There's no default here

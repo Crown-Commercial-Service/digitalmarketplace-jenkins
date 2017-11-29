@@ -15,7 +15,6 @@
           description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8'). If no frameworks are specified then all currently published services will be indexed."
       - string:
           name: CREATE_WITH_MAPPING
-          default:
           description: >
             Specify a mapping to create the index if it doesn't exist. If it does
             exist, the mapping for the index will be updated. There's no default here
