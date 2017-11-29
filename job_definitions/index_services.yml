@@ -7,12 +7,20 @@
     parameters:
       - string:
           name: INDEX
-          default: {{ search_config[environment].default_index }}
-          description: "Index name to use (eg 'g-cloud-9-2017-05-22')"
+          default: {{ search_config['services'][environment].default_index }}
+          description: "Index name or alias to use (eg 'g-cloud-9-2017-05-22')"
       - string:
           name: FRAMEWORKS
-          default: {{ search_config[environment].frameworks }}
+          default: {{ search_config['services'][environment].frameworks }}
           description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8'). If no frameworks are specified then all currently published services will be indexed."
+      - string:
+          name: CREATE_WITH_MAPPING
+          default:
+          description: >
+            Specify a mapping to create the index if it doesn't exist. If it does
+            exist, the mapping for the index will be updated. There's no default here
+            because using potentially-changed mappings should be done under manual control,
+            on a Production environment.
     triggers:
       - timed: "H 2 * * *"
     publishers:
@@ -21,7 +29,7 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=index-services
-              JOB=Index services {{ environment }}
+              JOB=Index services {{ environment }} :jenkins_parrot:
               ICON=:alarm_clock:
               STAGE={{ environment }}
               STATUS=FAILED
@@ -29,5 +37,5 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts scripts/index-services.py '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}"
+          docker run digitalmarketplace/scripts scripts/index-to-search-service.py services '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}" --create-with-mapping="${CREATE_WITH_MAPPING}"
 {% endfor %}

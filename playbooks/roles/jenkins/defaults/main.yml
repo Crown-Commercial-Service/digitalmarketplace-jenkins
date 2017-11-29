@@ -78,6 +78,9 @@ jenkins_list_views:
       - index-services-preview
       - index-services-production
       - index-services-staging
+      - index-briefs-preview
+      - index-briefs-production
+      - index-briefs-staging
       - notify-buyers-when-requirements-close-preview
       - notify-buyers-when-requirements-close-production
       - snapshot-g7-stats-preview
@@ -148,14 +151,25 @@ app_urls:
     www: https://www.digitalmarketplace.service.gov.uk
 
 search_config:
-  preview:
-    default_index: g-cloud-9
-    frameworks: g-cloud-9
-  staging:
-    default_index: g-cloud-9
-    frameworks: g-cloud-9
-  production:
-    default_index: g-cloud-9
-    frameworks: g-cloud-9
+  briefs:
+    preview:
+      default_index: briefs-digital-outcomes-and-specialists
+      frameworks:
+    staging:
+      default_index: briefs-digital-outcomes-and-specialists
+      frameworks:
+    production:
+      default_index: briefs-digital-outcomes-and-specialists
+      frameworks:
+  services:
+    preview:
+      default_index: g-cloud-9
+      frameworks: g-cloud-9
+    staging:
+      default_index: g-cloud-9
+      frameworks: g-cloud-9
+    production:
+      default_index: g-cloud-9
+      frameworks: g-cloud-9
 
 jenkins_job_builder_pipeline_version: f24b9f5b0de03edd59b94061fa5182d11887403d
