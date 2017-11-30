@@ -181,7 +181,6 @@
         stage('Functional tests - preview') {
           milestone()
           run_functional_tests("preview")
-          run_functional_tests("preview-legacy")
           milestone()
         }
         {% endif %}
@@ -204,7 +203,6 @@
         stage('Functional tests - preview') {
           milestone()
           run_functional_tests("preview")
-          run_functional_tests("preview-legacy")
           milestone()
         }
 
