@@ -57,7 +57,6 @@ build_monitor_jobs:
   - apps-are-up-production
   - database-backup
   - functional-tests-preview
-  - functional-tests-preview-legacy
   - functional-tests-staging
   - index-services-preview
   - index-services-production
@@ -94,8 +93,6 @@ jenkins_list_views:
       - apps-are-up-production
       - apps-are-up-staging
       - functional-tests-preview
-      - functional-tests-preview-legacy
-      - functional-tests-preview-service-submissions
       - functional-tests-staging
       - visual-regression-preview
   - name: "Emails"
