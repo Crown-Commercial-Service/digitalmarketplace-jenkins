@@ -12,6 +12,8 @@
     pipeline:
       script: |
 
+        import jenkins.model.Jenkins
+
         def tag_release(tag) {
           try {
             sh("git config user.name 'Jenkins'")
@@ -54,6 +56,81 @@
                 input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
                 echo "Skipping failed functional tests on ${stage}."
                 return true
+              }
+            }
+          }
+        }
+
+        def run_visual_regression_tests(stage) {
+          def job_name = "visual-regression-${stage}"
+          def vr_job = null
+
+          waitUntil {
+            node {
+              vr_job = build job: job_name, parameters: [
+                string(name: "COMMAND", value: "test"),
+              ], propagate: false
+            }
+
+            def vr_job_result = vr_job.result
+            def vr_job_number = vr_job.number
+            vr_job = null
+
+            if (vr_job_result == 'SUCCESS') {
+                return true
+            } else {
+              echo "Visual regression tests build result: ${vr_job_result}"
+
+              timeout(time:1, unit:'DAYS') {
+                script {
+                  env.FAILED_TEST_ACTION = input message: 'Visual regression tests failed. Retry, approve, bypass?', parameters: [
+                    [
+                      $class: 'ChoiceParameterDefinition',
+                      choices: 'Retry\nApprove\nBypass',
+                      description: 'Failed visual regression tests action',
+                      name: 'action'
+                    ]
+                  ]
+                }
+
+                echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+              }
+
+              if (env.FAILED_TEST_ACTION == 'Retry') {
+                echo "Retrying visual regression tests on ${stage}."
+                return false
+
+              } else if (env.FAILED_TEST_ACTION == 'Approve') {
+                def test_job = Jenkins.instance.getItemByFullName(job_name)
+                def test_job_last_build_number = test_job.getLastBuild().getNumber()
+                test_job = null
+
+                echo "Build triggered by this pipeline run: ${vr_job_number}. Last build: ${test_job_last_build_number}"
+
+                if (test_job_last_build_number == vr_job_number) {
+                  echo "Verified that the last visual regression job built was triggered by this pipeline. Approving."
+                  try {
+                    node {
+                      build job: job_name, parameters: [
+                        string(name: "COMMAND", value: "approve"),
+                      ]
+                    }
+
+                  } catch(inside_error) {
+                    echo "Approving visual regression tests failed: ${inside_error}"
+                    return false
+                  }
+
+                  return true
+                } else {
+                  input(message: "Visual regression tests have run elsewhere since this pipeline triggered the job. They will be re-run here when you proceed.")
+                  return false
+                }
+              } else if (env.FAILED_TEST_ACTION == 'Bypass') {
+                input(message: "Are you sure you want to bypass the visual regression tests? It's very likely you want to retry them (eg if a page failed to load) or approve them (if the changes you made were intentional or data related).")
+                echo "Skipping failed visual regression tests on ${stage}."
+                return true
+
               }
             }
           }
@@ -128,6 +205,12 @@
           milestone()
           run_functional_tests("preview")
           run_functional_tests("preview-legacy")
+          milestone()
+        }
+
+        stage('Visual regression tests - preview') {
+          milestone()
+          run_visual_regression_tests("preview")
           milestone()
         }
 
