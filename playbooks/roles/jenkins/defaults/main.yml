@@ -64,6 +64,7 @@ build_monitor_jobs:
   - notify-suppliers-of-dos-opportunities-production
   - notify-suppliers-of-new-questions-answers-production
   - upload-dos-opportunities-email-list-production
+  - visual-regression-preview
 
 jenkins_list_views:
   - name: "Data"
