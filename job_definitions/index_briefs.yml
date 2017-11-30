@@ -1,4 +1,4 @@
-{% for environment in ['preview'] %}
+{% for environment in ['preview', 'staging', 'production'] %}
 - job:
     name: "index-briefs-{{ environment }}"
     display-name: "Index briefs - {{ environment }}"
