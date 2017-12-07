@@ -96,6 +96,7 @@
                   build job: "index-services-{{ environment }}",
                   parameters: [
                     string(name: 'INDEX', value: "${INDEX_NAME}"),
+                    string(name: 'CREATE_WITH_MAPPING', value: "{{ search_config['services'][environment].default_mapping_name }}"),
                   ]
                 }
                 stage('Update index alias'){
@@ -113,6 +114,7 @@
                   build job: "index-briefs-{{ environment }}",
                   parameters: [
                     string(name: 'INDEX', value: "${INDEX_NAME}"),
+                    string(name: 'CREATE_WITH_MAPPING', value: "{{ search_config['briefs'][environment].default_mapping_name }}"),
                   ]
                 }
                 stage('Update index alias'){
