@@ -1,6 +1,9 @@
+{% set environments = ['production'] %}
+---
+{% for environment in environments %}
 - job:
-    name: "notify-suppliers-of-dos-opportunities-production"
-    display-name: "Notify suppliers of DOS opportunities - production"
+    name: "notify-suppliers-of-dos-opportunities-{{ environment }}"
+    display-name: "Notify suppliers of DOS opportunities - {{ environment }}"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
     parameters:
@@ -14,7 +17,9 @@
       - choice:
           name: MAILCHIMP_LIST_ID
           choices:
+            {% if environment == "production" %}
             - production-list
+            {% endif %}
             - test-list
           description: "To send the email to the briefs team instead of production users then choose 'test-list'"
       - choice:
@@ -39,19 +44,14 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=dos-opportunities
-              JOB=Notify suppliers of the latest DOS opportunities - production
+              JOB=Notify suppliers of the latest DOS opportunities - {{ environment }}
               ICON=:briefs:
-              STAGE=production
+              STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-release
     builders:
       - shell: |
-          [ -d venv ] || virtualenv venv
-
-          . ./venv/bin/activate
-          pip install -r requirements.txt
-
           if [ "$MAILCHIMP_LIST_ID" = "test-list" ]; then
             FLAGS="--list_id=096e52cebb"
           fi
@@ -64,4 +64,5 @@
             FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
           fi
 
-          ./scripts/send_dos_opportunities_email.py "production" "$DM_DATA_API_TOKEN_PRODUCTION" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
+          docker run digitalmarketplace/scripts scripts/send_dos_opportunities_email.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
+{% endfor %}
