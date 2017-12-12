@@ -37,11 +37,6 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          [ -d venv ] || virtualenv venv
-
-          . ./venv/bin/activate
-          pip install -r requirements.txt
-
           if [ -n "$DATE_CLOSED" ]; then
             FLAGS="--date-closed=$DATE_CLOSED"
           fi
@@ -50,5 +45,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          ./scripts/notify-buyers-when-requirements-close.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --email-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-buyers-when-requirements-close.py '{{ environment }}' --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --email-api-key="$MANDRILL_API_KEY_{{ environment|upper }}" $FLAGS
 {% endfor %}
