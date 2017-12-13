@@ -44,3 +44,14 @@ docker run digitalmarketplace/scripts scripts/my-amazing-script.py arg1 arg2 ...
 This removes the need for activating a virtualenv or installing requirements with pip.
 
 [More information on running scripts with Docker](https://github.com/alphagov/digitalmarketplace-scripts#running-scripts-with-docker)
+
+
+## Plugins
+
+The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci.marketplace.team/pluginManager/installed (dependencies
+are greyed out on the dashboard, and are not included in the `main.yml` list).
+
+To upgrade a plugin (for example, to address a security vulnerability), tick the relevant box on the Updates panel of the plugins dashboard, and
+ click `Download now and install after restart` and follow the instructions given.
+
+ Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
