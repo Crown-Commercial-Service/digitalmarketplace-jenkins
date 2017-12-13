@@ -29,20 +29,24 @@ dm_db_applications:
   - api
 
 jenkins_plugins:
+  - ansicolor
+  - build-monitor-plugin
+  - build-name-setter
+  - conditional-buildstep
+  - cvs
+  - extended-choice-parameter
   - git
   - github
   - github-oauth
-  - conditional-buildstep
+  - greenballs
+  - htmlpublisher
+  - lockable-resources
+  - nodejs
   - parameterized-trigger
   - postbuildscript
-  - build-monitor-plugin
-  - nodejs
-  - ansicolor
-  - htmlpublisher
-  - greenballs
-  - build-name-setter
-  - extended-choice-parameter
-  - lockable-resources
+  - rebuild
+  - translation
+  - workflow-aggregator  # aka 'Pipeline' suite
 
 jenkins_config_templates:
   - config.xml
