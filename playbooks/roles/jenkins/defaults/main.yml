@@ -30,9 +30,11 @@ dm_db_applications:
 
 jenkins_plugins:
   - ansicolor
+  - blueocean
   - build-monitor-plugin
   - build-name-setter
   - conditional-buildstep
+  - cvs
   - extended-choice-parameter
   - git
   - github
@@ -43,6 +45,10 @@ jenkins_plugins:
   - nodejs
   - parameterized-trigger
   - postbuildscript
+  - rebuild
+  - translation
+  - workflow-aggregator  # aka 'Pipeline' suite
+  - ws-cleanup
 
 jenkins_config_templates:
   - config.xml
