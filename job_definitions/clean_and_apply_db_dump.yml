@@ -64,11 +64,14 @@
               }
 
               stage('Import and clean lastest production db-dump') {
-                sh('''
-                  pyenv local 3.6.2
-                  make requirements
-                  make import-and-clean-db-dump
-                ''')
+                sh(
+                  script: '''
+                    pyenv local 3.6.2
+                    make requirements
+                    make import-and-clean-db-dump
+                  ''',
+                  returnStdout: true
+                )
                 env.DUMP_ALEMBIC_VERSION = sh(
                   script: "psql -qtA -d postgres://postgres:@localhost:63306/postgres -c 'SELECT version_num FROM alembic_version ORDER BY version_num DESC LIMIT 1'",
                   returnStdout: true
