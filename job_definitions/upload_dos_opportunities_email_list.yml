@@ -26,9 +26,4 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          [ -d venv ] || virtualenv venv
-
-          . ./venv/bin/activate
-          pip install -r requirements.txt
-
-          ./scripts/upload_dos_opportunities_email_list.py "production" "$DM_DATA_API_TOKEN_PRODUCTION" "jenkins" "$MAILCHIMP_API_TOKEN"
+          docker run digitalmarketplace/scripts scripts/upload_dos_opportunities_email_list.py "production" "$DM_DATA_API_TOKEN_PRODUCTION" "jenkins" "$MAILCHIMP_API_TOKEN"
