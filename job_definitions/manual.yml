@@ -14,8 +14,4 @@
       - pollscm: "H/2 * * * *"
     builders:
       - shell: |
-          [ -x /tmp/dm-manual-venv/bin/pip ] || virtualenv /tmp/dm-manual-venv
-          . /tmp/dm-manual-venv/bin/activate
-
-          pip install -r requirements.txt
           make clean html pages
