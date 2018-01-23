@@ -16,10 +16,10 @@
       - string:
           name: CREATE_WITH_MAPPING
           description: >
-            Specify a mapping to create the index if it doesn't exist. If it does
-            exist, the mapping for the index will be updated. There's no default here
-            because using potentially-changed mappings should be done under manual control,
-            on a Production environment.
+            Create the named index using mapping <mapping>. There's no default here, as
+            creating indexes should be done under user control on the Production environment.
+            This mapping is a filename (without .json suffix) as would be found by the
+            search-api in its digitalmarketplace-search-api/mappings directory.
     triggers:
       - timed: "H 2 * * *"
     publishers:
