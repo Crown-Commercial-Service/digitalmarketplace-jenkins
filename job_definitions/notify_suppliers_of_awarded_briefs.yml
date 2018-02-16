@@ -15,7 +15,7 @@
       - string:
           name: BRIEF_RESPONSE_IDS
           default: null
-          description: "List of BriefResponse IDs to be emailed (e.g. following a failure)"
+          description: "Comma-separated list of BriefResponse IDs to be emailed (e.g. '1234,5678')"
       - bool:
           name: DRY_RUN
           default: false
