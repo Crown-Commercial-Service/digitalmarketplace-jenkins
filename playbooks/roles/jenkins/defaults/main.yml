@@ -108,6 +108,8 @@ jenkins_list_views:
       - notify-buyers-to-award-closed-briefs-8-weeks-production
       - notify-buyers-when-requirements-close-preview
       - notify-buyers-when-requirements-close-production
+      - notify-suppliers-of-awarded-briefs-preview
+      - notify-suppliers-of-awarded-briefs-production
       - notify-suppliers-of-dos-opportunities-production
       - notify-suppliers-of-new-questions-answers-production
       - notify-suppliers-of-brief-withdrawals-preview
