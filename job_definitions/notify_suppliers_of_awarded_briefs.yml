@@ -36,12 +36,12 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          if [ -n "AWARDED_AT" ]; then
-            FLAGS="--awarded_at=AWARDED_AT"
+          if [ -n "$AWARDED_AT" ]; then
+            FLAGS="--awarded_at=$AWARDED_AT"
           fi
 
-          if [ -n "BRIEF_RESPONSE_IDS" ]; then
-            FLAGS="$FLAGS --brief_response_ids=BRIEF_RESPONSE_IDS"
+          if [ -n "$BRIEF_RESPONSE_IDS" ]; then
+            FLAGS="$FLAGS --brief_response_ids=$BRIEF_RESPONSE_IDS"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
