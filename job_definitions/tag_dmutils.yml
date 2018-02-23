@@ -1,4 +1,4 @@
-{% set packages = ['utils', 'apiclient', 'content-loader'] %}
+{% set packages = ['utils', 'apiclient', 'content-loader', 'test-utils'] %}
 ---
 {% for package in packages %}
 - job:
