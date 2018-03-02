@@ -2,7 +2,7 @@
 
 - name: Download CloudFoundry Debian package
   get_url:
-    url: "https://cli.run.pivotal.io/stable?release=debian64&source=github"
+    url: "https://packages.cloudfoundry.org/stable?release=debian64&version=6.32.0&source=github-rel"
     dest: /tmp/cloudfoundry-cli.deb
   register: download_result
 
