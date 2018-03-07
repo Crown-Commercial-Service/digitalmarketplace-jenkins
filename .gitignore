@@ -1,4 +1,5 @@
-/venv
+/venv*
 .envrc
 requirements.txt.md5
 *.retry
+local.nix
