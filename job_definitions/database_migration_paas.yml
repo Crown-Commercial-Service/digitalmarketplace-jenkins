@@ -22,7 +22,23 @@
           description: "Release name (eg 'release-42') to run migrations from"
     pipeline:
       script: |
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+                parameters: [
+                  string(name: 'USERNAME', value: "database-migration-paas"),
+                  string(name: 'ICON', value: icon),
+                  string(name: 'JOB', value: "Run database migrations for ${APPLICATION_NAME} on ${STAGE}"),
+                  string(name: 'CHANNEL', value: "#dm-release"),
+                  string(name: 'PROJECT', value: "${APPLICATION_NAME}"),
+                  text(name: 'STAGE', value: "${STAGE}"),
+                  text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/tree/${RELEASE_NAME}|${RELEASE_NAME}>"),
+                  text(name: 'STATUS', value: status),
+                  text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                ]
+        }
+
         node {
+
             try {
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
 
@@ -52,6 +68,8 @@
                                 if (taskStatus == 'FAILED') {
                                     sh("cf logs --recent ${APPLICATION_NAME}-db-migration")
                                     throw new Exception('Database migration task failed')
+                                } else if (taskStatus == 'SUCCEEDED') {
+                                    notify_slack(':duck:', 'SUCCESS')
                                 }
                                 return (taskStatus == 'SUCCEEDED');
                             }
@@ -62,6 +80,7 @@
             } catch(err) {
                 currentBuild.result = 'FAILURE'
                 echo "Error: ${err}"
+                notify_slack(':kaboom:', 'FAILED')
             } finally {
                 sh('make paas-clean')
             }
