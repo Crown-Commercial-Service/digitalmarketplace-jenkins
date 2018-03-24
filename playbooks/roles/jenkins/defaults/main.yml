@@ -127,6 +127,7 @@ jenkins_list_views:
       - tag-frameworks
       - tag-toolkit
       - update-credentials
+      - rotate-api-tokens
   - name: "Release"
     jobs:
       - release-api

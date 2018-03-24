@@ -1,0 +1,113 @@
+{#
+  Our apps have to be deployed in a specific order when recycling tokens: Search API first, then Data API, then the frontend apps.
+  Any of our frontend apps can talk talk to any of our APIs. The Data API can talk to the Search API. The Search API doesn't talk to anything else.
+  Our APIs receive a list of tokens they should accept. On top of this, apps that need to talk to an API use the _first_ token from the list of tokens as the one they'll use to authenticate.
+  Therefore, any API that receives requests from some other app needs to have their list of accepted tokens updated before any app starts using one of the new tokens for authentication.
+  As the Search API doesn't talk to the Data API, we can update it safely first.
+  After that, the Data API can safely be updated as the Search API will now accept the new token it will receive.
+  After both of those are updated, all of the frontend apps can be updated simultaneously as both APIs accept new tokens.
+  When removing the old tokens, all apps could theoretically be updated simultaneously as they'll all be using and accepting the new tokens for authentication, but we repeat the same deployment schedule for the sake of simplicity.
+#}
+{% set stages = [{'name': 'Add new tokens', 'command': 'add-new'}, {'name': 'Remove old tokens', 'command': 'remove-old'}] %}
+{% set app_groups = [['search-api'], ['api'], ['admin-frontend', 'briefs-frontend', 'brief-responses-frontend', 'buyer-frontend', 'supplier-frontend', 'user-frontend']] %}
+---
+- job:
+    name: rotate-api-tokens
+    display-name: "Rotate API tokens"
+    project-type: pipeline
+    description: Rotate Data and Search API tokens for a given environment.
+    disabled: false
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - staging
+            - production
+    pipeline:
+      script: |
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "rotate-api-tokens"),
+            string(name: 'ICON', value: icon),
+            string(name: 'JOB', value: "Rotate API tokens on ${STAGE}"),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            text(name: 'STAGE', value: "${STAGE}"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+        }
+
+{% for stage in stages %}
+        stage("{{ stage.name }}") {
+{% if loop.index == 1 %}
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
+{% endif %}
+          node {
+            try {
+              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ stage.command }}" "${STAGE}"')
+
+              notify_slack(':spinner:', '{{ stage.name }} - SUCCESS')
+
+            } catch(e) {
+              notify_slack(':kaboom:', '{{ stage.name }} - FAILED')
+              echo "Error caught"
+              currentBuild.result = 'FAILURE'
+              return
+            }
+          }
+        }
+
+        stage('Deploy') {
+          milestone()
+          waitUntil {
+            try {
+              input(message: "1/2: Do not continue until the Pull Request updating API tokens has been merged to master.")
+              input(message: "2/2: Have you definitely merged the dm-credentials Pull Request? Great. Go ahead.")
+              return true
+            } catch(error) {
+              input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. If not, click 'Proceed' to continue.")
+              return false
+            }
+          }
+          milestone()
+
+{% for app_group in app_groups %}
+          parallel(
+{% for app in app_group %}
+            "{{ app }}": {
+              stage("{{ app }}") {
+                build job: "release-app-paas", parameters: [
+                  string(name: "STAGE", value: "${STAGE}"),
+                  string(name: "APPLICATION_NAME", value: "{{ app }}")
+                ]
+              }
+            },
+{% endfor %}
+          )
+{% endfor %}
+        }
+
+{% if loop.index == 1 %}
+        stage("Update Jenkins Config") {
+          milestone()
+          waitUntil {
+            try {
+              input(message: "1/2: You should now prepare Jenkins for shutdown (Jenkins Homepage -> Manage Jenkins -> Prepare for Shutdown) and wait for all running jobs to finish. Then, you need to run `make jenkins TAGS=config` (with DM_CREDENTIALS_REPO defined) to synchronize Jenkins' environment with the just-merged tokens. Jenkins will then restart.")
+              input(message: "2/2: Have you run `make jenkins TAGS=config` (with DM_CREDENTIALS_REPO defined) and allowed Jenkins to restart? Great. Go ahead.")
+              return true
+            } catch(error) {
+              input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. If not, click 'Proceed' to continue.")
+              return false
+            }
+          }
+          milestone()
+        }
+{% endif %}
+{% endfor %}
+
+        stage("Notify Slack") {
+          notify_slack(':confetti_ball:', 'COMPLETE')
+        }
