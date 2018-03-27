@@ -34,7 +34,7 @@
                 source ${VIRTUALENV_ROOT}/bin/activate
                 ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
 
-                ./scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "{{ app_urls[environment].search_api }}" --stage="{{ environment }}" --delete-old-index=${DELETE_OLD_INDEX}
+                docker run -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" -e "DM_DATA_API_TOKEN_{{ environment|upper }}" digitalmarketplace/scripts scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "{{ app_urls[environment].search_api }}" --stage="{{ environment }}" --delete-old-index=${DELETE_OLD_INDEX}
               ''')
             }
           }
