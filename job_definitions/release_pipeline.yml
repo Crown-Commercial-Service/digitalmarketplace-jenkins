@@ -34,20 +34,19 @@
               }
             } catch(error) {
               echo "Functional tests failed: ${error}"
-              timeout(time:1, unit:'DAYS') {
-                script {
-                  env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
-                    parameters: [
-                      [
-                        $class: 'ChoiceParameterDefinition',
-                        choices: 'Retry\nSkip',
-                        description: 'Failed functional tests action',
-                        name: 'action'
-                      ]
+              script {
+                env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
+                  parameters: [
+                    [
+                      $class: 'ChoiceParameterDefinition',
+                      choices: 'Retry\nSkip',
+                      description: 'Failed functional tests action',
+                      name: 'action'
                     ]
-                }
-                echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+                  ]
               }
+              echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+
               if (env.FAILED_TEST_ACTION == 'Retry') {
                 echo "Retrying functional tests on ${stage}."
                 return false
@@ -81,20 +80,18 @@
             } else {
               echo "Visual regression tests build result: ${vr_job_result}"
 
-              timeout(time:1, unit:'DAYS') {
-                script {
-                  env.FAILED_TEST_ACTION = input message: 'Visual regression tests failed. Retry, approve, bypass?', parameters: [
-                    [
-                      $class: 'ChoiceParameterDefinition',
-                      choices: 'Retry\nApprove\nBypass',
-                      description: 'Failed visual regression tests action',
-                      name: 'action'
-                    ]
+              script {
+                env.FAILED_TEST_ACTION = input message: 'Visual regression tests failed. Retry, approve, bypass?', parameters: [
+                  [
+                    $class: 'ChoiceParameterDefinition',
+                    choices: 'Retry\nApprove\nBypass',
+                    description: 'Failed visual regression tests action',
+                    name: 'action'
                   ]
-                }
-
-                echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+                ]
               }
+
+              echo "Action chosen was ${env.FAILED_TEST_ACTION}"
 
               if (env.FAILED_TEST_ACTION == 'Retry') {
                 echo "Retrying visual regression tests on ${stage}."
