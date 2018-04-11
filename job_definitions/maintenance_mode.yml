@@ -36,7 +36,7 @@
         }
 
         stage("Create PR") {
-          currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${MODE}"
           node {
             try {
               if ("${MODE}" == "maintenance") {
@@ -46,10 +46,8 @@
               }
 
             } catch(e) {
-              notify_slack(':kaboom:', '${STAGE} - FAILED')
-              echo "Error caught"
-              currentBuild.result = 'FAILURE'
-              return
+              currentBuild.result = 'ABORTED'
+              error('Stopping early - possibly no change in maintenance mode, or script failed.')
             }
           }
         }
