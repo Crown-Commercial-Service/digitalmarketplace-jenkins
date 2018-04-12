@@ -59,17 +59,10 @@
                 }
 
                 lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                  if ("$RELEASE_NAME" == "" && "$APPLICATION_NAME" != "router") {
+                  if ("$RELEASE_NAME" == "") {
                     echo "No release specified. Detecting currently deployed release version of ${APPLICATION_NAME} ..."
 
-                    env.RELEASE_NAME = sh(script: '''
-                      APP_ROUTES=$(cf curl /v2/apps/\$(cf app ${APPLICATION_NAME} --guid)/routes)
-                      APP_SUBDOMAIN=$(echo \"\$APP_ROUTES\" | jq -crM ".resources[0].entity.host")
-                      APP_PATH=$(echo \"\$APP_ROUTES\" | jq -crM ".resources[0].entity.path")
-                      curl -s "https://\$APP_SUBDOMAIN.cloudapps.digital\$APP_PATH/_status" | jq -crM ".version"
-                      ''',
-                      returnStdout: true
-                    ).trim()
+                    env.RELEASE_NAME = sh(script: '''cf app ${APPLICATION_NAME} | grep 'docker image' | cut -d ':' -f 3''', returnStdout: true).trim()
 
                     echo "Current deployed version of ${APPLICATION_NAME}: ${RELEASE_NAME}"
                     currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"

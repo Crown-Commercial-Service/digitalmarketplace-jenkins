@@ -1,0 +1,77 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+- job:
+    name: maintenance-mode
+    display-name: "Toggle maintenance mode"
+    project-type: pipeline
+    description: Enable or disable maintenance mode on the Digital Marketplace
+    disabled: false
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - staging
+            - production
+      - choice:
+          name: MODE
+          choices:
+            - maintenance
+            - live
+
+    pipeline:
+      script: |
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "maintenance-mode"),
+            string(name: 'ICON', value: icon),
+            string(name: 'JOB', value: "Toggle maintenance mode on ${STAGE}"),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            text(name: 'STAGE', value: "${STAGE}"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+        }
+
+        stage("Create PR") {
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${MODE}"
+          node {
+            try {
+              if ("${MODE}" == "maintenance") {
+                sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "on" "${STAGE}"')
+              } else {
+                sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "off" "${STAGE}"')
+              }
+
+            } catch(e) {
+              currentBuild.result = 'ABORTED'
+              error('Stopping early - possibly no change in maintenance mode, or script failed.')
+            }
+          }
+        }
+
+        stage('Deploy') {
+          milestone()
+          waitUntil {
+            try {
+              input(message: "1/2: Do not continue until the Pull Request toggling maintenance mode has been merged to master.")
+              input(message: "2/2: Have you definitely merged the dm-aws Pull Request? Great. Go ahead.")
+              return true
+            } catch(error) {
+              input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. If not, click 'Proceed' to continue.")
+              return false
+            }
+          }
+          milestone()
+
+          build job: "release-app-paas", parameters: [
+            string(name: "STAGE", value: "${STAGE}"),
+            string(name: "APPLICATION_NAME", value: "router")
+          ]
+        }
+
+        stage("Notify Slack") {
+          notify_slack(':hammer_and_wrench:', 'COMPLETE')
+        }
