@@ -43,7 +43,7 @@
         owner=jenkins
         group=jenkins
   notify: restart jenkins
-  with_items: jenkins_config_templates
+  with_items: "{{ jenkins_config_templates }}"
   tags: config
 
 - name: Create temp authorized_keys file with shared public ssh key
