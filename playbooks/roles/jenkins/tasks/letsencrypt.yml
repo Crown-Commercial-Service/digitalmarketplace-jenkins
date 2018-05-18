@@ -6,7 +6,7 @@
   git: dest=/opt/certbot clone=yes repo=https://github.com/certbot/certbot force=yes
 
 - name: Request certificate file
-  shell: executable=/bin/bash /opt/certbot/certbot-auto certonly -m {{ letsencrypt_email }}{% for domain in nginx_domains %} -d {{ domain }}{% endfor %} --agree-tos --standalone --expand --standalone-supported-challenges http-01 --keep-until-expiring --non-interactive
+  shell: executable=/bin/bash /opt/certbot/certbot-auto certonly -m {{ letsencrypt_email }} -d {{ inventory_hostname }} --agree-tos --standalone --expand --standalone-supported-challenges http-01 --keep-until-expiring --non-interactive
 
 - name: Create ssl/certs dir
   file: path=/etc/nginx/ssl/certs mode=755 state=directory owner=root
@@ -15,7 +15,7 @@
   file: path=/etc/nginx/ssl/private mode=700 state=directory owner=root
 
 - name: Copy the TLS certificate
-  command: cp /etc/letsencrypt/live/{{ nginx_domains[0] }}/fullchain.pem /etc/nginx/ssl/certs/cert.pem
+  command: cp /etc/letsencrypt/live/{{ inventory_hostname }}/fullchain.pem /etc/nginx/ssl/certs/cert.pem
   notify: reload nginx
 
 - name: Set TLS cert permissions
@@ -23,7 +23,7 @@
   notify: reload nginx
 
 - name: Copy the TLS key
-  command: cp /etc/letsencrypt/live/{{ nginx_domains[0] }}/privkey.pem /etc/nginx/ssl/private/privkey.pem
+  command: cp /etc/letsencrypt/live/{{ inventory_hostname }}/privkey.pem /etc/nginx/ssl/private/privkey.pem
   notify: reload nginx
 
 - name: Set TLS key permissions
