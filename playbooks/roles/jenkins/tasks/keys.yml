@@ -1,0 +1,15 @@
+---
+- set_fact:  # The authorized_key module does accept URLs, but only one at a time when passed a multiline set of
+             # keys, so we have to do the lookup ourselves and build a list of all the keys we want.
+    ssh_keys: "{{ ssh_keys|default([jenkins_2_public_key])
+      + query('url', 'https://github.com/' ~ item.name ~ '.keys', split_lines=True) }}"
+  with_items:
+    - "{{ jenkins_github_users }}"
+  tags: keys
+
+- name: Add developers' public ssh keys to authorized_keys file
+  authorized_key:
+    key: "{{ ssh_keys|join('\n') }}"
+    user: ubuntu
+    exclusive: yes
+  tags: keys

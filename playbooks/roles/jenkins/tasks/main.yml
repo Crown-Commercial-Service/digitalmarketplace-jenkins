@@ -46,6 +46,8 @@
 
 - import_tasks: bootstrap.yml
   tags: [bootstrap]
+- import_tasks: keys.yml
+  tags: [keys]
 - import_tasks: tools.yml
   tags: [tools]
 - import_tasks: letsencrypt.yml

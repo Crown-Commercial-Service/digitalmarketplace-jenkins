@@ -45,22 +45,3 @@
   notify: restart jenkins
   with_items: "{{ jenkins_config_templates }}"
   tags: config
-
-- name: Create temp authorized_keys file with shared public ssh key
-  copy: src=/{{ lookup('env', 'DM_CREDENTIALS_REPO') }}/aws-keys/ci.pub dest=/home/ubuntu/.ssh/authorized_keys_temp mode=600 owner=ubuntu group=ubuntu
-  tags: config
-
-- name: Add dev's public ssh keys to temp authorized_keys file
-  shell: >
-    executable=/bin/bash
-    set -o pipefail &&
-    curl -s https://api.github.com/users/{{ item.name }}/keys |
-    jq -er '.[] | select(.id=={{ item.key_id }}) | .key' |
-    awk '{print $0 " {{ item.name }}"}' >>
-    /home/ubuntu/.ssh/authorized_keys_temp
-  with_items: jenkins_github_users
-  tags: config
-
-- name: Replace authorized_keys with temp authorized_keys
-  command: mv /home/ubuntu/.ssh/authorized_keys_temp /home/ubuntu/.ssh/authorized_keys
-  tags: config
