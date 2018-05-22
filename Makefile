@@ -33,4 +33,5 @@ jenkins: venv ## Run Jenkins playbook
 	ANSIBLE_CONFIG=playbooks/ansible.cfg ${VIRTUALENV_ROOT}/bin/ansible-playbook \
 		-i playbooks/hosts playbooks/jenkins_playbook.yml \
 		-e @$$TEMPFILE \
+		-e dm_credentials_repo="$$(realpath ${DM_CREDENTIALS_REPO})" \
 		--tags "${TAGS}" -e "jobs=${JOBS}"

@@ -16,20 +16,20 @@
 - name: Decrypt Github key for jenkins user
   become: no
   local_action: >
-    shell ${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/github/github_com_and_enterprise.enc >
-    ${DM_CREDENTIALS_REPO}/github/github_com_and_enterprise &&
-    chmod 600 ${DM_CREDENTIALS_REPO}/github/github_com_and_enterprise
+    shell {{ dm_credentials_repo }}/sops-wrapper -d {{ dm_credentials_repo }}/github/github_com_and_enterprise.enc >
+    {{ dm_credentials_repo }}/github/github_com_and_enterprise &&
+    chmod 600 {{ dm_credentials_repo }}/github/github_com_and_enterprise
   tags: config
 
 - name: Copy Github keys for jenkins user
   copy: src={{ item.from }} dest=/var/lib/jenkins/.ssh/{{ item.to }} mode=600 owner=jenkins
   tags: config
   with_items:
-    - { from: "{{ github_com_and_enterprise_private_key }}", to: "github_com_and_enterprise" }
+    - { from: "{{ dm_credentials_repo }}/github/github_com_and_enterprise", to: "github_com_and_enterprise" }
 
 - name: Remove decrypted Github key for jenkins user
   become: no
-  local_action: shell rm ${DM_CREDENTIALS_REPO}/github/github_com_and_enterprise
+  local_action: "shell rm {{ dm_credentials_repo }}/github/github_com_and_enterprise"
   tags: config
 
 - name: Setup Jenkins config directory
