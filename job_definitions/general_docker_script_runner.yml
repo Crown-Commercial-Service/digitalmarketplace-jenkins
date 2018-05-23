@@ -1,0 +1,33 @@
+- job:
+    name: "docker script runner"
+    display-name: "General Docker script runner"
+    project-type: freestyle
+    description: "Easily pass commands to the digitalmarketplace/scripts. Makes it easy to run scripts that don't have a specific job."
+    disabled: false
+    parameters:
+      - string:
+          name: RUN_COMMAND
+          description: "The command to run against the digitalmarkeplace/scripts Docker image"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=General docker script runner
+              JOB=See build for command run
+              ICON=:whale:
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=General docker script runner
+              JOB=See build for command run
+              ICON=:railfail:
+              STATUS=FAILURE
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          docker run digitalmarketplace/scripts $RUN_COMMAND
