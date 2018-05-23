@@ -1,48 +1,10 @@
 ---
-- name: Add Jenkins apt repository key.
-  apt_key:
-    url: "{{ jenkins_repo_key_url }}"
-    state: present
-  tags: jenkins
-
-- name: Add Jenkins apt repository.
-  apt_repository:
-    repo: "{{ jenkins_repo_url }}"
-    state: present
-    update_cache: yes
-  tags: jenkins
-
-- name: Ensure latest release of Jenkins is installed.
-  apt: pkg=jenkins state=latest update_cache=yes
-  notify: restart jenkins
-  tags: jenkins
-
-- name: Ensure Jenkins is started and runs on startup.
-  service: name=jenkins state=started enabled=yes
-
 - name: Remove existing Jenkins config
   file: path=/data/jenkins/{{ item }} state=absent
   notify: restart jenkins
-  with_items: jenkins_config_templates
+  with_items:
+   - "{{ jenkins_config_templates }}"
   tags: remove_config
-
-- name: Wait for Jenkins to start up before proceeding.
-  shell: curl --head --silent http://{{ jenkins_hostname }}:8080/cli/
-  register: result
-  until: result.stdout.find("200 OK") != -1
-  retries: "{{ jenkins_connection_retries }}"
-  delay: "{{ jenkins_connection_delay }}"
-  changed_when: false
-
-- name: Get the jenkins-cli jarfile from the Jenkins server.
-  get_url:
-    url: "http://{{ jenkins_hostname }}:8080/jnlpJars/jenkins-cli.jar"
-    dest: "{{ jenkins_jar_location }}"
-  register: jarfile_get
-  until: "'OK' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
-  retries: 5
-  delay: 10
-  tags: jenkins
 
 - import_tasks: bootstrap.yml
   tags: [bootstrap]
@@ -50,12 +12,12 @@
   tags: [keys]
 - import_tasks: tools.yml
   tags: [tools]
-- import_tasks: letsencrypt.yml
-  tags: [letsencrypt]
 - import_tasks: nginx.yml
   tags: [nginx]
-- import_tasks: jobs.yml
-  tags: [jobs]
+- import_tasks: letsencrypt.yml
+  tags: [letsencrypt]
+- import_tasks: jenkins.yml
+  tags: [jenkins]
 - import_tasks: gdrive.yml
   tags: [gdrive]
 - import_tasks: docker.yml
@@ -64,7 +26,11 @@
   tags: [paas,cloudfoundry]
 - import_tasks: plugins.yml
   tags: [plugins]
-- import_tasks: config.yml
+- import_tasks: config.yml  # must come after plugins, otherwise we are configuring plugins that are not installed!
   tags: [config]
+
 - import_tasks: sops.yml
   tags: [sops]
+
+- import_tasks: jobs.yml
+  tags: [jobs]
