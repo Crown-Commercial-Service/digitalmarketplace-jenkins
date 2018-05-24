@@ -141,6 +141,9 @@ jenkins_list_views:
       - release-user-frontend
       - database-migration-paas
       - release-app-paas
+  - name: "Framework lifecycle jobs"
+    jobs:
+      - notify-suppliers-whether-application-made-for-framework-production
 
 app_urls:
   preview:
