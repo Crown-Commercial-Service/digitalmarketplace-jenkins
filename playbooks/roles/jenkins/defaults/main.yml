@@ -129,6 +129,7 @@ jenkins_list_views:
       - update-credentials
       - rotate-api-tokens
       - rotate-production-notify-callback-token
+      - virus_scan_s3_bucket
   - name: "Release"
     jobs:
       - release-api
