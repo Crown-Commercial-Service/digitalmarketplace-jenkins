@@ -5,33 +5,6 @@
             backup=no
   tags: config
 
-- name: Setup Jenkins SSH directory
-  file: path=/var/lib/jenkins/.ssh state=directory owner=jenkins group=jenkins
-  tags: config
-
-- name: Setup Jenkins SSH config
-  copy: src=jenkins_ssh_config dest=/var/lib/jenkins/.ssh/config owner=jenkins mode=600
-  tags: config
-
-- name: Decrypt Github key for jenkins user
-  become: no
-  local_action: >
-    shell {{ dm_credentials_repo }}/sops-wrapper -d {{ dm_credentials_repo }}/github/github_com_and_enterprise.enc >
-    {{ dm_credentials_repo }}/github/github_com_and_enterprise &&
-    chmod 600 {{ dm_credentials_repo }}/github/github_com_and_enterprise
-  tags: config
-
-- name: Copy Github keys for jenkins user
-  copy: src={{ item.from }} dest=/var/lib/jenkins/.ssh/{{ item.to }} mode=600 owner=jenkins
-  tags: config
-  with_items:
-    - { from: "{{ dm_credentials_repo }}/github/github_com_and_enterprise", to: "github_com_and_enterprise" }
-
-- name: Remove decrypted Github key for jenkins user
-  become: no
-  local_action: "shell rm {{ dm_credentials_repo }}/github/github_com_and_enterprise"
-  tags: config
-
 - name: Setup Jenkins config directory
   file: path=/data/jenkins state=directory owner=jenkins group=jenkins
   tags: config
