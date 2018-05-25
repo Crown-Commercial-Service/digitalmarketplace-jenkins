@@ -42,13 +42,17 @@
               USERNAME=Jenkins
               JOB=Virus scan S3 bucket
               ICON=:can-of-worms:
-              STATUS=FAILURE
+              STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-release
     builders:
       - shell: |
+          if [ -n "$SINCE" ]; then
+            FLAGS="--since=$SINCE"
+          fi
+
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py ${BUCKET} --prefix="${PREFIX}" --host="${HOST}" --port="${PORT}" --since="${SINCE}" ${FLAGS}
+          docker run digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py ${BUCKET} --prefix="${PREFIX}" --host="${HOST}" --port="${PORT}" ${FLAGS}
