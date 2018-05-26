@@ -1,0 +1,89 @@
+{# By default this job is only parameterized for production credential rotation, as that is the only environment that Notify interacts with. #}
+{# If a preview or staging credential is exposed, this job can be edited to allow running it against those stages. #}
+{% set job_stages = [{'name': 'Add new token', 'command': 'add-new-callback'}, {'name': 'Remove old token', 'command': 'remove-old-callback'}] %}
+{% set environments = ['production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: rotate-{{ environment }}-notify-callback-token
+    display-name: "Rotate {{ environment }} Notify callback token"
+    project-type: pipeline
+    description: Rotate the {{ environment }} Notify callback token.
+    disabled: false
+    concurrent: false
+    pipeline:
+      script: |
+        def notify_slack(icon, status) {
+          build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "rotate-api-tokens"),
+            string(name: 'ICON', value: icon),
+            string(name: 'JOB', value: "Rotate Notify callback token for {{ environment }}"),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            text(name: 'STAGE', value: "{{ environment }}"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+        }
+
+{% for job_stage in job_stages %}
+        stage("{{ job_stage.name }}") {
+          node {
+            try {
+              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ job_stage.command }}" "{{ environment }}"')
+
+              notify_slack(':spinner:', '{{ job_stage.name }} - SUCCESS')
+
+            } catch(e) {
+              notify_slack(':kaboom:', '{{ job_stage.name }} - FAILED')
+              echo "Error caught"
+              currentBuild.result = 'FAILURE'
+              return
+            }
+          }
+        }
+
+        stage('Checkpoint') {
+          milestone()
+          waitUntil {
+            try {
+              input(message: "1/2: Do not continue until the Pull Request updating the Notify callback token has been merged to master.")
+              input(message: "2/2: Have you definitely merged the dm-credentials Pull Request? Great. Go ahead.")
+              return true
+            } catch(error) {
+              input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. If not, click 'Proceed' to continue.")
+              return false
+            }
+          }
+          milestone()
+        }
+
+        stage('Deploy API') {
+          build job: "release-app-paas", parameters: [
+            string(name: "STAGE", value: "{{ environment }}"),
+            string(name: "APPLICATION_NAME", value: "api")
+          ]
+        }
+
+{% if loop.index == 1 and environment == 'production' %}
+        stage("Update token in Notify") {
+          milestone()
+          waitUntil {
+            try {
+              input(message: "1/2: You must now update the token Notify uses to post callbacks to the API under the Digital Marketplace team at https://www.notifications.service.gov.uk/accounts. *Do not* continue with this pipeline until you have configured Notify to use the new token.")
+              input(message: "2/2: Have you definitely configured Notify to use the new callback token? Great. Go ahead.")
+              return true
+            } catch(error) {
+              input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. If not, click 'Proceed' to continue.")
+              return false
+            }
+          }
+          milestone()
+        }
+{% endif %}
+
+{% endfor %}
+        stage("Notify Slack") {
+          notify_slack(':confetti_ball:', 'COMPLETE')
+        }
+{% endfor %}
