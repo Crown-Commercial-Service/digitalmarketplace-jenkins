@@ -24,7 +24,7 @@ $ make jenkins TAGS=jobs JOBS=index_services
 
 ## To SSH onto the jenkins box
 
-You need a private key file, a username, and the hostname.
+You need a private key file, a username (always 'ubuntu'), and the hostname.
 
 ```bash
 ssh -i [path/to/identity/file] {username}@{hostname}
