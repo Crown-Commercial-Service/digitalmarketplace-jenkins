@@ -60,3 +60,13 @@ To upgrade a plugin (for example, to address a security vulnerability), tick the
  click `Download now and install after restart` and follow the instructions given.
 
  Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
+
+
+# Authentication
+
+Authentication is managed via github. Our application is managed by the user `dm-ssp-jenkins` on
+github. The password is in `logins.enc` in the credentials repo.
+
+An application exists per Jenkins instance - see *Settings/Developer settings/Oauth Apps*. The
+Client ID and Client Secret must be stored in the credentials repo, and are deployed via the
+_config_ task tag.
