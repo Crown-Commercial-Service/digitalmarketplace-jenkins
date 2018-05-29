@@ -4,6 +4,11 @@
 
 We use Jenkins job builder for managing jobs. The best documentation for this is [here](https://jenkins-job-builder.readthedocs.org/en/latest/index.html)
 
+Basic jenkins setup uses an ansible script [found on the interwebs](https://github.com/softasap/sa-box-jenkins) that is BSD/MIT
+licensed, copied and modified substantially to our own ends. Our version needed to be sufficiently different (e.g. we install to
+a different location) that including the original as a submodule turned out not the be useful.
+
+
 ## To setup
 
  * The DM_CREDENTIALS_REPO environment variable needs to be set to your credentials repo path. (E.g. put it in your bash profile)

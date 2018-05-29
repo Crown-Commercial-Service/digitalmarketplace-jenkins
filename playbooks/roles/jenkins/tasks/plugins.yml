@@ -1,10 +1,4 @@
 ---
-
-# TODO let's get these into dm-creds, and inject them per the sa-box-jenkins ref'd below
-- set_fact:
-    jenkins_admin_password: 51e2a14c3ad24e9593c905976e6450a1
-    jenkins_admin_user: admin
-
 # Below is copied from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/main.yml
 
 - name: Jenkins | Get Jenkins crumb
@@ -24,14 +18,14 @@
     jenkins_crumb_token: "{{ crumb_token.json.crumbRequestField }}={{ crumb_token.json.crumb }}"
 
 
-# Below is copied from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/plugins.yml
+# Below is copied, modified, from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/plugins.yml
 # * * * *
 
 # Jenkins doesn't allow updates via CLI, though that is required before plugins
 # can be installed via CLI. See: https://gist.github.com/rowan-m/1026918
 - name: Jenkins | Create Jenkins updates folder.
   file:
-    path: /var/lib/jenkins/updates
+    path: "{{ jenkins_home }}/updates"
     owner: jenkins
     group: jenkins
     mode: 0755
@@ -40,14 +34,14 @@
 
 - name: Jenkins | Update Jenkins plugin data.
   shell: >
-    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > /var/lib/jenkins/updates/default.json
-    creates=/var/lib/jenkins/updates/default.json
+    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > "{{ jenkins_home }}/updates/default.json"
+    creates="{{ jenkins_home }}/updates/default.json"
   become: yes
 
 
 - name: Jenkins | Permissions for default.json updates info.
   file:
-    path: /var/lib/jenkins/updates/default.json
+    path: "{{ jenkins_home }}/updates/default.json"
     owner: jenkins
     group: jenkins
     mode: 0755
