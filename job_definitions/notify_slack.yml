@@ -72,6 +72,8 @@
                   return "good"
               elif status == "FAILED":
                   return "danger"
+              elif status == "APPROVED":
+                  return "#00ccff"
 
 
           def build_message():
