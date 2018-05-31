@@ -20,7 +20,7 @@
                 JOB=Export of framework applicant details
                 ICON=:user:
                 STAGE={{ environment }}
-                STATUS=PASSED
+                STATUS=SUCCESS
                 URL=<${BUILD_URL}../ws/SCRIPT_OUTPUTS|Download csv file>
                 CHANNEL=#dm-development
       builders:
