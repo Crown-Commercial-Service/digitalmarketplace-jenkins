@@ -1,0 +1,58 @@
+- job:
+    name: "virus-scan-s3-bucket"
+    display-name: "Virus scan an S3 bucket"
+    project-type: freestyle
+    description: "Run the `virus-scan-s3-bucket` script to stream documents from S3 to a deployed (ClamAV) virus scanner."
+    disabled: false
+    parameters:
+      - string:
+          name: BUCKET
+          description: "The bucket to virus scan (e.g. digitalmarketplace-dev-uploads)"
+      - string:
+          name: PREFIX
+          description: "An object prefix to use when filtering files to scan (e.g. g-cloud-9/documents)"
+      - string:
+          name: HOST
+          description: "The exposed host on which clamd is available (e.g. https://clamav.some.url"
+      - string:
+          name: PORT
+          default: "3310"
+          description: "The exposed port on which clamd is available (default: 3310)."
+      - string:
+          name: SINCE
+          description: "A timezone-aware ISO8601 datetime string; if provided, only scan objects uploaded after this point in time (e.g. 2018-01-01T12:00:00Z)."
+      - bool:
+          name: DRY_RUN
+          default: true
+          description: "A dry run will not bypass retrieving the object from S3 and send an empty file object to ClamAV."
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=Jenkins
+              JOB=Virus scan S3 bucket
+              ICON=:clean:
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=Jenkins
+              JOB=Virus scan S3 bucket
+              ICON=:can-of-worms:
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ -n "$SINCE" ]; then
+            FLAGS="--since=$SINCE"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+
+          docker run digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py ${BUCKET} --prefix="${PREFIX}" --host="${HOST}" --port="${PORT}" ${FLAGS}

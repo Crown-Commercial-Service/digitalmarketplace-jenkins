@@ -73,5 +73,5 @@
         }
 
         stage("Notify Slack") {
-          notify_slack(':hammer_and_wrench:', 'COMPLETE')
+          notify_slack(':hammer_and_wrench:', 'SUCCESS')
         }

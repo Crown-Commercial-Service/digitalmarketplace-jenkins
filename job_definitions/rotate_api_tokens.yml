@@ -109,5 +109,5 @@
 {% endfor %}
 
         stage("Notify Slack") {
-          notify_slack(':confetti_ball:', 'COMPLETE')
+          notify_slack(':confetti_ball:', 'SUCCESS')
         }
