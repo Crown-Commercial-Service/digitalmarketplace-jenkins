@@ -192,5 +192,3 @@ search_config:
       default_index: g-cloud-10
       frameworks: g-cloud-10
       default_mapping_name: services
-
-jenkins_job_builder_pipeline_version: f24b9f5b0de03edd59b94061fa5182d11887403d
