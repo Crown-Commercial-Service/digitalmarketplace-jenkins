@@ -13,6 +13,8 @@
   {% endfor %}
 
     <!-- Jenkins Github user used for jenkins-job-builder -->
+    <permission>hudson.model.Hudson.Administer:{{ jenkins_api_user }}</permission>
+
     <permission>hudson.model.Hudson.Read:{{ jenkins_api_user }}</permission>
     <permission>hudson.model.Item.Configure:{{ jenkins_api_user }}</permission>
     <permission>hudson.model.Item.Create:{{ jenkins_api_user }}</permission>
