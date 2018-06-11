@@ -67,7 +67,7 @@
                   sh('source ./venv/bin/activate')
                   sh('pip install --upgrade pip')
                   sh('pip install -r requirements.txt')
-                  sh('AWS_PROFILE="{{ environment }}" python ./scripts/upload-counterpart-agreements.py \
+                  sh('python ./scripts/upload-counterpart-agreements.py \
                   {{ environment }} \
                   "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
                   generated-countersignature-pdfs \
