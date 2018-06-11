@@ -1,4 +1,4 @@
-{% set environments = ['preview', 'staging', 'production'] %}
+{% set environments = ['production'] %}
 {% set NOTIFY_TEMPLATE_ID = '3e43a131-8399-4674-89d3-b4f80d2e07d4' %}
 ---
 {% for environment in environments %}
