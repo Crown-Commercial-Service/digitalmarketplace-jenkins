@@ -21,6 +21,9 @@ in (with args; {
       pkgs.cacert
       # because we *actually* also depend on the credentials repo
       pkgs.sops
+      # ansible makes use of rsync & ssh
+      pkgs.openssh
+      pkgs.rsync
       ((import ./aws-auth.nix) (with pkgs; { inherit stdenv fetchFromGitHub makeWrapper jq awscli openssl; }))
     ];
 
