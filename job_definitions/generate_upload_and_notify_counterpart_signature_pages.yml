@@ -1,11 +1,11 @@
 {% set environments = ['production'] %}
-{% set frameworks = ['digital-outcomes-and-specialists-2'] %}
+{% set frameworks = [('DOS2', 'digital-outcomes-and-specialists-2'), ('G10', 'g-cloud-10')] %}
 ---
 {% for environment in environments %}
-{% for framework in frameworks %}
+{% for acronym, framework in frameworks %}
 - job:
-    name: 'generate-upload-and-notify-counterpart-signature-pages-{{ environment }}'
-    display-name: 'Generate, Upload and Notify Counterpart Signature Pages - {{ environment }}'
+    name: 'generate-upload-and-notify-counterpart-signature-pages-{{ environment }}-{{ acronym }}'
+    display-name: 'Generate, Upload and Notify Counterpart Signature Pages - {{ environment }}-{{ acronym }}'
     project-type: pipeline
     description: |
         This job will run a series of scripts to
@@ -54,9 +54,8 @@
                   sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
                         python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
                                {{ environment }} \
-                               "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
                                {{ framework }} \
-                               ../agreements/documents/framework-agreement-signature-page \
+                               ../agreements \
                                generated-countersignature-pdfs')
                 }
               }
@@ -69,7 +68,6 @@
                   sh('pip install -r requirements.txt')
                   sh('python ./scripts/upload-counterpart-agreements.py \
                   {{ environment }} \
-                  "$DM_DATA_API_TOKEN_{{ environment|upper }}" \
                   generated-countersignature-pdfs \
                   {{ framework }} \
                   --notify-key="$NOTIFY_API_TOKEN" \
