@@ -1,0 +1,36 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "data-retention-{{ environment }}"
+    display-name: "Data retention - {{ environment }}"
+    project-type: freestyle
+    description: "Remove personal data from the database in line with our retention schedule"
+    parameters:
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "When dry run is true we log out what objects would have data removed from them without deleting"
+    triggers:
+      - timed: "H 4 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=data-retention-{{ environment }}
+              JOB=Data retention {{ environment }}
+              ICON=:fish:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="--dry-run"
+          fi
+
+          docker run digitalmarketplace/scripts scripts/data-retention-remove-user-data.py '{{ environment }}' $FLAGS --verbose
+          docker run digitalmarketplace/scripts scripts/data-retention-remove-contact-information-data.py '{{ environment }}' $FLAGS --verbose
+{% endfor %}
