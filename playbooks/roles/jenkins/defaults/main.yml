@@ -146,6 +146,12 @@ jenkins_list_views:
   - name: "Framework lifecycle jobs"
     jobs:
       - notify-suppliers-whether-application-made-for-framework-production
+      - publish-dos-draft-services-preview
+      - publish-dos-draft-services-staging
+      - publish-dos-draft-services-production
+      - publish-g-cloud-draft-services-preview
+      - publish-g-cloud-draft-services-staging
+      - publish-g-cloud-draft-services-production
 
 app_urls:
   preview:
