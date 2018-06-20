@@ -32,5 +32,5 @@
             FLAGS="--dry-run"
           fi
 
-          docker run digitalmarketplace/scripts ./scripts/publish-dos-draft-services.py $FRAMEWORK "{{ environment }}" $DM_DATA_API_TOKEN_{{ environment|upper }} "$FLAGS"
+          docker run digitalmarketplace/scripts ./scripts/publish-dos-draft-services.py $FRAMEWORK "{{ environment }}" $DM_DATA_API_TOKEN_{{ environment|upper }} $FLAGS
 {% endfor %}

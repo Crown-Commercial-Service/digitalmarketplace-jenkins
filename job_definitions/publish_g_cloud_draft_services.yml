@@ -32,5 +32,5 @@
             FLAGS="--dry-run"
           fi
 
-          docker run digitalmarketplace/scripts ./scripts/publish-g-cloud-draft-services.py $FRAMEWORK "{{ environment }}" $DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace-submissions-production-production digitalmarketplace-documents-{{ environment }}-{{ environment }} "$FLAGS"
+          docker run digitalmarketplace/scripts ./scripts/publish-g-cloud-draft-services.py $FRAMEWORK "{{ environment }}" $DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace-submissions-production-production digitalmarketplace-documents-{{ environment }}-{{ environment }} $FLAGS
 {% endfor %}
