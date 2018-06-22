@@ -1,6 +1,6 @@
-{% set environments = ['preview', 'staging', 'production'] %}
+{% set environments = [('preview', 'false'), ('staging', 'true'), ('production', 'true')] %}
 ---
-{% for environment in environments %}
+{% for environment, dry_run in environments %}
 - job:
     name: "data-retention-{{ environment }}"
     display-name: "Data retention - {{ environment }}"
@@ -9,7 +9,7 @@
     parameters:
       - bool:
           name: DRY_RUN
-          default: true
+          default: {{ dry_run }}
           description: "When dry run is true we log out what objects would have data removed from them without deleting"
     triggers:
       - timed: "H 4 * * *"
