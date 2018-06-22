@@ -9,7 +9,7 @@
     parameters:
       - bool:
           name: DRY_RUN
-          default: false
+          default: true
           description: "When dry run is true we log out what objects would have data removed from them without deleting"
     triggers:
       - timed: "H 4 * * *"
