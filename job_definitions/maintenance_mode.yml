@@ -5,7 +5,6 @@
     display-name: "Toggle maintenance mode"
     project-type: pipeline
     description: Enable or disable maintenance mode on the Digital Marketplace
-    disabled: false
     concurrent: false
     parameters:
       - choice:

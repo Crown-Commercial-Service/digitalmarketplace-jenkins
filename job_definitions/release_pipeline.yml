@@ -5,7 +5,6 @@
     display-name: "[Pipeline] {{ application }}"
     project-type: pipeline
     description: Promote {{ application }} through environments
-    disabled: false
     concurrent: true
     triggers:
       - pollscm: "* * * * *"

@@ -3,7 +3,6 @@
     display-name: Build scripts
     project-type: pipeline
     description: Build the scripts Docker image and upload it to Docker Hub
-    disabled: false
     concurrent: false
     triggers:
       - pollscm: "* * * * *"

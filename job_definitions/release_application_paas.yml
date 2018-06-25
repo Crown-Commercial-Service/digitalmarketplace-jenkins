@@ -3,7 +3,6 @@
     display-name: Release application to PaaS
     project-type: pipeline
     description: Download application from S3 and deploy it to PaaS
-    disabled: false
     concurrent: true
     parameters:
       - choice:

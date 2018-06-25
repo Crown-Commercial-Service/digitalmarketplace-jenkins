@@ -2,7 +2,13 @@
 SHELL := /bin/bash
 VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
 
-JOBS ?= '*'
+# extra variables that, if specified, will override those in playbooks/roles/jenkins/defaults/main.yml
+ifdef JOBS_DISABLED
+	EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
+endif
+ifdef JOBS
+	EXTRA_VARS += -e 'jobs=${JOBS}'
+endif
 
 .PHONY: help
 help: ## List available commands
@@ -38,4 +44,4 @@ jenkins: venv ## Run Jenkins playbook
 		-e "jenkins_public_key='$$(ssh-keygen -y -f $$PRIVATE_KEY_FILE)'" \
 		--key-file=$$PRIVATE_KEY_FILE \
 		-e "dm_credentials_repo='$$(realpath ${DM_CREDENTIALS_REPO})'" \
-		--tags "${TAGS}" -e "jobs=${JOBS}"
+		--tags "${TAGS}" ${EXTRA_VARS}

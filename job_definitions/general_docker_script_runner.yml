@@ -3,7 +3,6 @@
     display-name: "General Docker script runner"
     project-type: freestyle
     description: "Easily pass commands to the digitalmarketplace/scripts. Makes it easy to run scripts that don't have a specific job."
-    disabled: false
     parameters:
       - string:
           name: RUN_COMMAND

@@ -3,7 +3,6 @@
     display-name: "Virus scan an S3 bucket"
     project-type: freestyle
     description: "Run the `virus-scan-s3-bucket` script to stream documents from S3 to a deployed (ClamAV) virus scanner."
-    disabled: false
     parameters:
       - string:
           name: BUCKET

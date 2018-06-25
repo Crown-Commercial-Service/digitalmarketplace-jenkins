@@ -27,6 +27,15 @@ To only update a specific Jenkins job
 $ make jenkins TAGS=jobs JOBS=index_services
 ```
 
+Usually, the jenkins jobs you push onto the server will be enabled. However if you're setting up a new box, you will
+want to disable them, which can be done as follows:
+```bash
+make jenkins TAGS=jobs JOBS_DISABLED=true
+```
+
+They will also be disabled if you are bootstrapping the box from scratch (i.e. if the `bootstrap`
+tag is used, or if no tags are specified).
+
 ## To SSH onto the jenkins box
 
 You need a private key file, a username (always 'ubuntu'), and the hostname.
