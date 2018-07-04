@@ -24,7 +24,6 @@ in (with args; {
       # ansible makes use of rsync & ssh
       pkgs.openssh
       pkgs.rsync
-      pkgs.libsodium
       ((import ./aws-auth.nix) (with pkgs; { inherit stdenv fetchFromGitHub makeWrapper jq awscli openssl; }))
     ];
 
@@ -34,7 +33,6 @@ in (with args; {
     VIRTUALENV_ROOT = "venv${pythonPackages.python.pythonVersion}";
     VIRTUAL_ENV_DISABLE_PROMPT = "1";
     SOURCE_DATE_EPOCH = "315532800";
-    SODIUM_INSTALL="system";
 
     # if we don't have this, we get unicode troubles in a --pure nix-shell
     LANG="en_GB.UTF-8";
