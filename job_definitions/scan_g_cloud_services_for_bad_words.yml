@@ -1,0 +1,45 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "scan-g-cloud-services-for-bad-words-{{ environment }}"
+    display-name: "Scan G-Cloud services for bad words - {{ environment }}"
+    project-type: freestyle
+    description: "Scans G-Cloud services for bad words contained in a list in our bad words repo."
+    parameters:
+      - string:
+          name: FRAMEWORK
+          description: "Slug of framework to scan for bad words"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-bad-words.git
+          credentials-id: github_com_and_enterprise
+          branches:
+            - master
+          wipe-workspace: false
+    publishers:
+      - html-publisher:
+          name: "bad words report"
+          dir: data
+          files: ${FRAMEWORK}-services-with-blacklisted-words.csv
+          keep-all: true
+          allow-missing: true
+          link-to-last-build: true
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=scan-g-cloud-services-for-bad-words.py
+              JOB=Scan G-Cloud services for bad words - {{ environment }}
+              ICON=:zipper_mouth_face:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          rm -rf ./data && mkdir data
+          cp ./blacklist.txt ./data/blacklist.txt
+
+          docker run --volume $(pwd)/data:/app/data digitalmarketplace/scripts ./scripts/scan-g-cloud-services-for-bad-words.py "{{ environment }}" $DM_DATA_API_TOKEN_{{ environment|upper }} /app/data/blacklist.txt $FRAMEWORK /app/data
+{% endfor %}
