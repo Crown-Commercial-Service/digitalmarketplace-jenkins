@@ -31,6 +31,6 @@
             FLAGS="--dry-run"
           fi
 
-          docker run digitalmarketplace/scripts scripts/data-retention-remove-user-data.py '{{ environment }}' $FLAGS --verbose
-          docker run digitalmarketplace/scripts scripts/data-retention-remove-contact-information-data.py '{{ environment }}' $FLAGS --verbose
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/data-retention-remove-user-data.py '{{ environment }}' $FLAGS --verbose
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/data-retention-remove-contact-information-data.py '{{ environment }}' $FLAGS --verbose
 {% endfor %}
