@@ -70,6 +70,6 @@
             FLAGS="$FLAGS --buyer-ids=$BUYER_IDS"
           fi
 
-          docker run digitalmarketplace/scripts scripts/notify-buyers-to-award-closed-briefs.py {{ environment }} $DM_DATA_API_TOKEN_{{ environment|upper }} $NOTIFY_API_TOKEN $NOTIFY_TEMPLATE_ID $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-buyers-to-award-closed-briefs.py {{ environment }} $NOTIFY_API_TOKEN $NOTIFY_TEMPLATE_ID $FLAGS
 {% endfor %}
 {% endfor %}

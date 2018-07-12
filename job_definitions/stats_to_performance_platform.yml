@@ -30,7 +30,7 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} {{ pp_service }} --{{ period }}
+          docker run digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ performance_platform_bearer_token }} {{ pp_service }} --{{ period }}
 
 {% endfor %}
 {% endfor %}
