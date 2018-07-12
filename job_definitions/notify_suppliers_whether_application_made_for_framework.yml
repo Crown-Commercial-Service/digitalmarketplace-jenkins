@@ -43,5 +43,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run digitalmarketplace/scripts scripts/notify-suppliers-whether-application-made-for-framework.py "{{ environment }}" "$DM_DATA_API_TOKEN_{{ environment|upper }}" "$FRAMEWORK_SLUG" "$NOTIFY_API_TOKEN" $FLAGS
+          docker run digitalmarketplace/scripts scripts/notify-suppliers-whether-application-made-for-framework.py "{{ environment }}" "$FRAMEWORK_SLUG" "$NOTIFY_API_TOKEN" $FLAGS
 {% endfor %}
