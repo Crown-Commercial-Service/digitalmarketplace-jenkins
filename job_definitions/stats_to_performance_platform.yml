@@ -1,9 +1,9 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('g-cloud-10', 'true')] %}
+{% set frameworks = [('digital-outcomes-and-specialists-3', 'digital-outcomes-specialists', 'true')] %}
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
 ---
 {% for environment in environments %}
-{% for framework, disabled in frameworks %}
+{% for framework, pp_service, disabled in frameworks %}
 {% for schedule, period in schedules %}
 - job:
     name: 'performance-platform-stats-{{ framework }}-per-{{ period }}-{{ environment }}'
@@ -30,7 +30,7 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} --{{ period }}
+          docker run digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} "$DM_DATA_API_TOKEN_{{ environment|upper }}" {{ performance_platform_bearer_token }} {{ pp_service }} --{{ period }}
 
 {% endfor %}
 {% endfor %}
