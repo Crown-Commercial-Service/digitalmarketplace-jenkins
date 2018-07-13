@@ -28,6 +28,6 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts scripts/snapshot-framework-stats.py "{{ framework }}" "{{ environment }}"
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/snapshot-framework-stats.py "{{ framework }}" "{{ environment }}"
 {% endfor %}
 {% endfor %}

@@ -25,6 +25,6 @@
                 CHANNEL=#dm-development
       builders:
         - shell: |
-            docker run digitalmarketplace/scripts scripts/export-framework-applicant-details.py "{{ environment }}" "{{ framework }}" "SCRIPT_OUTPUTS"
+            docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/export-framework-applicant-details.py "{{ environment }}" "{{ framework }}" "SCRIPT_OUTPUTS"
 {% endfor %}
 {% endfor %}

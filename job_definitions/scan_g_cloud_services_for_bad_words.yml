@@ -41,5 +41,5 @@
           rm -rf ./data && mkdir data
           cp ./blacklist.txt ./data/blacklist.txt
 
-          docker run --volume $(pwd)/data:/app/data digitalmarketplace/scripts ./scripts/scan-g-cloud-services-for-bad-words.py "{{ environment }}" /app/data/blacklist.txt $FRAMEWORK /app/data
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --volume $(pwd)/data:/app/data digitalmarketplace/scripts ./scripts/scan-g-cloud-services-for-bad-words.py "{{ environment }}" /app/data/blacklist.txt $FRAMEWORK /app/data
 {% endfor %}
