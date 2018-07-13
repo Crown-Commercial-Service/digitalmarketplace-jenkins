@@ -30,4 +30,4 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts $RUN_COMMAND
+          docker run digitalmarketplace/scripts $RUN_COMMAND
