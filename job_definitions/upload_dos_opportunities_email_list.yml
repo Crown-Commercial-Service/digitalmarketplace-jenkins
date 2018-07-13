@@ -26,4 +26,4 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "$DM_DATA_API_TOKEN_PRODUCTION" "jenkins" "$MAILCHIMP_API_TOKEN"
+          docker run digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "jenkins" "$MAILCHIMP_API_TOKEN"
