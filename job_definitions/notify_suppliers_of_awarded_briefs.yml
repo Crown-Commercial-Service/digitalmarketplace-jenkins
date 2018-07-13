@@ -48,5 +48,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run digitalmarketplace/scripts scripts/notify-suppliers-of-awarded-briefs.py '{{ environment }}' $NOTIFY_API_TOKEN {{ NOTIFY_TEMPLATE_ID }} $FLAGS --verbose
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-awarded-briefs.py '{{ environment }}' $NOTIFY_API_TOKEN {{ NOTIFY_TEMPLATE_ID }} $FLAGS --verbose
 {% endfor %}
