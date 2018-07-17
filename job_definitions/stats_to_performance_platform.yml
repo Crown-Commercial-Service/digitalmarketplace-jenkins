@@ -1,5 +1,5 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('digital-outcomes-and-specialists-3', 'digital-outcomes-specialists', 'true')] %}
+{% set frameworks = [('digital-outcomes-and-specialists-3', 'digital-outcomes-specialists', 'false')] %}
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
 ---
 {% for environment in environments %}
@@ -30,7 +30,7 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ performance_platform_bearer_token }} {{ pp_service }} --{{ period }}
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ performance_platform_bearer_tokens[pp_service] }} {{ pp_service }} --{{ period }}
 
 {% endfor %}
 {% endfor %}
