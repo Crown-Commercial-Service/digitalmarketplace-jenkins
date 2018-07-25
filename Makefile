@@ -43,5 +43,5 @@ jenkins: venv ## Run Jenkins playbook
 		-e @$$JENKINS_VARS_FILE \
 		-e "jenkins_public_key='$$(ssh-keygen -y -f $$PRIVATE_KEY_FILE)'" \
 		--key-file=$$PRIVATE_KEY_FILE \
-		-e "dm_credentials_repo='$$(realpath ${DM_CREDENTIALS_REPO})'" \
+		-e "dm_credentials_repo=${DM_CREDENTIALS_REPO}" \
 		--tags "${TAGS}" ${EXTRA_VARS}
