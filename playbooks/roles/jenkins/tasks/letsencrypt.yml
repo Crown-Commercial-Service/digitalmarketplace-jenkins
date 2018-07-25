@@ -2,6 +2,9 @@
 - name: Letsencrypt Python client
   git: dest=/opt/certbot clone=yes repo=https://github.com/certbot/certbot force=yes
 
+- name: Stop nginx to allow binding to port 80
+  service: name=nginx state=stopped
+
 - name: Request certificate file
   shell: executable=/bin/bash /opt/certbot/certbot-auto certonly -m {{ letsencrypt_email }} -d {{ inventory_hostname }} --agree-tos --standalone --expand --standalone-supported-challenges http-01 --keep-until-expiring --non-interactive
 
@@ -26,3 +29,6 @@
 - name: Set TLS key permissions
   file: path=/etc/nginx/ssl/private/privkey.pem mode=0644 group=ssl-cert
   notify: reload nginx
+
+- name: Ensure Nginx service is started
+  service: name=nginx state=started enabled=yes
