@@ -29,6 +29,11 @@
 
   when: ansible_os_family != "Debian"
 
+- name: Set Jenkins service boot config
+  template: src=jenkins_defaults.j2
+            dest=/etc/default/jenkins
+            backup=no
+
 - name: Jenkins | Ensure Jenkins is installed.
   package: name=jenkins state=present
   register: jenkins_package_install
@@ -73,20 +78,17 @@
   become: yes
   when: not (jenkins_second_time_install is failed)
 
-- name: Jenkins | Forced restart in case if there was admin password reset
+- name: Jenkins | Forced restart to pick up any changes
   service: name=jenkins state=restarted
-  when: not (jenkins_second_time_install is failed)
   become: yes
 
 - wait_for: port=8080 delay=20
 
 # TODO unclear if we still need the below
 
-- wait_for: port=8080 delay=5
-
 - name: Get the jenkins-cli jarfile from the Jenkins server.
   get_url:
-    url: "https://{{ jenkins_hostname }}/jnlpJars/jenkins-cli.jar"
+    url: "https://{{ inventory_hostname }}/jnlpJars/jenkins-cli.jar"
     dest: "{{ jenkins_jar_location }}"
   register: jarfile_get
   until: "'OK' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
