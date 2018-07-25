@@ -57,6 +57,7 @@ jenkins_config_templates:
   - hudson.tasks.Shell.xml
   - jenkins.model.DownloadSettings.xml
   - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
+  - jenkins.model.JenkinsLocationConfiguration.xml
 
 build_monitor_jobs:
   - apps-are-up-preview
