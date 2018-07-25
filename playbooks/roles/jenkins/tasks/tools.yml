@@ -77,12 +77,6 @@
   with_items:
     - {name: "rbenv"}
 
-- name: Add .aws config directory
-  file: path=/var/lib/jenkins/.aws state=directory owner=jenkins group=jenkins
-
-- name: Add AWS credentials file
-  template: src=aws_credentials.j2 dest=/var/lib/jenkins/.aws/credentials
-
 - name: Add gpg-agent conf directory
   file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
 
@@ -129,12 +123,6 @@
 
 - name: Install PhantomJS binary
   file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
-
-- name: Install AWS cli
-  tags: [awscli]
-  pip:
-    name: awscli==1.11.45
-    state: present
 
 - name: Give jenkins user permissions on its home directory
   file:
