@@ -1,10 +1,4 @@
 ---
-- name: Set Jenkins service boot config
-  template: src=jenkins_defaults.j2
-            dest=/etc/default/jenkins
-            backup=no
-  tags: config
-
 - name: Setup Jenkins config directory
   file: path=/data/jenkins state=directory owner=jenkins group=jenkins
   tags: config
@@ -18,3 +12,10 @@
   notify: restart jenkins
   with_items: "{{ jenkins_config_templates }}"
   tags: config
+
+# This step is important if building the box from scratch to ensure the config and so auth is in place
+- name: Jenkins | Forced restart to ensure config sticks
+  service: name=jenkins state=restarted
+  become: yes
+
+- wait_for: port=8080 delay=20
