@@ -38,5 +38,5 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py briefs '{{ environment }}' --search-api-token="$DM_SEARCH_API_TOKEN_{{ environment|upper }}" --api-token="$DM_DATA_API_TOKEN_{{ environment|upper }}" --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}" --create-with-mapping="${CREATE_WITH_MAPPING}"
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py briefs '{{ environment }}' --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}" --create-with-mapping="${CREATE_WITH_MAPPING}"
 {% endfor %}
