@@ -1,9 +1,7 @@
 ---
 - hosts: jenkins
-  name: setup
-  user: ubuntu
-  gather_facts: True
-  sudo: True
-
+  name: Setup Jenkins CI, config and dependencies
+  remote_user: ubuntu
+  become: yes
   roles:
     - jenkins

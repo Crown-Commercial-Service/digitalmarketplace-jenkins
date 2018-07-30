@@ -49,7 +49,6 @@
     - python3-pip
 
 - name: Install rbenv
-  become: yes
   git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
   with_items:
     - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}

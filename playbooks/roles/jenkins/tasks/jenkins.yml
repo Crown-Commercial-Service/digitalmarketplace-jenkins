@@ -5,11 +5,9 @@
 
   - name: Jenkins | Add Jenkins apt repository key.
     apt_key: url="http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key" state=present
-    become: yes
 
   - name: Jenkins | Add Jenkins apt repository.
     apt_repository: repo="deb http://pkg.jenkins-ci.org/debian binary/"  state=present update_cache=yes
-    become: yes
 
   when: ansible_os_family == "Debian"
 
@@ -19,13 +17,11 @@
     get_url:
       url: "http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo"
       dest: /etc/yum.repos.d/jenkins.repo
-    become: yes
 
   - name: Add Jenkins repo GPG key.
     rpm_key:
       state: present
       key: "https://jenkins-ci.org/redhat/jenkins-ci.org.key"
-    become: yes
 
   when: ansible_os_family != "Debian"
 
@@ -37,12 +33,10 @@
 - name: Jenkins | Ensure Jenkins is installed.
   package: name=jenkins state=present
   register: jenkins_package_install
-  become: yes
 
 - name: Jenkins | Forced restart after first time package installation
   service: name=jenkins state=restarted
   when: jenkins_package_install.changed
-  become: yes
 
 - wait_for: port=8080 delay=20
   when: jenkins_package_install.changed
@@ -51,17 +45,14 @@
   command: "test -e {{ jenkins_home }}/secrets/initialAdminPassword"
   ignore_errors: yes
   register: jenkins_second_time_install
-  become: yes
 
 - name: Jenkins | Supress wizard mode (debian)
   lineinfile: dest="/etc/default/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
   when: not (jenkins_second_time_install is failed) and ansible_os_family == "Debian"
-  become: yes
 
 - name: Jenkins | Supress wizard mode (centos)
   lineinfile: dest="/etc/sysconfig/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
   when: not (jenkins_second_time_install is failed) and ansible_os_family != "Debian"
-  become: yes
 
 - name: Jenkins | Remove initial Jenkins password
   file: name="{{ jenkins_home }}/secrets/initialAdminPassword" state=absent
@@ -75,12 +66,10 @@
 
 - name: Jenkins | Patch original password hash line
   lineinfile: dest="{{ jenkins_home }}/users/admin/config.xml" regexp='^(\s)*<passwordHash>(.*)' line='      <passwordHash>ansible_jenkins:{{ jenkins_password_hash.stdout }}</passwordHash>' owner="jenkins"
-  become: yes
   when: not (jenkins_second_time_install is failed)
 
 - name: Jenkins | Forced restart to pick up any changes
   service: name=jenkins state=restarted
-  become: yes
 
 - wait_for: port=8080 delay=20
 
