@@ -1,13 +1,40 @@
 ---
 # Below is copied from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/main.yml
 
-- name: Jenkins | Get Jenkins crumb
+# If Jenkins is being configured from scratch with all tags then the Github OAuth
+# plugin won't be configured yet, so we can have to use the admin user. Once Github
+# OAuth _has_ been configured, it's used to authenticate API requests and the admin
+# user stops working.
+- name: Check if Github OAuth is set up yet so we can use the correct credentials
   uri:
-    user: "{{jenkins_admin_user}}"
-    password: "{{ jenkins_admin_password }}"
+    user: "{{ jenkins_api_user }}"
+    password: "{{ jenkins_api_user_github_personal_access_token }}"
+    url: "http://localhost:8080/api/json"
     force_basic_auth: yes
-    url: "http://127.0.0.1:8080/crumbIssuer/api/json"
+  register: auth_test
+  ignore_errors: yes
+  retries: 10
+  delay: 5
+
+- name: Set credentials if succesfull auth
+  set_fact:
+    plugins_username: "{{ jenkins_api_user }}"
+    plugins_password: "{{ jenkins_api_user_github_personal_access_token }}"
+  when: not auth_test.failed
+
+- name: Set credentials if not succesfull auth
+  set_fact:
+    plugins_username: "{{ jenkins_admin_user }}"
+    plugins_password: "{{ jenkins_admin_password }}"
+  when: auth_test.failed
+
+- name: Get Jenkins crumb
+  uri:
+    user: "{{ plugins_username }}"
+    password: "{{ plugins_password }}"
+    url: "http://localhost:8080/crumbIssuer/api/json"
     return_content: yes
+    force_basic_auth: yes
   register: crumb_token
   until: crumb_token.content.find('Please wait while Jenkins is getting ready') == -1
   retries: 10
@@ -17,13 +44,12 @@
   set_fact:
     jenkins_crumb_token: "{{ crumb_token.json.crumbRequestField }}={{ crumb_token.json.crumb }}"
 
-
 # Below is copied, modified, from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/plugins.yml
 # * * * *
 
 # Jenkins doesn't allow updates via CLI, though that is required before plugins
 # can be installed via CLI. See: https://gist.github.com/rowan-m/1026918
-- name: Jenkins | Create Jenkins updates folder.
+- name: Create Jenkins updates folder.
   file:
     path: "{{ jenkins_home }}/updates"
     owner: jenkins
@@ -31,12 +57,12 @@
     mode: 0755
     state: directory
 
-- name: Jenkins | Update Jenkins plugin data.
+- name: Update Jenkins plugin data.
   shell: >
     curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > "{{ jenkins_home }}/updates/default.json"
     creates="{{ jenkins_home }}/updates/default.json"
 
-- name: Jenkins | Permissions for default.json updates info.
+- name: Permissions for default.json updates info.
   file:
     path: "{{ jenkins_home }}/updates/default.json"
     owner: jenkins
@@ -45,19 +71,19 @@
 
 - wait_for: port=8080
 
-- name: Jenkins | Get installed plugins
+- name: Get installed plugins
   uri:
-    user: admin
-    password: "{{ jenkins_admin_password }}"
+    user: "{{ plugins_username }}"
+    password: "{{ plugins_password }}"
     force_basic_auth: yes
     url: "http://127.0.0.1:8080/pluginManager/api/json?tree=plugins[shortName]&{{ jenkins_crumb_token }}"
     return_content: yes
   register: jenkins_installed_plugins
 
-- name: Jenkins | Install plugins
+- name: Install plugins
   uri:
-    user: admin
-    password: "{{ jenkins_admin_password }}"
+    user: "{{ plugins_username }}"
+    password: "{{ plugins_password }}"
     force_basic_auth: yes
     url: "http://127.0.0.1:8080/pluginManager/install?plugin.{{ item }}.default=on&{{ jenkins_crumb_token }}"
     method: POST
@@ -65,10 +91,10 @@
   when: item not in jenkins_installed_plugins.json.plugins|map(attribute='shortName')|list
   with_items: "{{ jenkins_plugins }}"
 
-- name: Jenkins | Wait for plugins to be installed
+- name: Wait for plugins to be installed
   uri:
-    user: admin
-    password: "{{ jenkins_admin_password }}"
+    user: "{{ plugins_username }}"
+    password: "{{ plugins_password }}"
     force_basic_auth: yes
     url: "http://127.0.0.1:8080/updateCenter/installStatus?{{ jenkins_crumb_token }}"
     return_content: yes
@@ -77,19 +103,19 @@
   retries: 120
   delay: 10
 
-- name: Jenkins | Check if we need to restart Jenkins to activate plugins
+- name: Check if we need to restart Jenkins to activate plugins
   uri:
-    user: admin
-    password: "{{ jenkins_admin_password }}"
+    user: "{{ plugins_username }}"
+    password: "{{ plugins_password }}"
     force_basic_auth: yes
     url: "http://127.0.0.1:8080/updateCenter/api/json\
     ?tree=restartRequiredForCompletion&{{ jenkins_crumb_token }}"
     return_content: yes
   register: jenkins_restart_required
 
-- name: Jenkins | Restart Jenkins to activate new plugins
+- name: Restart Jenkins to activate new plugins
   service: name=jenkins state=restarted
   when: jenkins_restart_required.json.restartRequiredForCompletion|bool
 
-- name: Jenkins | Wait for Jenkins to become available
+- name: Wait for Jenkins to become available
   wait_for: port=8080
