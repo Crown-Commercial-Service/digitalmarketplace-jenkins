@@ -6,6 +6,11 @@
     display-name: "Publish DOS draft services - {{ environment }}"
     project-type: freestyle
     description: "This publishes DOS draft services by promoting them from draft to published."
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     parameters:
       - string:
           name: FRAMEWORK

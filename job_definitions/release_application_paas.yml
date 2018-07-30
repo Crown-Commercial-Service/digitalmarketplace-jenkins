@@ -41,6 +41,10 @@
 
         try {
           node {
+            locks_to_aquire = ["paas-${STAGE}-${APPLICATION_NAME}-deploy"]
+              if (${STAGE} != "production") {
+                locks_to_aquire += "${STAGE}-database"
+              }
             git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
 
             stage('Prepare') {
@@ -57,7 +61,7 @@
                   sh('make paas-login')
                 }
 
-                lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                lock(locks_to_aquire) {
                   if ("$RELEASE_NAME" == "") {
                     echo "No release specified. Detecting currently deployed release version of ${APPLICATION_NAME} ..."
 
@@ -66,7 +70,6 @@
                     echo "Current deployed version of ${APPLICATION_NAME}: ${RELEASE_NAME}"
                     currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
                   }
-
                   sh("make ${STAGE} deploy-app")
                 }
               }

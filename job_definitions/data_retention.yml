@@ -11,6 +11,11 @@
           name: DRY_RUN
           default: false
           description: "When dry run is true we log out what objects would have data removed from them without deleting"
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     triggers:
       - timed: "H 4 * * *"
     publishers:

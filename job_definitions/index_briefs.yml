@@ -4,6 +4,11 @@
     display-name: "Index briefs - {{ environment }}"
     project-type: freestyle
     description: "This imports all briefs (opportunities) in the current API database into the current Elasticsearch index."
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     parameters:
       - string:
           name: INDEX

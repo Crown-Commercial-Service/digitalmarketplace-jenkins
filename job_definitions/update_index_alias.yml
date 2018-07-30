@@ -3,6 +3,11 @@
     name: "update-{{ environment }}-index-alias"
     display-name: "Update {{ environment }} index alias"
     description: Apply a given alias to a given elasticsearch index
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     project-type: pipeline
     concurrent: false
     parameters:

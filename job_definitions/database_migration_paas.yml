@@ -37,6 +37,10 @@
         }
 
         node {
+            locks_to_aquire = ["paas-${STAGE}-${APPLICATION_NAME}-deploy"]
+            if (${STAGE} != "production") {
+              locks_to_aquire += "${STAGE}-database"
+            }
 
             try {
                 git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
@@ -54,7 +58,7 @@
                     withEnv(paas_credentials.tokenize("\n")) {
                         sh('make paas-login')
                     }
-                    lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                    lock(locks_to_aquire) {
                         sh "make deploy-db-migration"
                         timeout(2) {
                             waitUntil {

@@ -29,6 +29,9 @@
       - pollscm: "H/2 * * * *"
     wrappers:
       - ansicolor
+    properties:
+      - lockable-resources:
+          resources: '{{ job.environment }}-database'
     publishers:
       - html-publisher:
           name: "functional test report"

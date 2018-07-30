@@ -6,6 +6,11 @@
     display-name: "Export API model data as CSV - {{ environment }}"
     project-type: freestyle
     description: "Runs the get-model-data.py script and saves the generated CSV files to Google Drive"
+{% if environment == 'preview' %}
+    properties:
+      - lockable-resources:
+          resources: 'preview-database'
+{% endif %}
     triggers:
       - timed: "H 5 * * *"
     publishers:

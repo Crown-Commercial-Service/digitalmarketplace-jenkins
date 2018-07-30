@@ -9,6 +9,11 @@
     display-name: "Snapshot {{ framework }} stats - {{ environment }}"
     project-type: freestyle
     description: Creates an hourly snapshot of framework stats and stores it in the API audit event
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     logrotate:
       daysToKeep: 20
       artifactDaysToKeep: 20

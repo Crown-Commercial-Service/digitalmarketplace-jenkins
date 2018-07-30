@@ -6,6 +6,11 @@
     display-name: "Clean and apply database dump - {{ environment }}"
     project-type: pipeline
     description: "Takes the latest production database dump, cleans it, and applies it to target stage. Also Google Drive."
+{% if environment != 'google-drive' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     concurrent: false
 {% if environment == 'staging' %}
     triggers:

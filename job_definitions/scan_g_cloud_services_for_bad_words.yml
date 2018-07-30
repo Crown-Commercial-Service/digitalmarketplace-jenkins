@@ -6,6 +6,11 @@
     display-name: "Scan G-Cloud services for bad words - {{ environment }}"
     project-type: freestyle
     description: "Scans G-Cloud services for bad words contained in a list in our bad words repo."
+{% if environment != 'production' %}
+    properties:
+      - lockable-resources:
+          resources: '{{ environment }}-database'
+{% endif %}
     parameters:
       - string:
           name: FRAMEWORK
