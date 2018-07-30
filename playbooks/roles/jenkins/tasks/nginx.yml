@@ -9,11 +9,9 @@
   user: name=nginx groups=www-data,ssl-cert
 
 - name: Create nginx jenkins proxy configuration files
-  template: src={{ item }}_nginx.j2
-            dest=/etc/nginx/sites-available/{{ item }}
+  template: src=jenkins_nginx.j2
+            dest=/etc/nginx/sites-available/jenkins
             backup=yes
-  with_items:
-    - jenkins
   notify: reload nginx
 
 - name: Ensure that the default site is disabled
@@ -22,11 +20,9 @@
   notify: reload nginx
 
 - name: Ensure that the configuration files are enabled
-  command: ln -s /etc/nginx/sites-available/{{ item }}
-           /etc/nginx/sites-enabled/{{ item }}
-           creates=/etc/nginx/sites-enabled/{{ item }}
-  with_items:
-    - jenkins
+  command: ln -s /etc/nginx/sites-available/jenkins
+           /etc/nginx/sites-enabled/jenkins
+           creates=/etc/nginx/sites-enabled/jenkins
   notify: reload nginx
 
 - name: Ensure Nginx service is started
