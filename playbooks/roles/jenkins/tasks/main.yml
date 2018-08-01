@@ -14,8 +14,6 @@
   tags: [tools]
 - import_tasks: nginx.yml
   tags: [nginx]
-- import_tasks: letsencrypt.yml
-  tags: [letsencrypt]
 - import_tasks: jenkins.yml
   tags: [jenkins]
 - import_tasks: gdrive.yml
