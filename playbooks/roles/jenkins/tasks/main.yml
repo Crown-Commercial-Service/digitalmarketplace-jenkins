@@ -1,11 +1,4 @@
 ---
-- name: Remove existing Jenkins config
-  file: path=/data/jenkins/{{ item }} state=absent
-  notify: restart jenkins
-  with_items:
-   - "{{ jenkins_config_templates }}"
-  tags: remove_config
-
 - import_tasks: bootstrap.yml
   tags: [bootstrap]
 - import_tasks: keys.yml
@@ -16,19 +9,17 @@
   tags: [nginx]
 - import_tasks: jenkins.yml
   tags: [jenkins]
+- import_tasks: plugins.yml
+  tags: [plugins]
+- import_tasks: config.yml  # must come after plugins, otherwise we are configuring plugins that are not installed!
+  tags: [config]
 - import_tasks: gdrive.yml
   tags: [gdrive]
 - import_tasks: docker.yml
   tags: [docker]
 - import_tasks: paas.yml
   tags: [paas,cloudfoundry]
-- import_tasks: plugins.yml
-  tags: [plugins]
-- import_tasks: config.yml  # must come after plugins, otherwise we are configuring plugins that are not installed!
-  tags: [config]
-
 - import_tasks: sops.yml
   tags: [sops]
-
 - import_tasks: jobs.yml
   tags: [jobs]
