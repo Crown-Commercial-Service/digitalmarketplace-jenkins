@@ -17,5 +17,22 @@
 - name: Create logs dir
   file: path={{ jenkins_logs_dir }} mode=755 state=directory owner=jenkins
 
+- name: Set SSH ClientAliveInterval
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "ClientAliveInterval 45"
+    regexp: "^ClientAliveInterval (\\d*)$"
+
+- name: Set SSH ClientAliveCountMax
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "ClientAliveCountMax 80"
+    regexp: "^ClientAliveCountMax (\\d*)$"
+
+- name: Restart sshd
+  service:
+      name: 'ssh'
+      state: 'restarted'
+
 - set_fact:
     jobs_disabled: true  # when first setting up a box, disable the jobs!
