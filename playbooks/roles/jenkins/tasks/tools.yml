@@ -146,3 +146,6 @@
     group: jenkins
     state: directory
     recurse: yes
+
+- name: Restart Jenkins
+  service: name=jenkins state=restarted
