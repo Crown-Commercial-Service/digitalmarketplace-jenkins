@@ -1,13 +1,15 @@
 # Ansible project to manage Jenkins
 
-[jenkins URL](https://ci.marketplace.team/)
+[jenkins URL](https://ci3.marketplace.team/)
 
 We use Jenkins job builder for managing jobs. The best documentation for this is [here](https://jenkins-job-builder.readthedocs.org/en/latest/index.html)
 
-Basic jenkins setup uses an ansible script [found on the interwebs](https://github.com/softasap/sa-box-jenkins) that is BSD/MIT
-licensed, copied and modified substantially to our own ends. Our version needed to be sufficiently different (e.g. we install to
-a different location) that including the original as a submodule turned out not the be useful.
+## Infrastructure
 
+The infrastructure that Jenkins runs on is now managed via our Terraform code which is in the digitalmarketplace-aws
+repo [here](https://github.com/alphagov/digitalmarketplace-aws/tree/master/terraform/modules/jenkins). Jenkins runs
+behind an ELB. The ELB has a certificate provided by Amazon Certificate Manager, and terminates our TLS, before proxying
+requests on to the Jenkins instance.
 
 ## To setup
 
@@ -44,7 +46,7 @@ You need a private key file, a username (always 'ubuntu'), and the hostname.
 ssh -i [path/to/identity/file] {username}@{hostname}
 
 # eg
-ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
+ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci3.marketplace.team
 ```
 
 ## Running scripts with Python3 via a Jenkins job
@@ -62,13 +64,13 @@ This removes the need for activating a virtualenv or installing requirements wit
 
 ## Plugins
 
-The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci.marketplace.team/pluginManager/installed (dependencies
+The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci3.marketplace.team/pluginManager/installed (dependencies
 are greyed out on the dashboard, and are not included in the `main.yml` list).
 
 To upgrade a plugin (for example, to address a security vulnerability), tick the relevant box on the Updates panel of the plugins dashboard, and
  click `Download now and install after restart` and follow the instructions given.
 
- Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
+Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
 
 
 # Authentication
