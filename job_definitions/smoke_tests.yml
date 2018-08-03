@@ -89,19 +89,6 @@
             } catch(err) {
               {% if environment == 'production' %}
                 notify_slack(':fire:', 'FAILED')
-              {% else %}
-                try {
-                  def migrations_being_run = sh(
-                    script: "curl -s https://{{ jenkins_api_user }}:{{ jenkins_api_token }}@ci3.marketplace.team/job/clean-and-apply-db-dump-{{ environment }}/lastBuild/api/json?tree=building | jq -r '.building'",
-                    returnStdout: true
-                  ).trim()
-
-                  if (migrations_being_run == 'false') {
-                    notify_slack(':fire:', 'FAILED')
-                  }
-                } catch(err2) {
-                  notify_slack(':fire:', 'FAILED')
-                }
               {% endif %}
 
               echo "Error caught"
