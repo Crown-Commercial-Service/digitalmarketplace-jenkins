@@ -16,7 +16,6 @@
     display-name: "Rotate API tokens"
     project-type: pipeline
     description: Rotate Data and Search API tokens for a given environment.
-    disabled: false
     concurrent: false
     parameters:
       - choice:

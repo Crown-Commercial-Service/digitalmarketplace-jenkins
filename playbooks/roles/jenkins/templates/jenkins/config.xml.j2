@@ -13,6 +13,8 @@
   {% endfor %}
 
     <!-- Jenkins Github user used for jenkins-job-builder -->
+    <permission>hudson.model.Hudson.Administer:{{ jenkins_api_user }}</permission>
+
     <permission>hudson.model.Hudson.Read:{{ jenkins_api_user }}</permission>
     <permission>hudson.model.Item.Configure:{{ jenkins_api_user }}</permission>
     <permission>hudson.model.Item.Create:{{ jenkins_api_user }}</permission>
@@ -29,8 +31,8 @@
     <!-- GitHub authorization app, belongs to the dm-ssp-jenkins user -->
     <githubWebUri>https://github.com</githubWebUri>
     <githubApiUri>https://api.github.com</githubApiUri>
-    <clientID>{{ jenkins_github_auth_client_id }}</clientID>
-    <clientSecret>{{ jenkins_github_auth_client_secret }}</clientSecret>
+    <clientID>{{ jenkins_github_auth_by_hostname[inventory_hostname].client_id }}</clientID>
+    <clientSecret>{{ jenkins_github_auth_by_hostname[inventory_hostname].client_secret }}</clientSecret>
     <oauthScopes>user:email</oauthScopes>
   </securityRealm>
   <disableRememberMe>false</disableRememberMe>

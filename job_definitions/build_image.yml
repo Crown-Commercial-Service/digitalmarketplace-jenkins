@@ -3,7 +3,6 @@
     display-name: Build Docker image
     project-type: pipeline
     description: Builds the docker image from a repository release tag
-    disabled: false
     concurrent: true
     parameters:
       - choice:

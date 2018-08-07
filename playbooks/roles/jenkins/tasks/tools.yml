@@ -1,4 +1,13 @@
 ---
+- name: Add Oracle Java Repository
+  apt_repository: repo='ppa:webupd8team/java'
+
+- name: Accept Java 8 License
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+- name: Install Oracle Java 8
+  apt: name=oracle-java8-installer state=latest
+
 - name: Adding APT repository key
   tags: [apt]
   apt_key:
@@ -14,7 +23,7 @@
 
 - name: Install tools
   tags: [apt]
-  apt: update_cache=yes name={{ item }}
+  apt: update_cache=yes name={{ item }} state=present
   with_items:
     - git
     - libpq-dev
@@ -32,10 +41,19 @@
     - wkhtmltopdf
     - fonts-liberation
     - gnupg2
+    - make
+    - zlib1g-dev
+    - bzip2
+    - libsqlite3-dev
+    - libssl-dev
+    - python3-pip
+
+- name: Install AWS cli
+  pip:
+    name: awscli==1.15.67
+    state: present
 
 - name: Install rbenv and pyenv
-  sudo: yes
-  sudo_user: jenkins
   git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
   with_items:
     - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
@@ -48,8 +66,8 @@
   lineinfile:
     dest: /var/lib/jenkins/.bash_profile
     create: yes
-    regexp: 'export PATH="\$HOME/{{ item.path }}/bin'
-    line: 'export PATH="$HOME/{{ item.path }}/bin:$PATH" && export {{ item.env_var }}="$HOME/{{ item.path }}"'
+    regexp: 'export PATH="/var/lib/jenkins/{{ item.path }}/bin'
+    line: 'export PATH="/var/lib/jenkins/{{ item.path }}/bin:$PATH" && export {{ item.env_var }}="/var/lib/jenkins/{{ item.path }}"'
     owner: jenkins
     group: jenkins
   with_items:
@@ -67,14 +85,18 @@
     - {name: "rbenv"}
     - {name: "pyenv"}
 
-- name: Install pyenv python
-  shell: "sudo su jenkins -c 'source $HOME/.bash_profile && pyenv install -s 2.7.9 && pyenv global 2.7.9 && $HOME/.pyenv/shims/pip install virtualenv'"
-
 - name: Install pyenv python3
-  shell: "sudo su jenkins -c 'source $HOME/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && $HOME/.pyenv/shims/pip install virtualenv'"
+  shell: "bash -c 'source /var/lib/jenkins/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && /var/lib/jenkins/.pyenv/shims/pip install virtualenv'"
+
+- name: Add gpg-agent conf directory
+  file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
 
 - name: Add gpg-agent conf file
-  file: path=/var/lib/jenkins/.gnupg/gpg-agent.conf owner=jenkins group=jenkins
+  copy:
+    src: ../files/gpg-agent.conf
+    dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
+    group: jenkins
+    owner: jenkins
 
 - name: Kill gpg-agent
   command: gpgconf --kill gpg-agent
@@ -99,7 +121,7 @@
 
 - name: Install NodeJS
   tags: [apt]
-  apt: pkg=nodejs=4.* state=installed
+  apt: pkg=nodejs=4.* state=present
 
 # TODO: Stop installing PhantomJS like this when there is a better
 #       apt source available.
@@ -117,8 +139,13 @@
 - name: Install PhantomJS binary
   file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
 
-- name: Install AWS cli
-  tags: [awscli]
-  pip:
-    name: awscli
-    state: present
+- name: Give jenkins user permissions on its home directory
+  file:
+    path: /var/lib/jenkins
+    owner: jenkins
+    group: jenkins
+    state: directory
+    recurse: yes
+
+- name: Restart Jenkins
+  service: name=jenkins state=restarted

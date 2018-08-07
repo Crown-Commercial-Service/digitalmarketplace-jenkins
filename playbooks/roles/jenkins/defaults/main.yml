@@ -11,8 +11,10 @@ jenkins_connection_retries: 60
 
 jenkins_hostname: localhost
 jenkins_jar_location: /opt/jenkins-cli.jar
+jenkins_java_args: ""
 
 jobs: '*'
+jobs_disabled: false
 
 dm_applications:
   - api
@@ -55,6 +57,7 @@ jenkins_config_templates:
   - hudson.tasks.Shell.xml
   - jenkins.model.DownloadSettings.xml
   - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
+  - jenkins.model.JenkinsLocationConfiguration.xml
 
 build_monitor_jobs:
   - apps-are-up-preview
@@ -191,5 +194,3 @@ search_config:
       default_index: g-cloud-10
       frameworks: g-cloud-10
       default_mapping_name: services
-
-jenkins_job_builder_pipeline_version: f24b9f5b0de03edd59b94061fa5182d11887403d

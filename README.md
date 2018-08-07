@@ -1,8 +1,15 @@
 # Ansible project to manage Jenkins
 
-[jenkins URL](https://ci.marketplace.team/)
+[jenkins URL](https://ci3.marketplace.team/)
 
 We use Jenkins job builder for managing jobs. The best documentation for this is [here](https://jenkins-job-builder.readthedocs.org/en/latest/index.html)
+
+## Infrastructure
+
+The infrastructure that Jenkins runs on is now managed via our Terraform code which is in the digitalmarketplace-aws
+repo [here](https://github.com/alphagov/digitalmarketplace-aws/tree/master/terraform/modules/jenkins). Jenkins runs
+behind an ELB. The ELB has a certificate provided by Amazon Certificate Manager, and terminates our TLS, before proxying
+requests on to the Jenkins instance.
 
 ## To setup
 
@@ -22,15 +29,24 @@ To only update a specific Jenkins job
 $ make jenkins TAGS=jobs JOBS=index_services
 ```
 
+Usually, the jenkins jobs you push onto the server will be enabled. However if you're setting up a new box, you will
+want to disable them, which can be done as follows:
+```bash
+make jenkins TAGS=jobs JOBS_DISABLED=true
+```
+
+They will also be disabled if you are bootstrapping the box from scratch (i.e. if the `bootstrap`
+tag is used, or if no tags are specified).
+
 ## To SSH onto the jenkins box
 
-You need a private key file, a username, and the hostname.
+You need a private key file, a username (always 'ubuntu'), and the hostname.
 
 ```bash
 ssh -i [path/to/identity/file] {username}@{hostname}
 
 # eg
-ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
+ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci3.marketplace.team
 ```
 
 ## Running scripts with Python3 via a Jenkins job
@@ -48,10 +64,20 @@ This removes the need for activating a virtualenv or installing requirements wit
 
 ## Plugins
 
-The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci.marketplace.team/pluginManager/installed (dependencies
+The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci3.marketplace.team/pluginManager/installed (dependencies
 are greyed out on the dashboard, and are not included in the `main.yml` list).
 
 To upgrade a plugin (for example, to address a security vulnerability), tick the relevant box on the Updates panel of the plugins dashboard, and
  click `Download now and install after restart` and follow the instructions given.
 
- Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
+Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
+
+
+# Authentication
+
+Authentication is managed via github. Our application is managed by the user `dm-ssp-jenkins` on
+github. The password is in `logins.enc` in the credentials repo.
+
+An application exists per Jenkins instance - see *Settings/Developer settings/Oauth Apps*. The
+Client ID and Client Secret must be stored in the credentials repo, and are deployed via the
+_config_ task tag.

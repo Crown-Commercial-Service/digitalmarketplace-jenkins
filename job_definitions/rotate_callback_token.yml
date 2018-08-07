@@ -9,7 +9,6 @@
     display-name: "Rotate {{ environment }} Notify callback token"
     project-type: pipeline
     description: Rotate the {{ environment }} Notify callback token.
-    disabled: false
     concurrent: false
     pipeline:
       script: |

@@ -1,33 +1,26 @@
 ---
 - name: Install Nginx
-  apt: name=nginx update_cache=yes state=installed
+  apt: name=nginx update_cache=yes state=present
 
-- name: Create ssl-cert group
-  group: name=ssl-cert state=present
-
-- name: Make sure nginx user is in ssl-cert
-  user: name=nginx groups=www-data,ssl-cert
+- name: Make sure nginx user is in www-data
+  user: name=nginx groups=www-data
 
 - name: Create nginx jenkins proxy configuration files
-  template: src={{ item }}_nginx.j2
-            dest=/etc/nginx/sites-available/{{ item }}
+  template: src=jenkins_nginx.j2
+            dest=/etc/nginx/sites-available/jenkins
             backup=yes
-  with_items:
-    - jenkins
   notify: reload nginx
 
 - name: Ensure that the default site is disabled
-  command: rm /etc/nginx/sites-enabled/default
-           removes=/etc/nginx/sites-enabled/default
+  command: rm /etc/nginx/sites-available/default
+           removes=/etc/nginx/sites-available/default
   notify: reload nginx
 
 - name: Ensure that the configuration files are enabled
-  command: ln -s /etc/nginx/sites-available/{{ item }}
-           /etc/nginx/sites-enabled/{{ item }}
-           creates=/etc/nginx/sites-enabled/{{ item }}
-  with_items:
-    - jenkins
+  command: ln -s /etc/nginx/sites-available/jenkins
+           /etc/nginx/sites-enabled/jenkins
+           creates=/etc/nginx/sites-enabled/jenkins
   notify: reload nginx
 
-- name: Ensure Nginx service is started
-  service: name=nginx state=started enabled=yes
+- name: Restart nginx
+  service: name=nginx state=reloaded

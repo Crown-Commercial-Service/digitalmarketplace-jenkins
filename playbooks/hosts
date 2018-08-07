@@ -1,2 +1,5 @@
 [jenkins]
-ci.marketplace.team
+ci3.marketplace.team
+
+[jenkins:vars]
+ansible_python_interpreter=/usr/bin/python3

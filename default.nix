@@ -3,7 +3,7 @@ let
   # specifying args defaults in this slightly non-standard way to allow us to include the default values in `args`
   args = rec {
     pkgs = import <nixpkgs> {};
-    pythonPackages = pkgs.python27Packages;
+    pythonPackages = pkgs.python36Packages;
     localOverridesPath = ./local.nix;
   } // argsOuter;
 in (with args; {
@@ -24,7 +24,6 @@ in (with args; {
       # ansible makes use of rsync & ssh
       pkgs.openssh
       pkgs.rsync
-      pkgs.libsodium
       ((import ./aws-auth.nix) (with pkgs; { inherit stdenv fetchFromGitHub makeWrapper jq awscli openssl; }))
     ];
 
@@ -34,7 +33,6 @@ in (with args; {
     VIRTUALENV_ROOT = "venv${pythonPackages.python.pythonVersion}";
     VIRTUAL_ENV_DISABLE_PROMPT = "1";
     SOURCE_DATE_EPOCH = "315532800";
-    SODIUM_INSTALL="system";
 
     # if we don't have this, we get unicode troubles in a --pure nix-shell
     LANG="en_GB.UTF-8";

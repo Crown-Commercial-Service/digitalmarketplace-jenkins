@@ -4,7 +4,6 @@
     project-type: pipeline
     description: |
       Builds digitalmarketplace-framework-application-guidance and publishes it on Github Pages
-    disabled: false
     concurrent: false
     triggers:
       - pollscm: "* * * * *"

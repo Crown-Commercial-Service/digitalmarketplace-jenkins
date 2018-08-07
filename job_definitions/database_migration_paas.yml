@@ -3,7 +3,6 @@
     display-name: Run database migration on PaaS
     project-type: pipeline
     description: Runs the database migration script on a newly deployed PaaS application
-    disabled: false
     concurrent: true
     parameters:
       - choice:

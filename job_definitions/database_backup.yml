@@ -3,7 +3,6 @@
     display-name: Create offsite backup of database
     project-type: pipeline
     description: Takes a dump of the database, compresses it, encrypts it and uploads to S3.
-    disabled: false
     concurrent: false
     triggers:
       - timed: "0 3 * * *"

@@ -2,7 +2,13 @@
 SHELL := /bin/bash
 VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
 
-JOBS ?= '*'
+# extra variables that, if specified, will override those in playbooks/roles/jenkins/defaults/main.yml
+ifdef JOBS_DISABLED
+	EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
+endif
+ifdef JOBS
+	EXTRA_VARS += -e 'jobs=${JOBS}'
+endif
 
 .PHONY: help
 help: ## List available commands
@@ -16,7 +22,7 @@ requirements: venv ## Install requirements
 venv: ${VIRTUALENV_ROOT}/activate ## Create virtualenv if it does not exist
 
 ${VIRTUALENV_ROOT}/activate:
-	@[ -z "${VIRTUAL_ENV}" ] && [ ! -d venv ] && virtualenv venv || true
+	[ -z $$VIRTUAL_ENV ] && [ ! -d venv ] && virtualenv -p python3 venv || true
 
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)
@@ -25,7 +31,17 @@ clean: ## Clean workspace (delete all generated files)
 .PHONY: jenkins
 jenkins: venv ## Run Jenkins playbook
 	$(if ${TAGS},,$(error Must specify a list of ansible tags in TAGS))
+	@set -e ;\
+	${DM_CREDENTIALS_REPO}/sops-wrapper -v > /dev/null ;\
+	JENKINS_VARS_FILE=$$(mktemp) ;\
+	PRIVATE_KEY_FILE=$$(mktemp) ;\
+	trap 'rm $$JENKINS_VARS_FILE $$PRIVATE_KEY_FILE' EXIT ;\
+	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml > $$JENKINS_VARS_FILE ;\
+	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > $$PRIVATE_KEY_FILE ;\
 	ANSIBLE_CONFIG=playbooks/ansible.cfg ${VIRTUALENV_ROOT}/bin/ansible-playbook \
 		-i playbooks/hosts playbooks/jenkins_playbook.yml \
-		-e @<(${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml) \
-		--tags "${TAGS}" -e "jobs=${JOBS}"
+		-e @$$JENKINS_VARS_FILE \
+		-e "jenkins_public_key='$$(ssh-keygen -y -f $$PRIVATE_KEY_FILE)'" \
+		--key-file=$$PRIVATE_KEY_FILE \
+		-e "dm_credentials_repo=${DM_CREDENTIALS_REPO}" \
+		--tags "${TAGS}" ${EXTRA_VARS}

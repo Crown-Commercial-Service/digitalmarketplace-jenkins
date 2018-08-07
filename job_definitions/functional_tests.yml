@@ -2,19 +2,16 @@
   {"environment": "preview",
    "display_name": "preview",
    "description": "Run the functional test suite against the preview environment",
-   "disabled": "false",
   },
   {"environment": "staging",
    "display_name": "staging",
    "description": "Run the functional test suite against the staging environment",
-   "disabled": "false",
   },
 ] %}
 ---
 {% for job in jobs %}
 - job:
     name: "functional-tests-{{ job.environment }}"
-    disabled: {{ job.disabled }}
     display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
     description: "{{ job.description }}"

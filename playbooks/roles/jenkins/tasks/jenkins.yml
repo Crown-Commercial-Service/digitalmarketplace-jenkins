@@ -1,0 +1,85 @@
+---
+# copied, modified, from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/main.yml
+
+- block:
+
+  - name: Add Jenkins apt repository key.
+    apt_key: url="http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key" state=present
+
+  - name: Add Jenkins apt repository.
+    apt_repository: repo="deb http://pkg.jenkins-ci.org/debian binary/"  state=present update_cache=yes
+
+  when: ansible_os_family == "Debian"
+
+- block:
+
+  - name: Add Jenkins yum repository
+    get_url:
+      url: "http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo"
+      dest: /etc/yum.repos.d/jenkins.repo
+
+  - name: Add Jenkins repo GPG key.
+    rpm_key:
+      state: present
+      key: "https://jenkins-ci.org/redhat/jenkins-ci.org.key"
+
+  when: ansible_os_family != "Debian"
+
+- name: Set Jenkins service boot config
+  template: src=jenkins_defaults.j2
+            dest=/etc/default/jenkins
+            backup=no
+
+- name: Ensure Jenkins is installed.
+  package: name=jenkins state=present
+  register: jenkins_package_install
+
+- name: Forced restart after first time package installation
+  service: name=jenkins state=restarted
+  when: jenkins_package_install.changed
+
+- wait_for: port=8080 delay=20
+  when: jenkins_package_install.changed
+
+- name: Check if first time install
+  command: "test -e {{ jenkins_home }}/secrets/initialAdminPassword"
+  ignore_errors: yes
+  register: first_time_install_test
+
+- name: Supress wizard mode (debian)
+  lineinfile: dest="/etc/default/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
+  when: not (first_time_install_test is failed) and ansible_os_family == "Debian"
+
+- name: Supress wizard mode (centos)
+  lineinfile: dest="/etc/sysconfig/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
+  when: not (first_time_install_test is failed) and ansible_os_family != "Debian"
+
+- name: Remove initial Jenkins password
+  file: name="{{ jenkins_home }}/secrets/initialAdminPassword" state=absent
+  ignore_errors: yes
+  when: not (first_time_install_test is failed)
+
+- name: Create Jenkins admin password hash
+  shell: echo -n "{{ jenkins_admin_password }}{ansible_jenkins}" | sha256sum - | awk '{ print $1; }'
+  when: not (first_time_install_test is failed)
+  register: jenkins_password_hash
+
+- name: Patch original password hash line
+  lineinfile: dest="{{ jenkins_home }}/users/admin/config.xml" regexp='^(\s)*<passwordHash>(.*)' line='      <passwordHash>ansible_jenkins:{{ jenkins_password_hash.stdout }}</passwordHash>' owner="jenkins"
+  when: not (first_time_install_test is failed)
+
+- name: Forced restart to pick up any changes
+  service: name=jenkins state=restarted
+
+- wait_for: port=8080 delay=20
+
+# TODO unclear if we still need the below
+
+- name: Get the jenkins-cli jarfile from the Jenkins server.
+  get_url:
+    url: "https://{{ inventory_hostname }}/jnlpJars/jenkins-cli.jar"
+    dest: "{{ jenkins_jar_location }}"
+  register: jarfile_get
+  until: "'OK' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
+  retries: 5
+  delay: 10
