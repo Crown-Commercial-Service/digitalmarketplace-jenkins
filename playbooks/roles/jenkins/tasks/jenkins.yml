@@ -31,7 +31,9 @@
             backup=no
 
 - name: Ensure Jenkins is installed.
-  package: name=jenkins state=latest
+  apt:
+    name=jenkins=2.*
+    state=present
   register: jenkins_package_install
 
 - name: Forced restart after first time package installation
