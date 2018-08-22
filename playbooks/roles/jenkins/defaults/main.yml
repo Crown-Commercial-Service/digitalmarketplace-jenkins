@@ -88,8 +88,6 @@ jenkins_list_views:
       - index-briefs-preview
       - index-briefs-production
       - index-briefs-staging
-      - notify-buyers-when-requirements-close-preview
-      - notify-buyers-when-requirements-close-production
       - snapshot-g7-stats-preview
       - snapshot-g7-stats-production
       - update-preview-index-alias
