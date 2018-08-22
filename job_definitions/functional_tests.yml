@@ -63,6 +63,8 @@
           rbenv install -s
           gem install bundler --conservative
 
+          set +x # do not echo credentials - remove for debugging
+
           export DM_API_DOMAIN="{{ app_urls[job.environment].data_api }}"
           export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ job.environment|upper }}"
 
@@ -94,6 +96,8 @@
 
           export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_framework_manager_email }}"
           export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_framework_manager_password }}"
+
+          set -x # restore echo
 
           export DM_PAGINATION_LIMIT=100
 
