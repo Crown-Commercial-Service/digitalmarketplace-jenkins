@@ -57,6 +57,9 @@
       - shell: |
 
           export DM_ENVIRONMENT="{{ environment }}"
+
+          set +x # do not echo credentials - remove for debugging
+
           export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
           export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
@@ -79,6 +82,8 @@
 
           export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[environment].buyer_email }}"
           export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[environment].buyer_password }}"
+
+          set -x # restore echo
 
           curl ${DM_FRONTEND_DOMAIN}/_status
           curl ${DM_FRONTEND_DOMAIN}/buyers/_status
