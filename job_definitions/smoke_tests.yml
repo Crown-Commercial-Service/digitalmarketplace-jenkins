@@ -96,7 +96,7 @@
               {% else %}
                 try {
                   def migrations_being_run = sh(
-                    script: "curl -s https://{{ jenkins_api_user }}:{{ jenkins_api_user_github_personal_access_token }}@ci3.marketplace.team/job/clean-and-apply-db-dump-{{ environment }}/lastBuild/api/json?tree=building | jq -r '.building'",
+                    script: "curl -s http://{{ jenkins_api_user }}:{{ jenkins_api_user_github_personal_access_token }}@localhost:80/job/clean-and-apply-db-dump-{{ environment }}/lastBuild/api/json?tree=building | jq -r '.building'",
                     returnStdout: true
                   ).trim()
 
