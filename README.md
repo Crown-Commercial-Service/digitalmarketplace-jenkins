@@ -1,6 +1,6 @@
 # Ansible project to manage Jenkins
 
-[jenkins URL](https://ci3.marketplace.team/)
+[jenkins URL](https://ci.marketplace.team/)
 
 We use Jenkins job builder for managing jobs. The best documentation for this is [here](https://jenkins-job-builder.readthedocs.org/en/latest/index.html)
 
@@ -9,7 +9,8 @@ We use Jenkins job builder for managing jobs. The best documentation for this is
 The infrastructure that Jenkins runs on is now managed via our Terraform code which is in the digitalmarketplace-aws
 repo [here](https://github.com/alphagov/digitalmarketplace-aws/tree/master/terraform/modules/jenkins). Jenkins runs
 behind an ELB. The ELB has a certificate provided by Amazon Certificate Manager, and terminates our TLS, before proxying
-requests on to the Jenkins instance.
+requests on to the Jenkins instance. The certificate is a wildcard certificate to make it easy to move Jenkins to a
+new subdomain if required.
 
 ## To setup
 
@@ -46,7 +47,7 @@ You need a private key file, a username (always 'ubuntu'), and the hostname.
 ssh -i [path/to/identity/file] {username}@{hostname}
 
 # eg
-ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci3.marketplace.team
+ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
 ```
 
 ## Running scripts with Python3 via a Jenkins job
@@ -64,7 +65,7 @@ This removes the need for activating a virtualenv or installing requirements wit
 
 ## Plugins
 
-The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci3.marketplace.team/pluginManager/installed (dependencies
+The list of plugins in `/playbooks/roles/jenkins/defaults/main.yml` should reflect the list at https://ci.marketplace.team/pluginManager/installed (dependencies
 are greyed out on the dashboard, and are not included in the `main.yml` list).
 
 To upgrade a plugin (for example, to address a security vulnerability), tick the relevant box on the Updates panel of the plugins dashboard, and
@@ -73,11 +74,21 @@ To upgrade a plugin (for example, to address a security vulnerability), tick the
 Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
 
 
-# Authentication
+## Authentication
 
-Authentication is managed via github. Our application is managed by the user `dm-ssp-jenkins` on
-github. The password is in `logins.enc` in the credentials repo.
+Authentication is managed via a Github OAuth app owned by the user `dm-ssp-jenkins` on
+Github. The password is in `logins.enc` in the credentials repo.
 
-An application exists per Jenkins instance - see *Settings/Developer settings/Oauth Apps*. The
-Client ID and Client Secret must be stored in the credentials repo, and are deployed via the
-_config_ task tag.
+An application exists per Jenkins instance - see *Settings/Developer settings/Oauth Apps* once logged into Github with
+the `dm-ssp-jenkins` user. The Client ID and Client Secret must be stored in the credentials repo, in
+*jenkins-vars/jenkins.yaml*, and must be stored as a nested dict under `jenkins_github_auth_by_hostname`. This allows
+us to maintain multiple Jenkins instances (if required). These credentials are deployed via the `config` task tag.
+
+## Backups
+
+In August 2018 our original Jenkins server, which had been running since 2015, was replaced with a new Jenkins server.
+The new server is completely managed by Terraform and Ansible. Before being terminated an AMI was created of the old
+server which captured it's setup and both it's volumes. That AMI is stored in the main AWS account, and has AMI ID:
+"ami-0042214035374c7b2" and AMI Name: "Jenkins - 2015 to August 2018". If needed the old server can be completely
+recreated from this image. WARNING! Jobs may start running as soon as the AMI is started as an instance. To prevent any
+unintended actions, it may be a good idea to assign the new image a security group with no egress.
