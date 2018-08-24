@@ -79,7 +79,15 @@
               }
 
               stage('Apply data to target stage and google drive') {
-                sh('GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}" TARGET="{{ environment }}" make apply-cleaned-db-dump')
+                sh(
+                   script: '''
+                     set +x
+                     export GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}"
+                     set -x
+                     export TARGET="{{ environment }}"
+                     make apply-cleaned-db-dump
+                   '''
+                  )
               }
 
 {% if environment in ['preview', 'staging'] %}
