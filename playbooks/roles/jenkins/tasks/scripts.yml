@@ -1,0 +1,3 @@
+---
+- name: Copy script for transfering old builds from outgoing server
+  copy: src=copy_old_builds.sh dest=/data/jenkins/jobs owner=jenkins mode=0700
