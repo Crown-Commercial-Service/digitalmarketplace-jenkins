@@ -58,7 +58,7 @@ To run a script with Python3 inside a Docker container, call the script as follo
 docker run digitalmarketplace/scripts scripts/my-amazing-script.py arg1 arg2 ...
 ```
 
-This removes the need for activating a virtualenv or installing requirements with pip.
+This removes the need for activating a venv or installing requirements with pip.
 
 [More information on running scripts with Docker](https://github.com/alphagov/digitalmarketplace-scripts#running-scripts-with-docker)
 

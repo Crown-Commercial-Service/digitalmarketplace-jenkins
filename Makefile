@@ -22,7 +22,7 @@ requirements: venv ## Install requirements
 venv: ${VIRTUALENV_ROOT}/activate ## Create virtualenv if it does not exist
 
 ${VIRTUALENV_ROOT}/activate:
-	[ -z $$VIRTUAL_ENV ] && [ ! -d venv ] && virtualenv -p python3 venv || true
+	[ -z $$VIRTUAL_ENV ] && [ ! -d venv ] && python3 -m venv venv || true
 
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)
