@@ -19,6 +19,7 @@ jobs_disabled: false
 dm_applications:
   - api
   - search-api
+  - antivirus-api
   - user-frontend
   - briefs-frontend
   - brief-responses-frontend
@@ -133,6 +134,7 @@ jenkins_list_views:
       - virus_scan_s3_bucket
   - name: "Release"
     jobs:
+      - release-antivirus-api
       - release-api
       - release-admin-frontend
       - release-briefs-frontend
