@@ -11,10 +11,10 @@
           description: "Index name or alias to use (eg 'briefs-digital-outcomes-and-specialists')"
       - string:
           name: FRAMEWORKS
+          default: {{ search_config['briefs'][environment].frameworks }}
           description: >
             Comma-separated list of framework slugs that should be indexed
-            (eg 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'). If
-            no frameworks are specified then all currently published briefs will be indexed.
+            (eg 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2').
       - string:
           name: CREATE_WITH_MAPPING
           description: >
