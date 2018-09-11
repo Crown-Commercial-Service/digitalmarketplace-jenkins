@@ -1,0 +1,38 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+{% set frameworks = [
+    'g-cloud-9', 'g-cloud-10', 'digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3'
+  ]
+%}
+---
+{% for environment in environments %}
+- job:
+    name: "export-supplier-csv-{{ environment }}"
+    display-name: "Export Supplier user data as CSV - {{ environment }}"
+    project-type: freestyle
+    description: "Runs the generate-supplier-user-csv.py scripts for each framework and uploads the generated CSV files to S3"
+    triggers:
+      - timed: "H 5 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=export-supplier-csv
+              JOB=Export supplier CSV {{ environment }}
+              ICON=:trident:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+
+          # We need to recreate the directory manually since the one created by Docker
+          # when mounting the volume will otherwise be owned by the root user.
+          rm -rf ./data && mkdir data
+{% for framework in frameworks %}
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' suppliers '{{ framework }}'
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}'
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}' --user-research-opted-in
+{% endfor %}
+{% endfor %}
