@@ -1,0 +1,59 @@
+{% for environment in ['preview', 'staging', 'production'] %}
+- job:
+    name: "create-index-{{ environment }}"
+    display-name: "Create index - {{ environment }}"
+    project-type: freestyle
+    description: >
+      This job creates a new index in the ElasticSearch service from specified objects in the database.
+
+      Visiting either https://search-api.<STAGE>.marketplace.team/_status or
+      https://search-api.digitalmarketplace.service.gov.uk/_status will show you currently available indexes and their
+      aliases.
+
+      You can use the above to get an idea of naming conventions.
+
+      Once you have created your new index you might want to use it on the site. To do so, you can give your new index
+      an 'alias' here https://ci.marketplace.team/job/update-{{ environment }}-index-alias/
+    parameters:
+      - choice:
+          name: OBJECTS
+          choices:
+            - briefs
+            - services
+      - string:
+          name: INDEX_NAME
+          description: "A new name for your new index (eg 'g-cloud-9-2017-05-22', 'briefs-digital-outcomes-and-specialists-2017-05-22')"
+      - string:
+          name: FRAMEWORKS
+          description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8', 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'). If no frameworks are specified then all currently published services will be indexed."
+      - string:
+          name: MAPPING
+          description: >
+            This mapping is a filename (without .json suffix) which should exist in the
+            digitalmarketplace-search-api/mappings directory
+            (https://github.com/alphagov/digitalmarketplace-search-api/tree/master/mappings)
+            (eg 'services', 'services-g-cloud-10', 'briefs-digital-outcomes-and-specialists-2')
+      - bool:
+          name: SERIAL
+          default: true
+          description: "Perform a non-parallel indexing. Turn this on for clearer debugging."
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=create-index
+              JOB=Index services {{ environment }} :jenkins_parrot:
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ "$SERIAL" = "true" ]; then
+            FLAGS="--serial"
+          fi
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py "${OBJECTS}" '{{ environment }}' --index="${INDEX_NAME}" --frameworks="${FRAMEWORKS}" --create-with-mapping="${MAPPING}" $FLAGS
+{% endfor %}
