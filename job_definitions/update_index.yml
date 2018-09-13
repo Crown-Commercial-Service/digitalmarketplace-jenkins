@@ -33,6 +33,10 @@
           description: >
             Comma-separated list of framework slugs that should be indexed
             (eg 'g-cloud-10' or 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2').
+      - bool:
+          name: SERIAL
+          default: true
+          description: "Perform a non-parallel indexing. Turn this on for clearer debugging."
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
@@ -47,5 +51,9 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py "${OBJECTS}" '{{ environment }}' --serial --index="${INDEX}" --frameworks="${FRAMEWORKS}"
+          if [ "$SERIAL" = "true" ]; then
+            FLAGS="--serial"
+          fi
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py "${OBJECTS}" '{{ environment }}' --index="${INDEX}" --frameworks="${FRAMEWORKS}" $FLAGS
 {% endfor %}
