@@ -87,11 +87,11 @@ jenkins_list_views:
       - export-supplier-csv-staging
       - export-supplier-csv-production
       - index-services-preview
-      - index-services-production
       - index-services-staging
+      - index-services-production
       - index-briefs-preview
-      - index-briefs-production
       - index-briefs-staging
+      - index-briefs-production
       - snapshot-g7-stats-preview
       - snapshot-g7-stats-production
       - update-preview-index-alias
@@ -100,8 +100,8 @@ jenkins_list_views:
   - name: "Functional, visual, and smoke tests"
     jobs:
       - apps-are-up-preview
-      - apps-are-up-production
       - apps-are-up-staging
+      - apps-are-up-production
       - functional-tests-preview
       - functional-tests-staging
       - visual-regression-preview
@@ -118,8 +118,8 @@ jenkins_list_views:
       - notify-suppliers-of-dos-opportunities-production
       - notify-suppliers-of-new-questions-answers-production
       - notify-suppliers-of-brief-withdrawals-preview
-      - notify-suppliers-of-brief-withdrawals-production
       - notify-suppliers-of-brief-withdrawals-staging
+      - notify-suppliers-of-brief-withdrawals-production
       - upload-dos-opportunities-email-list-production
   - name: "Utils and toolkit"
     jobs:
