@@ -6,13 +6,16 @@
     display-name: "Apps are up - {{ environment }}"
     project-type: pipeline
     description: |
-      Check that the five Digital Marketplace apps are up and running in the {{ environment|upper }} environment:
+      Check that the eight Digital Marketplace apps are up and running in the {{ environment|upper }} environment:
       <ul>
         <li>API</li>
         <li>Search API</li>
+        <li>Admin frontend</li>
+        <li>Briefs frontend</li>
+        <li>Brief-responses frontend</li>
         <li>Buyer frontend</li>
         <li>Supplier frontend</li>
-        <li>Admin frontend</li>
+        <li>User frontend</li>
       </ul>
     logrotate:
       daysToKeep: 4
