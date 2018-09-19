@@ -83,6 +83,9 @@ jenkins_list_views:
       - database-backup
       - export-data-preview
       - export-data-production
+      - export-supplier-csv-preview
+      - export-supplier-csv-staging
+      - export-supplier-csv-production
       - index-services-preview
       - index-services-production
       - index-services-staging
