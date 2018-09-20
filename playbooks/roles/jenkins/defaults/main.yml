@@ -83,40 +83,35 @@ jenkins_list_views:
       - database-backup
       - export-data-preview
       - export-data-production
+      - export-supplier-csv-preview
+      - export-supplier-csv-staging
+      - export-supplier-csv-production
       - index-services-preview
-      - index-services-production
       - index-services-staging
+      - index-services-production
       - index-briefs-preview
-      - index-briefs-production
       - index-briefs-staging
-      - snapshot-g7-stats-preview
-      - snapshot-g7-stats-production
+      - index-briefs-production
       - update-preview-index-alias
       - update-staging-index-alias
       - update-production-index-alias
   - name: "Functional, visual, and smoke tests"
     jobs:
       - apps-are-up-preview
-      - apps-are-up-production
       - apps-are-up-staging
+      - apps-are-up-production
       - functional-tests-preview
       - functional-tests-staging
       - visual-regression-preview
   - name: "Emails"
     jobs:
-      - notify-buyers-to-award-closed-briefs-4-weeks-preview
       - notify-buyers-to-award-closed-briefs-4-weeks-production
-      - notify-buyers-to-award-closed-briefs-8-weeks-preview
       - notify-buyers-to-award-closed-briefs-8-weeks-production
-      - notify-buyers-when-requirements-close-preview
       - notify-buyers-when-requirements-close-production
-      - notify-suppliers-of-awarded-briefs-preview
       - notify-suppliers-of-awarded-briefs-production
       - notify-suppliers-of-dos-opportunities-production
       - notify-suppliers-of-new-questions-answers-production
-      - notify-suppliers-of-brief-withdrawals-preview
       - notify-suppliers-of-brief-withdrawals-production
-      - notify-suppliers-of-brief-withdrawals-staging
       - upload-dos-opportunities-email-list-production
   - name: "Utils and toolkit"
     jobs:
