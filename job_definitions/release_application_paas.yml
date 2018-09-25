@@ -21,7 +21,7 @@
 {% endfor %}
       - string:
           name: RELEASE_NAME
-          description: "Release name (eg 'release-42') to deploy. If blank, the current release will be re-deployed. NOTE: router version cannot be derived - *must* be manually specified."
+          description: "Release name (eg 'release-42') to deploy. If blank, the current release will be re-deployed."
     pipeline:
       script: |
         def notify_slack(icon, status) {
