@@ -1,5 +1,5 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('DOS2', 'digital-outcomes-and-specialists-2'), ('G10', 'g-cloud-10')] %}
+{% set frameworks = [('DOS3', 'digital-outcomes-and-specialists-3'), ('G10', 'g-cloud-10')] %}
 ---
 {% for environment in environments %}
 {% for acronym, framework in frameworks %}
