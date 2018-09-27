@@ -1,9 +1,11 @@
 {% set environments = ['production'] %}
+{% set framework_slugs = ['digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3'] %}
 ---
 {% for environment in environments %}
+{% for framework_slug in framework_slugs %}
 - job:
-    name: "notify-suppliers-of-dos-opportunities-{{ environment }}"
-    display-name: "Notify suppliers of DOS opportunities - {{ environment }}"
+    name: "notify-suppliers-of-dos{{ framework_slug[-1] }}-opportunities-{{ environment }}"
+    display-name: "Notify suppliers of DOS{{ framework_slug[-1] }} opportunities - {{ environment }}"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
     parameters:
@@ -43,8 +45,8 @@
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
-              USERNAME=dos-opportunities
-              JOB=Notify suppliers of the latest DOS opportunities - {{ environment }}
+              USERNAME=dos{{ framework_slug[-1] }}-opportunities
+              JOB=Notify suppliers of the latest DOS{{ framework_slug[-1] }} opportunities - {{ environment }}
               ICON=:briefs:
               STAGE={{ environment }}
               STATUS=FAILED
@@ -64,5 +66,6 @@
             FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-dos-opportunities-email.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-dos-opportunities-email.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }} $FLAGS
+{% endfor %}
 {% endfor %}

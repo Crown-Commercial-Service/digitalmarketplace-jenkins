@@ -1,6 +1,9 @@
+{% set framework_slugs = ['digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3'] %}
+---
+{% for framework_slug in framework_slugs %}
 - job:
-    name: "upload-dos-opportunities-email-list-production"
-    display-name: "Upload DOS opportunities email list - production"
+    name: "upload-dos{{ framework_slug[-1] }}-opportunities-email-list-production"
+    display-name: "Upload DOS{{ framework_slug[-1] }} opportunities email list - production"
     project-type: freestyle
     description: "Subscribe new supplier emails to mailchimp lists which will be sent Digital Outcomes and Specialists opportunities emails"
     scm:
@@ -18,7 +21,7 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=mailchimp-lists
-              JOB=Upload DOS opportunities email list - production
+              JOB=Upload DOS{{ framework_slug[-1] }} opportunities email list - production
               ICON=:briefs:
               STAGE=production
               STATUS=FAILED
@@ -26,4 +29,5 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_PRODUCTION digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "jenkins" "$MAILCHIMP_API_TOKEN"
+          docker run -e DM_DATA_API_TOKEN_PRODUCTION digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }}
+{% endfor %}
