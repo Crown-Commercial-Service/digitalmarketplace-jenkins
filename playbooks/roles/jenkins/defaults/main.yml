@@ -70,7 +70,7 @@ build_monitor_jobs:
   - index-services-production
   - notify-buyers-when-requirements-close-production
   - notify-suppliers-of-dos2-opportunities-production
-  - notify-suppliers-of-do3-opportunities-production
+  - notify-suppliers-of-dos3-opportunities-production
   - notify-suppliers-of-new-questions-answers-production
   - upload-dos2-opportunities-email-list-production
   - upload-dos3-opportunities-email-list-production
