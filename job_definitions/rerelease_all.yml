@@ -1,0 +1,73 @@
+{% set apps = ['router', 'search-api', 'api', 'antivirus-api', 'admin-frontend', 'briefs-frontend', 'brief-responses-frontend', 'buyer-frontend', 'supplier-frontend', 'user-frontend'] %}
+---
+- job:
+    name: rerelease-all-apps
+    display-name: "Re-release all apps"
+    project-type: pipeline
+    description: |
+        Update credentials and re-release all apps. Used for credentials changes to be brought in.
+
+        This performs a deploy of the listed apps using the `release_application_paas` job which determines their current version.
+        <br>See:<br>
+
+        https://docs.cloudfoundry.org/devguide/deploy-apps/start-restart-restage.html<br>
+        (Restart Your Application)<br><br>
+
+        https://github.com/alphagov/digitalmarketplace-jenkins/blob/master/job_definitions/release_application_paas.yml#L2<br>
+        (Runs the update-credentials job on Jenkins)<br><br>
+
+        https://github.com/alphagov/digitalmarketplace-aws/blob/master/Makefile#L67 (generate-manifest)<br>
+        (Generates a manifest with the new credentials)<br><br>
+
+        https://github.com/alphagov/digitalmarketplace-aws/blob/master/Makefile#L84 (deploy-app)<br>
+        (Pushes the new manifest)<br>
+
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - staging
+            - production
+    pipeline:
+      script: |
+        def notify_slack(icon, job, status) {
+          build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "rerelease-all-apps"),
+            string(name: 'ICON', value: icon),
+            string(name: 'JOB', value: job),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            text(name: 'STAGE', value: "${STAGE}"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+        }
+        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
+        notify_slack(':spinner:', 'Start re-release all apps on ${STAGE}', 'STARTED')
+        try {
+          stage('Update credentials') {
+            build job: "update-credentials"
+          }
+          parallel(
+  {% for app in apps %}
+            "{{ app }}": {
+              stage("{{ app }}") {
+                build job: "release-app-paas", parameters: [
+                  string(name: "STAGE", value: "${STAGE}"),
+                  string(name: "APPLICATION_NAME", value: "{{ app }}")
+                ]
+              }
+            },
+  {% endfor %}
+          )
+
+          stage("Notify Slack") {
+            notify_slack(':rocket:', 'Re-release all apps on ${STAGE}', 'SUCCESS')
+          }
+        } catch(e) {
+          currentBuild.result = 'FAILURE'
+          echo "Error: ${e}"
+          notify_slack(':boom:', 'Re-release all apps on ${STAGE}', 'FAILED')
+        }
