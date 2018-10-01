@@ -173,15 +173,15 @@ search_config:
   briefs:
     preview:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2
+      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
     staging:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2
+      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
     production:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2
+      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
   services:
     preview:
