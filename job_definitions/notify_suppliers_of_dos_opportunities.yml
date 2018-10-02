@@ -1,5 +1,5 @@
 {% set environments = ['production'] %}
-{% set framework_slugs = ['digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3'] %}
+{% set framework_slugs = ['digital-outcomes-and-specialists-3'] %}
 ---
 {% for environment in environments %}
 {% for framework_slug in framework_slugs %}
