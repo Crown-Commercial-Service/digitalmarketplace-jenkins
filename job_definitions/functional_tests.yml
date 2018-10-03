@@ -97,6 +97,8 @@
           export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_framework_manager_email }}"
           export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_framework_manager_password }}"
 
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ job.environment }}-{{ job.environment }}"
+
           set -x # restore echo
 
           export DM_PAGINATION_LIMIT=100
