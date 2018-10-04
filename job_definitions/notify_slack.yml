@@ -96,7 +96,7 @@
               )
 
               message.update({
-                  "text": "{} finished".format(JOB),
+                  "text": JOB,
                   "attachments": [{
                       "fallback": "\n".join("{}: {}".format(key, val) for key, val, short in fields_def),
                       "color": color_from_status(STATUS),
