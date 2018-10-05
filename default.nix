@@ -44,6 +44,7 @@ in (with args; {
         ${pythonPackages.python}/bin/python -m venv $VIRTUALENV_ROOT
       fi
       source $VIRTUALENV_ROOT/bin/activate
+      pip install --upgrade pip==18.0  # e.g. pynacl is sensitive to "old" pips
       make requirements
     '';
   }).overrideAttrs (if builtins.pathExists localOverridesPath then (import localOverridesPath args) else (x: x));
