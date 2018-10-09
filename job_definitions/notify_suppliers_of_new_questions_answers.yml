@@ -45,5 +45,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-new-questions-answers.py {{ environment }} $MANDRILL_API_KEY_{{ environment|upper }} $FLAGS
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-new-questions-answers.py {{ environment }} $NOTIFY_API_TOKEN $FLAGS
 {% endfor %}
