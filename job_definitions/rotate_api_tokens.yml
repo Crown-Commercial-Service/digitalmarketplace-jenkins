@@ -1,21 +1,23 @@
 {#
   Our apps have to be deployed in a specific order when recycling tokens: Search API first, then Data API, then the frontend apps.
-  Any of our frontend apps can talk talk to any of our APIs. The Data API can talk to the Search API. The Search API doesn't talk to anything else.
+  Any of our frontend apps can talk to the Data API and Search API. The Data API can talk to the Search API. The Search API doesn't talk to anything else.
+  The apps don't talk to the Antivirus API, however it still needs its own token to be rotated.
   Our APIs receive a list of tokens they should accept. On top of this, apps that need to talk to an API use the _first_ token from the list of tokens as the one they'll use to authenticate.
   Therefore, any API that receives requests from some other app needs to have their list of accepted tokens updated before any app starts using one of the new tokens for authentication.
   As the Search API doesn't talk to the Data API, we can update it safely first.
   After that, the Data API can safely be updated as the Search API will now accept the new token it will receive.
   After both of those are updated, all of the frontend apps can be updated simultaneously as both APIs accept new tokens.
   When removing the old tokens, all apps could theoretically be updated simultaneously as they'll all be using and accepting the new tokens for authentication, but we repeat the same deployment schedule for the sake of simplicity.
+  The Antivirus API has no dependencies on the other apps, and safely can be updated last.
 #}
 {% set stages = [{'name': 'Add new tokens', 'command': 'add-new'}, {'name': 'Remove old tokens', 'command': 'remove-old'}] %}
-{% set app_groups = [['search-api'], ['api'], ['admin-frontend', 'briefs-frontend', 'brief-responses-frontend', 'buyer-frontend', 'supplier-frontend', 'user-frontend']] %}
+{% set app_groups = [['search-api'], ['api'], ['admin-frontend', 'briefs-frontend', 'brief-responses-frontend', 'buyer-frontend', 'supplier-frontend', 'user-frontend'], ['antivirus-api']] %}
 ---
 - job:
     name: rotate-api-tokens
     display-name: "Rotate API tokens"
     project-type: pipeline
-    description: Rotate Data and Search API tokens for a given environment.
+    description: Rotate Data, Search and Antivirus API tokens for a given environment.
     concurrent: false
     parameters:
       - choice:
