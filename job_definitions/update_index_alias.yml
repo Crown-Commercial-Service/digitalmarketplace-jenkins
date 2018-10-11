@@ -2,26 +2,30 @@
 - job:
     name: "update-{{ environment }}-index-alias"
     display-name: "Update {{ environment }} index alias"
-    description: Apply a given alias to a given elasticsearch index
+    description: >
+        Create an alias for a given elasticsearch index.
+        If there is an index with that alias already then
+        that index will be given the alias '<alias>-old'.
     project-type: pipeline
     concurrent: false
     parameters:
       - string:
           name: ALIAS
           default:
-          description: "The name of the alias you're applying."
+          description: "The alias name."
       - string:
           name: TARGET
           description: >
-            The name of the index you're applying the alias to, e.g.
-            '{{search_config['briefs'][environment].default_index}}' or
-            '{{search_config['services'][environment].default_index}}'.
+            The name of the index the alias will point to to, e.g.
+            'g-cloud-9-2018-01-26'.
       - extended-choice:
           name: DELETE_OLD_INDEX
           type: radio
           default: no
           value: yes,no
-          description: "Delete the index that's losing the '<alias>-old' alias"
+          description: >
+            If there is an index with the alias '<alias>-old' and
+            this option is enabled then that index will be deleted.
     pipeline:
       script: |
         node {
