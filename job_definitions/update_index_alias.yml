@@ -6,13 +6,15 @@
         Create an alias for a given elasticsearch index.
         If there is an index with that alias already then
         that index will be given the alias '<alias>-old'.
+
+        Look at previous builds for example parameters.
     project-type: pipeline
     concurrent: false
     parameters:
       - string:
           name: ALIAS
           default:
-          description: "The alias name."
+          description: "The alias name, e.g. 'g-cloud-9'."
       - string:
           name: TARGET
           description: >
