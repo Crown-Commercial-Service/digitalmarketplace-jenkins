@@ -11,7 +11,8 @@
           branches:
             - master
     triggers:
-      - pollscm: "H/2 * * * *"
+      - pollscm:
+          cron: "H/2 * * * *"
     builders:
       - shell: |
           [ -x /tmp/dm-manual-venv/bin/pip ] || virtualenv /tmp/dm-manual-venv

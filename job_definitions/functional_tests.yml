@@ -26,7 +26,8 @@
             - "master"
           wipe-workspace: false
     triggers:
-      - pollscm: "H/2 * * * *"
+      - pollscm:
+          cron: "H/2 * * * *"
     wrappers:
       - ansicolor
     publishers:

@@ -5,7 +5,8 @@
     description: Build the scripts Docker image and upload it to Docker Hub
     concurrent: false
     triggers:
-      - pollscm: "* * * * *"
+      - pollscm:
+          cron: "* * * * *"
     pipeline:
       script: |
 
