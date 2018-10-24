@@ -7,17 +7,17 @@
     parameters:
       - string:
           name: BUCKETS
-          description: "The buckets to virus scan, comma separated (e.g. digitalmarketplace-dev-uploads,other-bucket)"
+          description: "The buckets to virus scan, comma separated (e.g. `digitalmarketplace-dev-uploads,other-bucket`)"
       - string:
           name: PREFIX
-          description: "An object prefix to use when filtering files to scan (e.g. g-cloud-9/documents)"
+          description: "An object prefix to use when filtering files to scan (e.g. `g-cloud-9/documents`)"
       - string:
           name: SINCE
-          description: "A timezone-aware ISO8601 datetime string; if provided, only scan objects uploaded after this point in time (e.g. 2018-01-01T12:00:00Z)."
+          description: "A date string, as understood by `date(1)` (i.e. relative dates are supported); if provided, only scan objects uploaded after this point in time (e.g. `2018-01-01T12:00:00Z`, `32 hours ago`)."
       - string:
           name: CONCURRENCY
           default: 0
-          description: "Number of concurrent requests to make to Antivirus API. 0 disables concurrency & threading entirely"
+          description: "Number of concurrent requests to make to Antivirus API. `0` disables concurrency & threading entirely"
       - bool:
           name: DRY_RUN
           default: true
@@ -25,7 +25,8 @@
     builders:
       - shell: |
           if [ -n "$SINCE" ]; then
-            FLAGS="--since=$SINCE"
+            ISO_SINCE=$(date -u -Iseconds -d "$SINCE")
+            FLAGS="--since=$ISO_SINCE"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
