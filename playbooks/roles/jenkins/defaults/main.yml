@@ -129,6 +129,9 @@ jenkins_list_views:
       - virus-scan-s3-buckets-preview
       - virus-scan-s3-buckets-staging
       - virus-scan-s3-buckets-production
+      - virus-scan-s3-buckets-nightly-preview
+      - virus-scan-s3-buckets-nightly-staging
+      - virus-scan-s3-buckets-nightly-production
   - name: "Release"
     jobs:
       - release-antivirus-api

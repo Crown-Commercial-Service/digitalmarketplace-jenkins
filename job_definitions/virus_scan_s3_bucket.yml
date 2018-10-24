@@ -38,4 +38,31 @@
           fi
 
           docker run -e DM_ANTIVIRUS_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py {{ environment }} ${BUCKETS} --concurrency="${CONCURRENCY}" --prefix="${PREFIX}" ${FLAGS}
+- job:
+    name: "virus-scan-s3-buckets-nightly-{{ environment }}"
+    display-name: "Virus scan S3 buckets nightly - {{ environment }}"
+    project-type: freestyle
+    triggers:
+      - timed: "H 3 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=virus-scan
+              JOB=Virus scan S3 buckets nightly - {{ environment }}
+              ICON=:biohazard_sign:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-2ndline
+    builders:
+      - trigger-builds:
+          - project: "virus-scan-s3-buckets-{{ environment }}"
+            condition: UNSTABLE_OR_WORSE
+            block: true
+            predefined-parameters: |
+              BUCKETS=digitalmarketplace-agreements-{{ environment }}-{{ environment }},digitalmarketplace-communications-{{ environment }}-{{ environment }},digitalmarketplace-documents-{{ environment }}-{{ environment }},digitalmarketplace-submissions-{{ environment }}-{{ environment }}
+              SINCE=49 hours ago
+              DRY_RUN=false
 {% endfor %}
