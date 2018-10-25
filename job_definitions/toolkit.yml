@@ -15,7 +15,8 @@
             - master
           skip-tag: true
     triggers:
-      - pollscm: "H/2 * * * *"
+      - pollscm:
+          cron: "H/2 * * * *"
     wrappers:
       - ansicolor
     builders:
@@ -35,7 +36,8 @@
             - '*/tags/*'
           skip-tag: true
     triggers:
-      - pollscm: "H/2 * * * *"
+      - pollscm:
+          cron: "H/2 * * * *"
     wrappers:
       - ansicolor
     builders:

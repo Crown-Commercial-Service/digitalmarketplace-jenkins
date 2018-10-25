@@ -6,7 +6,8 @@
       Builds digitalmarketplace-framework-application-guidance and publishes it on Github Pages
     concurrent: false
     triggers:
-      - pollscm: "* * * * *"
+      - pollscm:
+          cron: "* * * * *"
     pipeline:
       script: |
         node {
