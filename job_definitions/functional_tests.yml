@@ -72,6 +72,8 @@
           export DM_SEARCH_API_DOMAIN="{{ app_urls[job.environment].search_api }}"
           export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ job.environment|upper }}"
 
+          export DM_ANTIVIRUS_API_DOMAIN="{{ app_urls[job.environment].antivirus_api }}"
+
           export DM_FRONTEND_DOMAIN="{{ app_urls[job.environment].www }}"
 
           export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ job.environment|upper }}"
