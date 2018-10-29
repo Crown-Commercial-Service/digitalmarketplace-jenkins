@@ -37,8 +37,6 @@ dist_tools:
   - xvfb
   - zip
   - zlib1g-dev
-  - jq
-  - wkhtmltopdf
 
 dm_applications:
   - api
