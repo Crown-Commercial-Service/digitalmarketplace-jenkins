@@ -17,28 +17,28 @@ jobs: '*'
 jobs_disabled: false
 
 dist_tools:
-  - git
-  - libpq-dev
-  - python-dev
-  - libyaml-dev
-  - libreadline-dev
-  - libffi-dev
-  - postgresql-client-9.5
-  - curl
-  - zip
-  - unzip
-  - ntp
-  - jq
-  - xvfb
-  - wkhtmltopdf
-  - fonts-liberation
-  - gnupg2
-  - make
-  - zlib1g-dev
   - bzip2
+  - curl
+  - fonts-liberation
+  - git
+  - gnupg2
+  - libffi-dev
+  - libpq-dev
+  - libreadline-dev
   - libsqlite3-dev
   - libssl-dev
+  - libyaml-dev
+  - make
+  - ntp
+  - postgresql-client-9.5
+  - python-dev
   - python3-pip
+  - unzip
+  - xvfb
+  - zip
+  - zlib1g-dev
+  - jq
+  - wkhtmltopdf
 
 dm_applications:
   - api
