@@ -16,6 +16,28 @@ jenkins_java_args: ""
 jobs: '*'
 jobs_disabled: false
 
+dist_tools:
+  - bzip2
+  - curl
+  - fonts-liberation
+  - git
+  - gnupg2
+  - libffi-dev
+  - libpq-dev
+  - libreadline-dev
+  - libsqlite3-dev
+  - libssl-dev
+  - libyaml-dev
+  - make
+  - ntp
+  - postgresql-client-9.5
+  - python-dev
+  - python3-pip
+  - unzip
+  - xvfb
+  - zip
+  - zlib1g-dev
+
 dm_applications:
   - api
   - search-api

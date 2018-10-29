@@ -1,0 +1,6 @@
+---
+# Upgrades packages separately from the main Jenkins build playbook
+- name: Upgrade system packages to the latest LTS version
+  tags: [apt]
+  apt: update_cache=yes name={{ item }} state=latest
+  with_items: "{{ dist_tools }}"
