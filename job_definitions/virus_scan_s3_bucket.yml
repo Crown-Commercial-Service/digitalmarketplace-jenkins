@@ -44,6 +44,16 @@
     project-type: freestyle
     triggers:
       - timed: "H 3 * * *"
+    builders:
+      - trigger-builds:
+          - project: "virus-scan-s3-buckets-{{ environment }}"
+            condition: UNSTABLE_OR_WORSE
+            block: true
+            predefined-parameters: |
+              BUCKETS=digitalmarketplace-agreements-{{ environment }}-{{ environment }},digitalmarketplace-communications-{{ environment }}-{{ environment }},digitalmarketplace-documents-{{ environment }}-{{ environment }},digitalmarketplace-submissions-{{ environment }}-{{ environment }}
+              SINCE=49 hours ago
+              DRY_RUN=false
+{% if environment != 'preview' %}
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
@@ -56,13 +66,5 @@
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-2ndline
-    builders:
-      - trigger-builds:
-          - project: "virus-scan-s3-buckets-{{ environment }}"
-            condition: UNSTABLE_OR_WORSE
-            block: true
-            predefined-parameters: |
-              BUCKETS=digitalmarketplace-agreements-{{ environment }}-{{ environment }},digitalmarketplace-communications-{{ environment }}-{{ environment }},digitalmarketplace-documents-{{ environment }}-{{ environment }},digitalmarketplace-submissions-{{ environment }}-{{ environment }}
-              SINCE=49 hours ago
-              DRY_RUN=false
+{% endif %}
 {% endfor %}
