@@ -31,18 +31,19 @@
     pipeline:
       script: |
         node {
-          withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"]){
-            stage('Update alias'){
-              git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
-              sh('''
-                VIRTUALENV_ROOT=$([ -z ${VIRTUAL_ENV} ] && echo $(pwd)/venv || echo ${VIRTUAL_ENV})
-                [ -z "${VIRTUAL_ENV}" ] && [ ! -d venv ] && virtualenv venv || true
-                source ${VIRTUALENV_ROOT}/bin/activate
-                ${VIRTUALENV_ROOT}/bin/pip install -r requirements.txt
-
-                docker run -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" -e "DM_DATA_API_TOKEN_{{ environment|upper }}" digitalmarketplace/scripts scripts/update-index-alias.py "${ALIAS}" "${TARGET}" "{{ app_urls[environment].search_api }}" --stage="{{ environment }}" --delete-old-index=${DELETE_OLD_INDEX}
-              ''')
-            }
+          stage('Update alias'){
+            sh('''
+              docker run \
+                -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" \
+                -e "DM_DATA_API_TOKEN_{{ environment|upper }}" \
+                digitalmarketplace/scripts \
+                scripts/update-index-alias.py \
+                "${ALIAS}" \
+                "${TARGET}" \
+                "{{ app_urls[environment].search_api }}" \
+                --stage="{{ environment }}" \
+                --delete-old-index=${DELETE_OLD_INDEX}
+            ''')
           }
         }
 {% endfor %}
