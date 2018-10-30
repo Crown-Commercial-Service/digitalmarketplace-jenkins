@@ -114,9 +114,9 @@ jenkins_list_views:
       - index-briefs-preview
       - index-briefs-staging
       - index-briefs-production
-      - update-preview-index-alias
-      - update-staging-index-alias
-      - update-production-index-alias
+      - update-index-alias-preview
+      - update-index-alias-staging
+      - update-index-alias-production
   - name: "Functional, visual, and smoke tests"
     jobs:
       - apps-are-up-preview
