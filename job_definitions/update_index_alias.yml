@@ -2,7 +2,7 @@
 - job:
     name: "update-index-alias-{{ environment }}"
     display-name: "Update index alias - {{ environment }}"
-    description: >
+    description: |
         Create an alias for a given elasticsearch index.
         If there is an index with that alias already then
         that index will be given the alias '<alias>-old'.

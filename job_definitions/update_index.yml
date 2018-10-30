@@ -3,7 +3,7 @@
     name: "update-index-{{ environment }}"
     display-name: "Update index - {{ environment }}"
     project-type: freestyle
-    description: >
+    description: |
       This job updates an existing ElasticSearch index with services or briefs as they exist in the database
 
       In all likelihood you want to reindex all existing briefs or services to their corresponding index.

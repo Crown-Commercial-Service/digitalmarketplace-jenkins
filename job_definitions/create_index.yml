@@ -3,7 +3,7 @@
     name: "create-index-{{ environment }}"
     display-name: "Create index - {{ environment }}"
     project-type: freestyle
-    description: >
+    description: |
       This job creates a new index in the ElasticSearch service from specified objects in the database.
 
       Visiting either https://search-api.<STAGE>.marketplace.team/_status or
