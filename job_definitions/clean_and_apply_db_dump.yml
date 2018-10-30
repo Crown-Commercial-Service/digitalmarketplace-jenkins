@@ -111,7 +111,7 @@
                   ]
                 }
                 stage('Update index alias'){
-                  build job: "update-{{ environment }}-index-alias",
+                  build job: "update-index-alias-{{ environment }}",
                   parameters: [
                     string(name: 'ALIAS', value: "{{ search_config['services'][environment].default_index }}"),
                     string(name: 'TARGET', value: "${INDEX_NAME}"),
@@ -129,7 +129,7 @@
                   ]
                 }
                 stage('Update index alias'){
-                  build job: "update-{{ environment }}-index-alias",
+                  build job: "update-index-alias-{{ environment }}",
                   parameters: [
                     string(name: 'ALIAS', value: "{{ search_config['briefs'][environment].default_index }}"),
                     string(name: 'TARGET', value: "${INDEX_NAME}"),

@@ -1,7 +1,7 @@
 {% for environment in ['preview', 'staging', 'production'] %}
 - job:
-    name: "update-{{ environment }}-index-alias"
-    display-name: "Update {{ environment }} index alias"
+    name: "update-index-alias-{{ environment }}"
+    display-name: "Update index alias - {{ environment }}"
     description: >
         Create an alias for a given elasticsearch index.
         If there is an index with that alias already then
