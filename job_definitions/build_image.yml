@@ -68,6 +68,5 @@
                         text(name: 'STATUS', value: 'FAILED'),
                         text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
                       ]
-            } finally {
             }
         }

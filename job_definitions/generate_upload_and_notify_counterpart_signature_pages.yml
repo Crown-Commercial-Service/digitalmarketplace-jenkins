@@ -91,7 +91,6 @@
                 string(name: 'STATUS', value: 'FAILED'),
                 string(name: 'CHANNEL', value: '#dm-release')
               ]
-            } finally {
             }
         }
 
