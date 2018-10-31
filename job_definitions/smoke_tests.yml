@@ -39,8 +39,8 @@
                   text(name: 'URL', value: "<${BUILD_URL}smoke_test_report|${BUILD_DISPLAY_NAME}>")
                 ]
         }
-        try {
-          node {
+        node {
+          try {
             stage('Prepare') {
               git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
               sh("rbenv install -s")
@@ -95,8 +95,7 @@
                 notify_slack(':green_heart:', 'SUCCESS')
               }
             }
-          }
-        } catch(err) {
+          } catch(err) {
           {% if environment == 'production' %}
             notify_slack(':fire:', 'FAILED')
           {% else %}
@@ -114,18 +113,19 @@
             }
           {% endif %}
 
-          echo "Error caught"
-          currentBuild.result = 'FAILURE'
-          echo "Error: ${err}"
-        } finally {
-          publishHTML(target: [
-            allowMissing: true,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: 'reports',
-            reportFiles: 'index.html',
-            reportName: 'smoke test report'
-          ])
+            echo "Error caught"
+            currentBuild.result = 'FAILURE'
+            echo "Error: ${err}"
+          } finally {
+            publishHTML(target: [
+              allowMissing: true,
+              alwaysLinkToLastBuild: true,
+              keepAll: true,
+              reportDir: 'reports',
+              reportFiles: 'index.html',
+              reportName: 'smoke test report'
+            ])
+          }
         }
 
 
