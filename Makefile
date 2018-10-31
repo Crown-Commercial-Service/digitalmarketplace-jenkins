@@ -29,7 +29,7 @@ clean: ## Clean workspace (delete all generated files)
 	rm -rf venv requirements.txt.md5
 
 .PHONY: jenkins
-jenkins: venv ## Run Jenkins playbook
+jenkins: requirements ## Run Jenkins playbook
 	$(if ${TAGS},,$(error Must specify a list of ansible tags in TAGS))
 	@set -e ;\
 	${DM_CREDENTIALS_REPO}/sops-wrapper -v > /dev/null ;\
