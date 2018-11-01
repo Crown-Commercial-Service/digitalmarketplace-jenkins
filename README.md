@@ -74,6 +74,16 @@ To upgrade a plugin (for example, to address a security vulnerability), tick the
 Jenkins should restart during a quiet period when no jobs are running (the restart will take a few seconds).
 
 
+## Jobs
+
+Our Jenkins jobs are generated on the Jenkins box using the `jenkins-job-builder` tool via Ansible. If you want to test your job file locally before uploading, you can use
+
+```bash
+$ make test [JOBS=<job_name>]
+```
+
+The first time you run `make test` to test all the jobs it can be a bit slow, but subsequent runs will only test files in `job_definitions` that have changed.
+
 ## Authentication
 
 Authentication is managed via a Github OAuth app owned by the user `dm-ssp-jenkins` on
