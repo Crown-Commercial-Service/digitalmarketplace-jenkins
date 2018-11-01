@@ -3,3 +3,4 @@
 requirements.txt.md5
 *.retry
 local.nix
+.test_cache
