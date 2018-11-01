@@ -28,6 +28,10 @@ requirements: venv ## Install requirements
 requirements-test: requirements ## Install test requirements
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements-jenkins-job-builder.txt
 
+.PHONY: test
+test: requirements-test
+	$(MAKE) -C tests
+
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)
 	rm -rf venv requirements.txt.md5
