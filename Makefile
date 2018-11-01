@@ -33,7 +33,7 @@ endif
 
 .PHONY: test
 test: requirements-test
-	source ${VIRTUALENV_ROOT}/bin/activate && tools/jjb-lint/jjb-lint.sh job_definitions/*.yml
+	source ${VIRTUALENV_ROOT}/bin/activate && tools/jjb-lint/jjb-lint.sh ${ARGS} job_definitions/*.yml
 
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)
