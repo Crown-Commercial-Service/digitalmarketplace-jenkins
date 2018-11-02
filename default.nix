@@ -21,6 +21,8 @@ in (with args; {
       pkgs.cacert
       # because we *actually* also depend on the credentials repo
       pkgs.sops
+      # for tput, used in Makefile
+      pkgs.ncurses
       # ansible makes use of rsync & ssh
       pkgs.openssh
       pkgs.rsync
