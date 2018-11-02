@@ -4,9 +4,13 @@ space :=
 space +=
 
 define colorecho
-      @tput setaf 6
-      @echo $1
-      @tput sgr0
+	@tput setaf 6
+	@echo $1
+	@tput sgr0
+endef
+
+define capture-output
+	script $1 $2 > /dev/null || cat $1
 endef
 
 DM_JENKINS_REPO ?= ..
@@ -42,18 +46,26 @@ define process-templates
 		$(DM_JENKINS_REPO)/tests/test_templates.yml
 endef
 
+define process-templates-quiet
+	$(call capture-output,$(@:.yml=).log,$(call process-templates,$1,$2))
+endef
+
 $(ANSIBLE_OUTDIR):
-	mkdir -p $@
-	$(call process-templates,$@,$(SOURCES))
-	$(eval ALREADY_RAN := true)
+	@mkdir -p $@
+	@$(call colorecho,'Detected first run; generating cache...')
+	@$(call process-templates,$@,$(SOURCES))
+	@$(eval ALREADY_RAN := true)
 
 $(ANSIBLE_OUTDIR)/%.yml: $(SRCDIR)/%.yml | $(ANSIBLE_OUTDIR)
-	$(if $(ALREADY_RAN),,$(call process-templates,$(@D),$?))
+	@$(call colorecho,'Parsing `$(<F)` with ansible...')
+	@$(if $(ALREADY_RAN),,$(call process-templates-quiet,$(@D),$?))
 
 $(JJB_OUTDIR)/%.xml: $(ANSIBLE_OUTDIR)/%.yml
-	mkdir -p $(@D)
-	$(call colorecho,'Parsing `$(<F)` with jenkins-jobs...')
-	jenkins-jobs test $< > $@
+	@mkdir -p $(@D)
+	@$(call colorecho,'Parsing `$(<F)` with jenkins-jobs...')
+	@tput setaf 1 # print jenkins-jobs warnings in red
+	@jenkins-jobs -l=WARNING test $< > $@
+	@tput sgr0
 
 generate-fixtures:
 	cat ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml \
