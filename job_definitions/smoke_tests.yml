@@ -17,9 +17,10 @@
         <li>Supplier frontend</li>
         <li>User frontend</li>
       </ul>
-    logrotate:
-      daysToKeep: 4
-      artifactDaysToKeep: 4
+    properties:
+      build-discarder:
+        days-to-keep: 4
+        artifact-days-to-keep: 4
     triggers:
       - timed: "H/5 * * * *"
     wrappers:
