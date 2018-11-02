@@ -39,6 +39,7 @@ pre-populate-cache: $(ANSIBLE_OUTDIR)
 
 define process-templates
 	ansible-playbook \
+		--inventory="localhost," \
 		--extra-vars=@$(DM_JENKINS_REPO)/playbooks/roles/jenkins/defaults/main.yml \
 		--extra-vars=@$(DM_JENKINS_REPO)/tests/fixtures/vars.yml \
 		--extra-vars="dest=$1" \
