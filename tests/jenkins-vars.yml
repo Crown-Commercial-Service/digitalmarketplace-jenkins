@@ -1,0 +1,57 @@
+jenkins_api_user: jenkins-api-user
+jenkins_api_user_github_personal_access_token: --jenkins-api-user-github-personal-access-token--
+jenkins_github_email: jenkins+github@example.com
+jenkins_gdrive_db_dumps_folder_id: __jenkins_gdrive_db_dumps_folder_id__
+jenkins_gdrive_csv_data_export_folder_id: __jenkins_gdrive_csv_data_export_folder_id__
+jenkins_slack_url: slack.example.com/?user=jenkins
+performance_platform_bearer_tokens:
+  digital-outcomes-specialists: SuperSecretPerformancePlatformBearerTokenForDOS
+smoke_test_variables:
+  preview:
+    admin_email: admin+smoke_test+preview@example.com
+    admin_password: PreviewSmokeTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoke_test+preview@example.com
+    admin_ccs_category_password: PreviewSmokeTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoke_test+preview@example.com
+    admin_ccs_sourcing_password: PreviewSmokeTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoke_test+preview@example.com
+    admin_manager_password: PreviewSmokeTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoke_test+preview@example.com
+    admin_framework_manager_password: PreviewSmokeTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoke_test+preview@example.com
+    buyer_password: PreviewSmokeTestBuyerPassword
+    supplier_email: supplier+smoke_test+preview@example.com
+    supplier_id: 11235
+    supplier_password: PreviewSmokeTestSupplierPassword
+  staging:
+    admin_email: admin+smoke_test+staging@example.com
+    admin_password: StagingSmokeTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoke_test+staging@example.com
+    admin_ccs_category_password: StagingSmokeTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoke_test+staging@example.com
+    admin_ccs_sourcing_password: StagingSmokeTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoke_test+staging@example.com
+    admin_manager_password: StagingSmokeTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoke_test+staging@example.com
+    admin_framework_manager_password: StagingSmokeTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoke_test+staging@example.com
+    buyer_password: StagingSmokeTestBuyerPassword
+    supplier_email: supplier+smoke_test+staging@example.com
+    supplier_id: 11235
+    supplier_password: StagingSmokeTestSupplierPassword
+  production:
+    admin_email: admin+smoke_test+production@example.com
+    admin_password: ProductionSmokeTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoke_test+production@example.com
+    admin_ccs_category_password: ProductionSmokeTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoke_test+production@example.com
+    admin_ccs_sourcing_password: ProductionSmokeTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoke_test+production@example.com
+    admin_manager_password: ProductionSmokeTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoke_test+production@example.com
+    admin_framework_manager_password: ProductionSmokeTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoke_test+production@example.com
+    buyer_password: ProductionSmokeTestBuyerPassword
+    supplier_email: supplier+smoke_test+production@example.com
+    supplier_id: 11235
+    supplier_password: ProductionSmokeTestSupplierPassword

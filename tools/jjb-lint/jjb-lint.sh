@@ -58,6 +58,7 @@ run_ansible()
 	ansible-playbook "$ANSIBLE_VERBOSE" \
 		--inventory="localhost," \
 		--extra-vars=@"${DM_JENKINS_REPO}/playbooks/roles/jenkins/defaults/main.yml" \
+		--extra-vars=@"${DM_JENKINS_REPO}/tests/jenkins-vars.yml" \
 		--extra-vars="dest=$dest" \
 		--extra-vars="items=[$items]" \
 		"${LIBDIR}/test_templates.yml"
