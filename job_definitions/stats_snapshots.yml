@@ -9,9 +9,10 @@
     display-name: "Snapshot {{ framework }} stats - {{ environment }}"
     project-type: freestyle
     description: Creates an hourly snapshot of framework stats and stores it in the API audit event
-    logrotate:
-      daysToKeep: 20
-      artifactDaysToKeep: 20
+    properties:
+      build-discarder:
+        days-to-keep: 20
+        artifact-days-to-keep: 20
     triggers:
       - timed: "H * * * *"
     publishers:

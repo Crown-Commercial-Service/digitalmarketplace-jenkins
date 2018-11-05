@@ -11,9 +11,10 @@
     display-name: "Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}"
     project-type: freestyle
     description: Sends a regular snapshot of framework stats to the performance platform
-    logrotate:
-      daysToKeep: 20
-      artifactDaysToKeep: 20
+    properties:
+      build-discarder:
+        days-to-keep: 20
+        artifact-days-to-keep: 20
     triggers:
       - timed: {{ schedule }}
     publishers:

@@ -4,9 +4,10 @@
     display-name: "Tag framework content"
     project-type: freestyle
     description: "Push the git tag on the https://github.com/alphagov/digitalmarketplace-frameworks repository."
-    logrotate:
-      daysToKeep: 20
-      artifactDaysToKeep: 20
+    properties:
+      build-discarder:
+        days-to-keep: 20
+        artifact-days-to-keep: 20
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-frameworks.git
