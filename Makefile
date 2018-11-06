@@ -27,6 +27,13 @@ requirements: venv ## Install requirements
 .PHONY: requirements-test
 requirements-test: requirements ## Install test requirements
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements-jenkins-job-builder.txt
+ifeq (, $(shell which jq))
+	$(error jjb-lint.sh requires jq, please ensure it is installed)
+endif
+
+.PHONY: test
+test: requirements-test
+	source ${VIRTUALENV_ROOT}/bin/activate && tools/jjb-lint/jjb-lint.sh job_definitions/*.yml
 
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)
