@@ -70,6 +70,7 @@ run_jjb()
 	echo "$2"
 	try \
 	jenkins-jobs \
+		--conf "jenkins_jobs.ini" \
 		test \
 		-o "$1" \
 		"$2" \
@@ -173,6 +174,8 @@ jjb_lint()
 	local status
 	status=0
 
+	copy_jjb_config
+
 	for f
 	do
 		# Use uniq before parsing the output because
@@ -191,6 +194,28 @@ jjb_lint()
 		fi
 	done
 	return $status
+}
+
+copy_jjb_config()
+{
+	# We want to test jenkins-jobs with the
+	# configuration used in production, but
+	# we want to tweak it slightly to avoid
+	# jenkins-jobs contacting jenkins
+
+	run_ansible "jenkins_jobs.ini.out" "${DM_JENKINS_REPO}/playbooks/roles/jenkins/templates/jenkins_jobs.ini.j2" > /dev/null
+
+	# If jenkins-jobs finds a configuration file
+	# it tries to contact the Jenkins server
+	# to detect what plugins are installed,
+	# unless `query_plugins_info` is set to False
+	# in the configuration file.
+	# See <https://docs.openstack.org/infra/jenkins-job-builder/execution.html#jenkins-section>
+	sed \
+		-e '/\[jenkins\]/a\
+query_plugins_info=False' \
+		"jenkins_jobs.ini.out" \
+		> "jenkins_jobs.ini"
 }
 
 ###################
