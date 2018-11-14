@@ -8,19 +8,18 @@
     triggers:
       - pollscm:
           cron: "* * * * *"
-    pipeline:
-      script: |
-        node {
-          stage('Prepare') {
-            git url: "git@github.com:alphagov/digitalmarketplace-framework-application-guidance.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
-            sh("rbenv install -s")
-            sh("gem install bundler --conservative")
-            sh("make requirements")
-          }
-
-          stage('Build and publish') {
-            sh("git config user.name 'Jenkins'")
-            sh("git config user.email '{{ jenkins_github_email }}'")
-            sh("make publish")
-          }
+    dsl: |
+      node {
+        stage('Prepare') {
+          git url: "git@github.com:alphagov/digitalmarketplace-framework-application-guidance.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
+          sh("rbenv install -s")
+          sh("gem install bundler --conservative")
+          sh("make requirements")
         }
+
+        stage('Build and publish') {
+          sh("git config user.name 'Jenkins'")
+          sh("git config user.email '{{ jenkins_github_email }}'")
+          sh("make publish")
+        }
+      }

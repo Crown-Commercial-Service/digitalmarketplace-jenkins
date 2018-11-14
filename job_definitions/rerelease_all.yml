@@ -30,44 +30,43 @@
             - preview
             - staging
             - production
-    pipeline:
-      script: |
-        def notify_slack(icon, job, status) {
-          build job: "notify-slack",
-          parameters: [
-            string(name: 'USERNAME', value: "rerelease-all-apps"),
-            string(name: 'ICON', value: icon),
-            string(name: 'JOB', value: job),
-            string(name: 'CHANNEL', value: "#dm-release"),
-            text(name: 'STAGE', value: "${STAGE}"),
-            text(name: 'STATUS', value: status),
-            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
-          ]
+    dsl: |
+      def notify_slack(icon, job, status) {
+        build job: "notify-slack",
+        parameters: [
+          string(name: 'USERNAME', value: "rerelease-all-apps"),
+          string(name: 'ICON', value: icon),
+          string(name: 'JOB', value: job),
+          string(name: 'CHANNEL', value: "#dm-release"),
+          text(name: 'STAGE', value: "${STAGE}"),
+          text(name: 'STATUS', value: status),
+          text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+        ]
+      }
+      currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
+      notify_slack(':spinner:', 'Start re-release all apps on ${STAGE}', 'STARTED')
+      try {
+        stage('Update credentials') {
+          build job: "update-credentials"
         }
-        currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
-        notify_slack(':spinner:', 'Start re-release all apps on ${STAGE}', 'STARTED')
-        try {
-          stage('Update credentials') {
-            build job: "update-credentials"
-          }
-          parallel(
-  {% for app in apps %}
-            "{{ app }}": {
-              stage("{{ app }}") {
-                build job: "release-app-paas", parameters: [
-                  string(name: "STAGE", value: "${STAGE}"),
-                  string(name: "APPLICATION_NAME", value: "{{ app }}")
-                ]
-              }
-            },
-  {% endfor %}
-          )
+        parallel(
+{% for app in apps %}
+          "{{ app }}": {
+            stage("{{ app }}") {
+              build job: "release-app-paas", parameters: [
+                string(name: "STAGE", value: "${STAGE}"),
+                string(name: "APPLICATION_NAME", value: "{{ app }}")
+              ]
+            }
+          },
+{% endfor %}
+        )
 
-          stage("Notify Slack") {
-            notify_slack(':rocket:', 'Re-release all apps on ${STAGE}', 'SUCCESS')
-          }
-        } catch(e) {
-          currentBuild.result = 'FAILURE'
-          echo "Error: ${e}"
-          notify_slack(':boom:', 'Re-release all apps on ${STAGE}', 'FAILED')
+        stage("Notify Slack") {
+          notify_slack(':rocket:', 'Re-release all apps on ${STAGE}', 'SUCCESS')
         }
+      } catch(e) {
+        currentBuild.result = 'FAILURE'
+        echo "Error: ${e}"
+        notify_slack(':boom:', 'Re-release all apps on ${STAGE}', 'FAILED')
+      }

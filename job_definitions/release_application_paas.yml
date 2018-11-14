@@ -22,65 +22,64 @@
       - string:
           name: RELEASE_NAME
           description: "Release name (eg 'release-42') to deploy. If blank, the current release will be re-deployed."
-    pipeline:
-      script: |
-        def notify_slack(icon, status) {
-          build job: "notify-slack",
-            parameters: [
-              string(name: 'USERNAME', value: "release-application-to-paas"),
-              string(name: 'ICON', value: icon),
-              string(name: 'JOB', value: "Release ${APPLICATION_NAME} to ${STAGE}"),
-              string(name: 'CHANNEL', value: "#dm-release"),
-              string(name: 'PROJECT', value: "${APPLICATION_NAME}"),
-              text(name: 'STAGE', value: "${STAGE}"),
-              text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/tree/${RELEASE_NAME}|${RELEASE_NAME}>"),
-              text(name: 'STATUS', value: status),
-              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
-            ]
-        }
+    dsl: |
+      def notify_slack(icon, status) {
+        build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "release-application-to-paas"),
+            string(name: 'ICON', value: icon),
+            string(name: 'JOB', value: "Release ${APPLICATION_NAME} to ${STAGE}"),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            string(name: 'PROJECT', value: "${APPLICATION_NAME}"),
+            text(name: 'STAGE', value: "${STAGE}"),
+            text(name: 'RELEASE_NAME', value: "<https://github.com/alphagov/digitalmarketplace-${APPLICATION_NAME}/tree/${RELEASE_NAME}|${RELEASE_NAME}>"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+      }
 
-        try {
-          node {
-            git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+      try {
+        node {
+          git url: 'git@github.com:alphagov/digitalmarketplace-aws.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
 
-            stage('Prepare') {
-              build job: "update-credentials"
-              currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
-              sh('make paas-clean')
-              sh('pyenv local 3.6.2 && make requirements')
-            }
+          stage('Prepare') {
+            build job: "update-credentials"
+            currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
+            sh('make paas-clean')
+            sh('pyenv local 3.6.2 && make requirements')
+          }
 
-            stage('Deploy') {
-              withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
-                paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
-                withEnv(paas_credentials.tokenize("\n")) {
-                  sh('make paas-login')
+          stage('Deploy') {
+            withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
+              paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
+              withEnv(paas_credentials.tokenize("\n")) {
+                sh('make paas-login')
+              }
+
+              lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
+                if ("$RELEASE_NAME" == "") {
+                  echo "No release specified. Detecting currently deployed release version of ${APPLICATION_NAME} ..."
+
+                  env.RELEASE_NAME = sh(script: '''cf app ${APPLICATION_NAME} | grep 'docker image' | cut -d ':' -f 3''', returnStdout: true).trim()
+
+                  echo "Current deployed version of ${APPLICATION_NAME}: ${RELEASE_NAME}"
+                  currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
                 }
 
-                lock("paas-${STAGE}-${APPLICATION_NAME}-deploy") {
-                  if ("$RELEASE_NAME" == "") {
-                    echo "No release specified. Detecting currently deployed release version of ${APPLICATION_NAME} ..."
-
-                    env.RELEASE_NAME = sh(script: '''cf app ${APPLICATION_NAME} | grep 'docker image' | cut -d ':' -f 3''', returnStdout: true).trim()
-
-                    echo "Current deployed version of ${APPLICATION_NAME}: ${RELEASE_NAME}"
-                    currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
-                  }
-
-                  sh("make ${STAGE} deploy-app")
-                }
+                sh("make ${STAGE} deploy-app")
               }
             }
           }
-
-          notify_slack(':sheep:', 'SUCCESS')
-
-        } catch(err) {
-            currentBuild.result = 'FAILURE'
-            echo "Error: ${err}"
-            notify_slack(':kaboom:', 'FAILED')
-        } finally {
-          node {
-            sh('make paas-clean')
-          }
         }
+
+        notify_slack(':sheep:', 'SUCCESS')
+
+      } catch(err) {
+          currentBuild.result = 'FAILURE'
+          echo "Error: ${err}"
+          notify_slack(':kaboom:', 'FAILED')
+      } finally {
+        node {
+          sh('make paas-clean')
+        }
+      }

@@ -10,20 +10,19 @@
     project-type: pipeline
     description: Rotate the {{ environment }} Notify callback token.
     concurrent: false
-    pipeline:
-      script: |
-        def notify_slack(icon, status) {
-          build job: "notify-slack",
-          parameters: [
-            string(name: 'USERNAME', value: "rotate-api-tokens"),
-            string(name: 'ICON', value: icon),
-            string(name: 'JOB', value: "Rotate Notify callback token for {{ environment }}"),
-            string(name: 'CHANNEL', value: "#dm-release"),
-            text(name: 'STAGE', value: "{{ environment }}"),
-            text(name: 'STATUS', value: status),
-            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
-          ]
-        }
+    dsl: |
+      def notify_slack(icon, status) {
+        build job: "notify-slack",
+        parameters: [
+          string(name: 'USERNAME', value: "rotate-api-tokens"),
+          string(name: 'ICON', value: icon),
+          string(name: 'JOB', value: "Rotate Notify callback token for {{ environment }}"),
+          string(name: 'CHANNEL', value: "#dm-release"),
+          text(name: 'STAGE', value: "{{ environment }}"),
+          text(name: 'STATUS', value: status),
+          text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+        ]
+      }
 
 {% for job_stage in job_stages %}
         stage("{{ job_stage.name }}") {

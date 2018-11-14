@@ -28,22 +28,21 @@
           description: >
             If there is an index with the alias '<alias>-old' and
             this option is enabled then that index will be deleted.
-    pipeline:
-      script: |
-        node {
-          stage('Update alias'){
-            sh('''
-              docker run \
-                -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" \
-                -e "DM_DATA_API_TOKEN_{{ environment|upper }}" \
-                digitalmarketplace/scripts \
-                scripts/update-index-alias.py \
-                "${ALIAS}" \
-                "${TARGET}" \
-                "{{ app_urls[environment].search_api }}" \
-                --stage="{{ environment }}" \
-                --delete-old-index=${DELETE_OLD_INDEX}
-            ''')
-          }
+    dsl: |
+      node {
+        stage('Update alias'){
+          sh('''
+            docker run \
+              -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" \
+              -e "DM_DATA_API_TOKEN_{{ environment|upper }}" \
+              digitalmarketplace/scripts \
+              scripts/update-index-alias.py \
+              "${ALIAS}" \
+              "${TARGET}" \
+              "{{ app_urls[environment].search_api }}" \
+              --stage="{{ environment }}" \
+              --delete-old-index=${DELETE_OLD_INDEX}
+          ''')
         }
+      }
 {% endfor %}
