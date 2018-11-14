@@ -14,15 +14,19 @@ endif
 help: ## List available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: requirements
-requirements: venv ## Install requirements
-	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
-
 .PHONY: venv
 venv: ${VIRTUALENV_ROOT}/activate ## Create virtualenv if it does not exist
 
 ${VIRTUALENV_ROOT}/activate:
 	[ -z $$VIRTUAL_ENV ] && [ ! -d venv ] && python3 -m venv venv || true
+
+.PHONY: requirements
+requirements: venv ## Install requirements
+	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
+
+.PHONY: requirements-test
+requirements-test: requirements ## Install test requirements
+	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements-jenkins-job-builder.txt
 
 .PHONY: clean
 clean: ## Clean workspace (delete all generated files)

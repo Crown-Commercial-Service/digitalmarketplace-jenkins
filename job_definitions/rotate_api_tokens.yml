@@ -26,20 +26,19 @@
             - preview
             - staging
             - production
-    pipeline:
-      script: |
-        def notify_slack(icon, status) {
-          build job: "notify-slack",
-          parameters: [
-            string(name: 'USERNAME', value: "rotate-api-tokens"),
-            string(name: 'ICON', value: icon),
-            string(name: 'JOB', value: "Rotate API tokens on ${STAGE}"),
-            string(name: 'CHANNEL', value: "#dm-release"),
-            text(name: 'STAGE', value: "${STAGE}"),
-            text(name: 'STATUS', value: status),
-            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
-          ]
-        }
+    dsl: |
+      def notify_slack(icon, status) {
+        build job: "notify-slack",
+        parameters: [
+          string(name: 'USERNAME', value: "rotate-api-tokens"),
+          string(name: 'ICON', value: icon),
+          string(name: 'JOB', value: "Rotate API tokens on ${STAGE}"),
+          string(name: 'CHANNEL', value: "#dm-release"),
+          text(name: 'STAGE', value: "${STAGE}"),
+          text(name: 'STATUS', value: status),
+          text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+        ]
+      }
 
 {% for stage in stages %}
         stage("{{ stage.name }}") {

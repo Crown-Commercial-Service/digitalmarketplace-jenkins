@@ -9,285 +9,284 @@
     triggers:
       - pollscm:
           cron: "* * * * *"
-    pipeline:
-      script: |
+    dsl: |
 
-        import jenkins.model.Jenkins
+      import jenkins.model.Jenkins
 
-        def tag_release(tag) {
+      def tag_release(tag) {
+        try {
+          sh("git config user.name 'Jenkins'")
+          sh("git config user.email '{{ jenkins_github_email }}'")
+          sh("git tag -a ${tag} -m ${tag}")
+          sh("git push origin ${tag} -f")
+        } catch(e) {
+          echo "${tag} tag already exists"
+        }
+      }
+
+      def run_functional_tests(stage) {
+        waitUntil {
           try {
-            sh("git config user.name 'Jenkins'")
-            sh("git config user.email '{{ jenkins_github_email }}'")
-            sh("git tag -a ${tag} -m ${tag}")
-            sh("git push origin ${tag} -f")
-          } catch(e) {
-            echo "${tag} tag already exists"
-          }
-        }
-
-        def run_functional_tests(stage) {
-          waitUntil {
-            try {
-              node {
-                build job: "functional-tests-${stage}"
-                return true
-              }
-            } catch(error) {
-              echo "Functional tests failed: ${error}"
-              script {
-                env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
-                  parameters: [
-                    [
-                      $class: 'ChoiceParameterDefinition',
-                      choices: 'Retry\nSkip',
-                      description: 'Failed functional tests action',
-                      name: 'action'
-                    ]
-                  ]
-              }
-              echo "Action chosen was ${env.FAILED_TEST_ACTION}"
-
-              if (env.FAILED_TEST_ACTION == 'Retry') {
-                echo "Retrying functional tests on ${stage}."
-                return false
-              }
-              if (env.FAILED_TEST_ACTION == 'Skip') {
-                input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
-                echo "Skipping failed functional tests on ${stage}."
-                return true
-              }
-            }
-          }
-        }
-
-        def run_visual_regression_tests(stage) {
-          def job_name = "visual-regression-${stage}"
-          def vr_job = null
-
-          waitUntil {
             node {
-              vr_job = build job: job_name, parameters: [
-                string(name: "COMMAND", value: "test"),
-              ], propagate: false
+              build job: "functional-tests-${stage}"
+              return true
             }
-
-            def vr_job_result = vr_job.result
-            def vr_job_number = vr_job.number
-            vr_job = null
-
-            if (vr_job_result == 'SUCCESS') {
-                return true
-            } else {
-              echo "Visual regression tests build result: ${vr_job_result}"
-
-              script {
-                env.FAILED_TEST_ACTION = input message: 'Visual regression tests failed. Retry, approve, bypass?', parameters: [
+          } catch(error) {
+            echo "Functional tests failed: ${error}"
+            script {
+              env.FAILED_TEST_ACTION = input message: 'Functional tests failed. Retry, skip or abort?',
+                parameters: [
                   [
                     $class: 'ChoiceParameterDefinition',
-                    choices: 'Retry\nApprove\nBypass',
-                    description: 'Failed visual regression tests action',
+                    choices: 'Retry\nSkip',
+                    description: 'Failed functional tests action',
                     name: 'action'
                   ]
                 ]
-              }
+            }
+            echo "Action chosen was ${env.FAILED_TEST_ACTION}"
 
-              echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+            if (env.FAILED_TEST_ACTION == 'Retry') {
+              echo "Retrying functional tests on ${stage}."
+              return false
+            }
+            if (env.FAILED_TEST_ACTION == 'Skip') {
+              input(message: "Do you swear on your eternal soul that you 100% know what you're doing and you really don't want to make the tests pass first?")
+              echo "Skipping failed functional tests on ${stage}."
+              return true
+            }
+          }
+        }
+      }
 
-              if (env.FAILED_TEST_ACTION == 'Retry') {
-                echo "Retrying visual regression tests on ${stage}."
-                return false
+      def run_visual_regression_tests(stage) {
+        def job_name = "visual-regression-${stage}"
+        def vr_job = null
 
-              } else if (env.FAILED_TEST_ACTION == 'Approve') {
-                def test_job = Jenkins.instance.getItemByFullName(job_name)
-                def test_job_last_build_number = test_job.getLastBuild().getNumber()
-                test_job = null
+        waitUntil {
+          node {
+            vr_job = build job: job_name, parameters: [
+              string(name: "COMMAND", value: "test"),
+            ], propagate: false
+          }
 
-                echo "Build triggered by this pipeline run: ${vr_job_number}. Last build: ${test_job_last_build_number}"
+          def vr_job_result = vr_job.result
+          def vr_job_number = vr_job.number
+          vr_job = null
 
-                if (test_job_last_build_number == vr_job_number) {
-                  echo "Verified that the last visual regression job built was triggered by this pipeline. Approving."
-                  try {
-                    node {
-                      build job: job_name, parameters: [
-                        string(name: "COMMAND", value: "approve"),
-                      ]
-                    }
+          if (vr_job_result == 'SUCCESS') {
+              return true
+          } else {
+            echo "Visual regression tests build result: ${vr_job_result}"
 
-                  } catch(inside_error) {
-                    echo "Approving visual regression tests failed: ${inside_error}"
-                    return false
+            script {
+              env.FAILED_TEST_ACTION = input message: 'Visual regression tests failed. Retry, approve, bypass?', parameters: [
+                [
+                  $class: 'ChoiceParameterDefinition',
+                  choices: 'Retry\nApprove\nBypass',
+                  description: 'Failed visual regression tests action',
+                  name: 'action'
+                ]
+              ]
+            }
+
+            echo "Action chosen was ${env.FAILED_TEST_ACTION}"
+
+            if (env.FAILED_TEST_ACTION == 'Retry') {
+              echo "Retrying visual regression tests on ${stage}."
+              return false
+
+            } else if (env.FAILED_TEST_ACTION == 'Approve') {
+              def test_job = Jenkins.instance.getItemByFullName(job_name)
+              def test_job_last_build_number = test_job.getLastBuild().getNumber()
+              test_job = null
+
+              echo "Build triggered by this pipeline run: ${vr_job_number}. Last build: ${test_job_last_build_number}"
+
+              if (test_job_last_build_number == vr_job_number) {
+                echo "Verified that the last visual regression job built was triggered by this pipeline. Approving."
+                try {
+                  node {
+                    build job: job_name, parameters: [
+                      string(name: "COMMAND", value: "approve"),
+                    ]
                   }
 
-                  return true
-                } else {
-                  input(message: "Visual regression tests have run elsewhere since this pipeline triggered the job. They will be re-run here when you proceed.")
+                } catch(inside_error) {
+                  echo "Approving visual regression tests failed: ${inside_error}"
                   return false
                 }
-              } else if (env.FAILED_TEST_ACTION == 'Bypass') {
-                input(message: "Are you sure you want to bypass the visual regression tests? It's very likely you want to retry them (eg if a page failed to load) or approve them (if the changes you made were intentional or data related).")
-                echo "Skipping failed visual regression tests on ${stage}."
+
                 return true
-
+              } else {
+                input(message: "Visual regression tests have run elsewhere since this pipeline triggered the job. They will be re-run here when you proceed.")
+                return false
               }
+            } else if (env.FAILED_TEST_ACTION == 'Bypass') {
+              input(message: "Are you sure you want to bypass the visual regression tests? It's very likely you want to retry them (eg if a page failed to load) or approve them (if the changes you made were intentional or data related).")
+              echo "Skipping failed visual regression tests on ${stage}."
+              return true
+
             }
           }
         }
+      }
 
-        stage('Create release tag') {
-          node {
-            git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
-                branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-            releaseNumber = sh(
-                script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
-                returnStdout: true
-            ).trim()
+      stage('Create release tag') {
+        node {
+          git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
+              branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+          releaseNumber = sh(
+              script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
+              returnStdout: true
+          ).trim()
 
-            if (releaseNumber == "") {
-                throw new Exception('Release number can not be found')
-            }
-
-            releaseName = "release-${releaseNumber}"
-
-            tag_release(releaseName)
-
-            echo "Release number: ${releaseNumber}"
-            currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
+          if (releaseNumber == "") {
+              throw new Exception('Release number can not be found')
           }
-        }
 
-        stage('Build') {
-          node {
-            build job: "build-image", parameters: [
-              string(name: "REPOSITORY", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
-        }
+          releaseName = "release-${releaseNumber}"
 
-        {% if application in dm_db_applications %}
-        stage('DB migration on preview') {
-          node {
-            build job: "database-migration-paas", parameters: [
-              string(name: "STAGE", value: "preview"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
-        }
+          tag_release(releaseName)
 
-        stage('Functional tests - preview') {
-          milestone()
-          run_functional_tests("preview")
-          milestone()
+          echo "Release number: ${releaseNumber}"
+          currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
         }
+      }
+
+      stage('Build') {
+        node {
+          build job: "build-image", parameters: [
+            string(name: "REPOSITORY", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+        }
+      }
+
+      {% if application in dm_db_applications %}
+      stage('DB migration on preview') {
+        node {
+          build job: "database-migration-paas", parameters: [
+            string(name: "STAGE", value: "preview"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+        }
+      }
+
+      stage('Functional tests - preview') {
+        milestone()
+        run_functional_tests("preview")
+        milestone()
+      }
+      {% endif %}
+
+      stage('Release to preview') {
+        node {
+          build job: "release-app-paas", parameters: [
+            string(name: "STAGE", value: "preview"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+          build job: "tag-application-deloyment", parameters: [
+            string(name: "STAGE", value: "preview"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+        }
+      }
+
+      stage('Functional tests - preview') {
+        milestone()
+        run_functional_tests("preview")
+        milestone()
+      }
+
+      stage('Visual regression tests - preview') {
+        milestone()
+        run_visual_regression_tests("preview")
+        milestone()
+      }
+
+      {% if application in dm_db_applications %}
+      stage('DB migration on staging') {
+        milestone()
+        input(message: "Release to staging?")
+        milestone()
+        node {
+          build job: "database-migration-paas", parameters: [
+            string(name: "STAGE", value: "staging"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+        }
+      }
+
+      stage('Functional tests - staging') {
+        milestone()
+        run_functional_tests("staging")
+        milestone()
+      }
+      {% endif %}
+
+      stage('Release to staging') {
+        {% if application not in dm_db_applications %}
+        milestone()
+        input(message: "Release to staging?")
+        milestone()
         {% endif %}
-
-        stage('Release to preview') {
-          node {
-            build job: "release-app-paas", parameters: [
-              string(name: "STAGE", value: "preview"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-            build job: "tag-application-deloyment", parameters: [
-              string(name: "STAGE", value: "preview"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
+        node {
+          build job: "release-app-paas", parameters: [
+            string(name: "STAGE", value: "staging"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+          build job: "tag-application-deloyment", parameters: [
+            string(name: "STAGE", value: "staging"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
         }
+      }
 
-        stage('Functional tests - preview') {
-          milestone()
-          run_functional_tests("preview")
-          milestone()
-        }
+      stage('Functional tests - staging') {
+        milestone()
+        run_functional_tests("staging")
+        milestone()
+      }
 
-        stage('Visual regression tests - preview') {
-          milestone()
-          run_visual_regression_tests("preview")
-          milestone()
+      {% if application in dm_db_applications %}
+      stage('DB migration on production') {
+        milestone()
+        input(message: "Release to production?")
+        milestone()
+        node {
+          build job: "database-migration-paas", parameters: [
+            string(name: "STAGE", value: "production"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
         }
+      }
+      {% endif %}
 
-        {% if application in dm_db_applications %}
-        stage('DB migration on staging') {
-          milestone()
-          input(message: "Release to staging?")
-          milestone()
-          node {
-            build job: "database-migration-paas", parameters: [
-              string(name: "STAGE", value: "staging"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
-        }
-
-        stage('Functional tests - staging') {
-          milestone()
-          run_functional_tests("staging")
-          milestone()
-        }
+      stage('Release to production') {
+        {% if application not in dm_db_applications %}
+        milestone()
+        input(message: "Release to production?")
+        milestone()
         {% endif %}
-
-        stage('Release to staging') {
-          {% if application not in dm_db_applications %}
-          milestone()
-          input(message: "Release to staging?")
-          milestone()
-          {% endif %}
-          node {
-            build job: "release-app-paas", parameters: [
-              string(name: "STAGE", value: "staging"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-            build job: "tag-application-deloyment", parameters: [
-              string(name: "STAGE", value: "staging"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
+        node {
+          build job: "release-app-paas", parameters: [
+            string(name: "STAGE", value: "production"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
+          build job: "tag-application-deloyment", parameters: [
+            string(name: "STAGE", value: "production"),
+            string(name: "APPLICATION_NAME", value: "{{ application }}"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
+          ]
         }
-
-        stage('Functional tests - staging') {
-          milestone()
-          run_functional_tests("staging")
-          milestone()
-        }
-
-        {% if application in dm_db_applications %}
-        stage('DB migration on production') {
-          milestone()
-          input(message: "Release to production?")
-          milestone()
-          node {
-            build job: "database-migration-paas", parameters: [
-              string(name: "STAGE", value: "production"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
-        }
-        {% endif %}
-
-        stage('Release to production') {
-          {% if application not in dm_db_applications %}
-          milestone()
-          input(message: "Release to production?")
-          milestone()
-          {% endif %}
-          node {
-            build job: "release-app-paas", parameters: [
-              string(name: "STAGE", value: "production"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-            build job: "tag-application-deloyment", parameters: [
-              string(name: "STAGE", value: "production"),
-              string(name: "APPLICATION_NAME", value: "{{ application }}"),
-              string(name: "RELEASE_NAME", value: "${releaseName}"),
-            ]
-          }
-        }
+      }
 {% endfor %}

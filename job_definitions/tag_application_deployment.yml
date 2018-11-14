@@ -23,23 +23,22 @@
       - string:
           name: RELEASE_NAME
           description: "Release name (eg 'release-42') to deploy"
-    pipeline:
-      script: |
-        node {
-          stage('Pull repo') {
-            dir("${APPLICATION_NAME}") {
-              git url: 'git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git',
-                  branch: 'master',
-                  credentialsId: 'github_com_and_enterprise'
-            }
-          }
-
-          stage('Move release tag') {
-            dir("${APPLICATION_NAME}") {
-              sh("git config user.name 'Jenkins'")
-              sh("git config user.email '{{ jenkins_github_email }}'")
-              sh("git tag -a -f -m deployed-to-${STAGE} deployed-to-${STAGE} ${RELEASE_NAME}" )
-              sh("git push --force origin refs/tags/deployed-to-${STAGE}:refs/tags/deployed-to-${STAGE}")
-            }
+    dsl: |
+      node {
+        stage('Pull repo') {
+          dir("${APPLICATION_NAME}") {
+            git url: 'git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git',
+                branch: 'master',
+                credentialsId: 'github_com_and_enterprise'
           }
         }
+
+        stage('Move release tag') {
+          dir("${APPLICATION_NAME}") {
+            sh("git config user.name 'Jenkins'")
+            sh("git config user.email '{{ jenkins_github_email }}'")
+            sh("git tag -a -f -m deployed-to-${STAGE} deployed-to-${STAGE} ${RELEASE_NAME}" )
+            sh("git push --force origin refs/tags/deployed-to-${STAGE}:refs/tags/deployed-to-${STAGE}")
+          }
+        }
+      }

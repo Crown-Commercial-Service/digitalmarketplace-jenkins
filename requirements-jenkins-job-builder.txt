@@ -1,0 +1,2 @@
+python-jenkins==0.4.15  # newer ones have broken basic auth :(
+jenkins-job-builder==2.6.0

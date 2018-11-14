@@ -22,78 +22,77 @@
       build-discarder:
         days-to-keep: 7
         artifact-days-to-keep: 7
-    pipeline:
-      script: |
-        node {
-            try {
-              stage('Prepare') {
-                dir('scripts/generated-countersignature-pdfs') {
-                  deleteDir()
-                }
-                dir('scripts') {
-                  git url: "git@github.com:alphagov/digitalmarketplace-scripts.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-                  echo "Cleaning scripts repository"
-                  sh('pwd')
-                  sh("git clean -fdx")
-                  sh("git reset --hard origin/master")
-                }
-                dir('agreements') {
-                  git url: "git@github.com:alphagov/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-                  echo "Cleaning agreements repository"
-                  sh('pwd')
-                  sh("git clean -fdx")
-                  sh("git reset --hard origin/master")
-                }
+    dsl: |
+      node {
+          try {
+            stage('Prepare') {
+              dir('scripts/generated-countersignature-pdfs') {
+                deleteDir()
               }
-              stage('Generate') {
-                dir('scripts') {
-                  sh('pyenv local 3.6.2')
-                  sh('[ -d venv ] || virtualenv venv')
-                  sh('source ./venv/bin/activate')
-                  sh('pip install --upgrade pip')
-                  sh('pip install -r requirements.txt')
-                  sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
-                        python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
-                               {{ environment }} \
-                               {{ framework }} \
-                               ../agreements \
-                               generated-countersignature-pdfs')
-                }
+              dir('scripts') {
+                git url: "git@github.com:alphagov/digitalmarketplace-scripts.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+                echo "Cleaning scripts repository"
+                sh('pwd')
+                sh("git clean -fdx")
+                sh("git reset --hard origin/master")
               }
-              stage('Upload') {
-                dir('scripts') {
-                  sh('pyenv local 3.6.2')
-                  sh('[ -d venv ] || virtualenv venv')
-                  sh('source ./venv/bin/activate')
-                  sh('pip install --upgrade pip')
-                  sh('pip install -r requirements.txt')
-                  sh('python ./scripts/upload-counterpart-agreements.py \
-                  {{ environment }} \
-                  generated-countersignature-pdfs \
-                  {{ framework }} \
-                  --notify-key="$NOTIFY_API_TOKEN" \
-                  --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
-                  ')
-                }
+              dir('agreements') {
+                git url: "git@github.com:alphagov/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+                echo "Cleaning agreements repository"
+                sh('pwd')
+                sh("git clean -fdx")
+                sh("git reset --hard origin/master")
               }
-              stage('Cleanup') {
-                dir('scripts/generated-countersignature-pdfs') {
-                  deleteDir()
-                }
-              }
-            } catch(err) {
-              currentBuild.result = 'FAILURE'
-              echo "Error: ${err}"
-              build job: 'notify-slack', parameters: [
-                string(name: 'USERNAME', value: 'jenkins'),
-                string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
-                string(name: 'ICON', value: ':alarm_clock:'),
-                string(name: 'STAGE', value: '{{ environment }}'),
-                string(name: 'STATUS', value: 'FAILED'),
-                string(name: 'CHANNEL', value: '#dm-release')
-              ]
             }
-        }
+            stage('Generate') {
+              dir('scripts') {
+                sh('pyenv local 3.6.2')
+                sh('[ -d venv ] || virtualenv venv')
+                sh('source ./venv/bin/activate')
+                sh('pip install --upgrade pip')
+                sh('pip install -r requirements.txt')
+                sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
+                      python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
+                             {{ environment }} \
+                             {{ framework }} \
+                             ../agreements \
+                             generated-countersignature-pdfs')
+              }
+            }
+            stage('Upload') {
+              dir('scripts') {
+                sh('pyenv local 3.6.2')
+                sh('[ -d venv ] || virtualenv venv')
+                sh('source ./venv/bin/activate')
+                sh('pip install --upgrade pip')
+                sh('pip install -r requirements.txt')
+                sh('python ./scripts/upload-counterpart-agreements.py \
+                {{ environment }} \
+                generated-countersignature-pdfs \
+                {{ framework }} \
+                --notify-key="$NOTIFY_API_TOKEN" \
+                --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
+                ')
+              }
+            }
+            stage('Cleanup') {
+              dir('scripts/generated-countersignature-pdfs') {
+                deleteDir()
+              }
+            }
+          } catch(err) {
+            currentBuild.result = 'FAILURE'
+            echo "Error: ${err}"
+            build job: 'notify-slack', parameters: [
+              string(name: 'USERNAME', value: 'jenkins'),
+              string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
+              string(name: 'ICON', value: ':alarm_clock:'),
+              string(name: 'STAGE', value: '{{ environment }}'),
+              string(name: 'STATUS', value: 'FAILED'),
+              string(name: 'CHANNEL', value: '#dm-release')
+            ]
+          }
+      }
 
 {% endfor %}
 {% endfor %}
