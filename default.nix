@@ -4,6 +4,7 @@ let
   args = rec {
     pkgs = import <nixpkgs> {};
     pythonPackages = pkgs.python36Packages;
+    forDev = true;
     localOverridesPath = ./local.nix;
   } // argsOuter;
 in (with args; {
@@ -24,6 +25,8 @@ in (with args; {
       # ansible makes use of rsync & ssh
       pkgs.openssh
       pkgs.rsync
+      # for tput
+      pkgs.ncurses
       ((import ./aws-auth.nix) (with pkgs; { inherit stdenv fetchFromGitHub makeWrapper jq awscli openssl; }))
     ];
 
@@ -45,7 +48,7 @@ in (with args; {
       fi
       source $VIRTUALENV_ROOT/bin/activate
       pip install --upgrade pip==18.0  # e.g. pynacl is sensitive to "old" pips
-      make requirements
+      make requirements${pkgs.stdenv.lib.optionalString forDev "-dev"}
     '';
   }).overrideAttrs (if builtins.pathExists localOverridesPath then (import localOverridesPath args) else (x: x));
 })
