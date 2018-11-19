@@ -25,7 +25,10 @@ requirements: venv ## Install requirements
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
 
 .PHONY: requirements-test
-requirements-test: requirements ## Install test requirements
+requirements-test: requirements-dev ## Alias for backwards-compatibility
+
+.PHONY: requirements-dev
+requirements-dev: requirements ## Install test requirements
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements-jenkins-job-builder.txt
 
 .PHONY: clean
