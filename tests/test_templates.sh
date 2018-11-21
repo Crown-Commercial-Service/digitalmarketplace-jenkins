@@ -39,15 +39,9 @@ main()
 	copy_jjb_config "jenkins_jobs.ini"
 	colorecho "done"
 
-	for job_file in job_definitions/*.yml
-	do
-		colorecho "Parsing '$job_file' with jenkins-jobs..."
-		run_jjb "job_definitions" "$job_file"
-		STATUS=$((STATUS|$?))
-		colorecho "done"
-	done
+	run_jjb "job_definitions" "job_definitions"
 
-	colorecho "jjb-lint finished with status code $STATUS"
+	colorecho "$0 finished with status code $STATUS"
 	exit $STATUS
 }
 
