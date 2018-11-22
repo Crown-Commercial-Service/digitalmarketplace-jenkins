@@ -11,4 +11,5 @@
     sshd:
       ClientAliveCountMax: 80
       ClientAliveInterval: 45
+      LogLevel: VERBOSE
       PasswordAuthentication: no
