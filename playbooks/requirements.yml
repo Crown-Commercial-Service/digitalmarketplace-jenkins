@@ -1,2 +1,4 @@
 - src: nickhammond.logrotate
   version: v0.0.5
+- src: willshersystems.sshd
+  version: v0.7.2
