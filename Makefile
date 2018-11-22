@@ -2,6 +2,9 @@
 SHELL := /bin/bash
 VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
 
+export ANSIBLE_ROLES_PATH := ${VIRTUALENV_ROOT}/etc/ansible/roles
+export ANSIBLE_CONFIG := playbooks/ansible.cfg
+
 # extra variables that, if specified, will override those in playbooks/roles/jenkins/defaults/main.yml
 ifdef JOBS_DISABLED
 	EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
@@ -23,6 +26,7 @@ ${VIRTUALENV_ROOT}/activate:
 .PHONY: requirements
 requirements: venv ## Install requirements
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
+	${VIRTUALENV_ROOT}/bin/ansible-galaxy install -r playbooks/requirements.yml
 
 .PHONY: requirements-test
 requirements-test: requirements-dev ## Alias for backwards-compatibility
