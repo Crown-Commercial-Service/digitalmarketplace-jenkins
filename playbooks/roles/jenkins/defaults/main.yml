@@ -55,6 +55,7 @@ dm_db_applications:
 
 jenkins_plugins:
   - ansicolor
+  - audit-trail
   - build-monitor-plugin
   - build-name-setter
   - conditional-buildstep
