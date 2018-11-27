@@ -75,6 +75,7 @@ jenkins_plugins:
   - workflow-aggregator  # aka 'Pipeline' suite
 
 jenkins_config_templates:
+  - audit-trail.xml
   - config.xml
   - credentials.xml
   - hudson.plugins.git.GitSCM.xml
