@@ -30,6 +30,22 @@
             dest=/etc/default/jenkins
             backup=no
 
+- name: Configure Jenkins log rotation
+  include_role:
+    name: nickhammond.logrotate
+  vars:
+    logrotate_scripts:
+      - name: jenkins
+        path: /var/log/jenkins/access.log
+        options:
+          - weekly
+          - copytruncate
+          - missingok
+          - rotate 52
+          - compress
+          - delaycompress
+          - notifempty
+
 - name: Ensure Jenkins is installed.
   apt:
     name=jenkins=2.*
