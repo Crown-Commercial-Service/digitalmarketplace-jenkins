@@ -55,6 +55,7 @@ dm_db_applications:
 
 jenkins_plugins:
   - ansicolor
+  - audit-trail
   - build-monitor-plugin
   - build-name-setter
   - conditional-buildstep
@@ -74,6 +75,7 @@ jenkins_plugins:
   - workflow-aggregator  # aka 'Pipeline' suite
 
 jenkins_config_templates:
+  - audit-trail.xml
   - config.xml
   - credentials.xml
   - hudson.plugins.git.GitSCM.xml
