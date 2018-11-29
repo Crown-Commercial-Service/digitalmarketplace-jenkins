@@ -55,3 +55,52 @@ smoke_test_variables:
     supplier_email: supplier+smoke_test+production@example.com
     supplier_id: 11235
     supplier_password: ProductionSmokeTestSupplierPassword
+smoulder_test_variables:
+  preview:
+    admin_email: admin+smoulder_test+preview@example.com
+    admin_password: PreviewSmoulderTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoulder_test+preview@example.com
+    admin_ccs_category_password: PreviewSmoulderTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoulder_test+preview@example.com
+    admin_ccs_sourcing_password: PreviewSmoulderTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoulder_test+preview@example.com
+    admin_manager_password: PreviewSmoulderTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoulder_test+preview@example.com
+    admin_framework_manager_password: PreviewSmoulderTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoulder_test+preview@example.com
+    buyer_password: PreviewSmoulderTestBuyerPassword
+    supplier_email: supplier+smoulder_test+preview@example.com
+    supplier_id: 11235
+    supplier_password: PreviewSmoulderTestSupplierPassword
+  staging:
+    admin_email: admin+smoulder_test+staging@example.com
+    admin_password: StagingSmoulderTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoulder_test+staging@example.com
+    admin_ccs_category_password: StagingSmoulderTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoulder_test+staging@example.com
+    admin_ccs_sourcing_password: StagingSmoulderTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoulder_test+staging@example.com
+    admin_manager_password: StagingSmoulderTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoulder_test+staging@example.com
+    admin_framework_manager_password: StagingSmoulderTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoulder_test+staging@example.com
+    buyer_password: StagingSmoulderTestBuyerPassword
+    supplier_email: supplier+smoulder_test+staging@example.com
+    supplier_id: 11235
+    supplier_password: StagingSmoulderTestSupplierPassword
+  production:
+    admin_email: admin+smoulder_test+production@example.com
+    admin_password: ProductionSmoulderTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoulder_test+production@example.com
+    admin_ccs_category_password: ProductionSmoulderTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoulder_test+production@example.com
+    admin_ccs_sourcing_password: ProductionSmoulderTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoulder_test+production@example.com
+    admin_manager_password: ProductionSmoulderTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoulder_test+production@example.com
+    admin_framework_manager_password: ProductionSmoulderTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoulder_test+production@example.com
+    buyer_password: ProductionSmoulderTestBuyerPassword
+    supplier_email: supplier+smoulder_test+production@example.com
+    supplier_id: 11235
+    supplier_password: ProductionSmoulderTestSupplierPassword
