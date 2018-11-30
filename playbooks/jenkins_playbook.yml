@@ -5,3 +5,11 @@
   become: yes
   roles:
     - jenkins
+    - role: willshersystems.sshd
+      tags: [sshd, jenkins]
+  vars:
+    sshd:
+      ClientAliveCountMax: 80
+      ClientAliveInterval: 45
+      LogLevel: VERBOSE
+      PasswordAuthentication: no
