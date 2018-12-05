@@ -1,4 +1,6 @@
 - src: nickhammond.logrotate
   version: v0.0.5
+- src: singleplatform-eng.awslogs
+  version: 1.0.2
 - src: willshersystems.sshd
   version: v0.7.2
