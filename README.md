@@ -50,6 +50,14 @@ ssh -i [path/to/identity/file] {username}@{hostname}
 ssh -i ../digitalmarketplace-credentials/aws-keys/ci.pem ubuntu@ci.marketplace.team
 ```
 
+All GitHub-associated SSH keys for trusted users should work, but you may need to run
+
+```bash
+make jenkins TAGS=keys
+```
+
+to re-gather these keys first if the SSH key you're using has only recently been added to your GitHub account.
+
 ## Running scripts with Python3 via a Jenkins job
 
 To run a script with Python3 inside a Docker container, call the script as follows:
