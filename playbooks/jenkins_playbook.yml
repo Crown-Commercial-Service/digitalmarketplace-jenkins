@@ -7,6 +7,8 @@
     - jenkins
     - role: willshersystems.sshd
       tags: [sshd, jenkins]
+    - role: singleplatform-eng.awslogs
+      tags: [awslogs, jenkins]
   vars:
     sshd:
       ClientAliveCountMax: 80
