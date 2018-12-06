@@ -1,0 +1,184 @@
+{% set variant_bases = {
+  "smoke": {
+    "timing": "H/5 * * * *",
+    "slugname": "apps-are-up",
+    "displayname": "Apps are up",
+    "assertion_description": "up and running",
+    "slack_username": "smoke-tests",
+    "report_name": "smoke test report",
+    "make_command": "make smoke-tests || make rerun",
+    "stage_name": "Run smoke tests",
+  },
+  "smoulder": {
+    "timing": "H * * * *",
+    "slugname": "apps-are-working",
+    "displayname": "Apps are working",
+    "assertion_description": "operating correctly",
+    "slack_username": "smoulder-tests",
+    "report_name": "smoulder test report",
+    "make_command": "make smoulder-tests-parallel && make build-report || ( make build-report; make rerun )",
+    "stage_name": "Run smoulder tests",
+  },
+} %}
+{% set environment_bases = {
+  "preview": {
+  },
+  "staging": {
+  },
+  "production": {
+  },
+} %}
+{% set environments = {
+  "preview": {
+    "smoke": variant_bases.smoke|combine(environment_bases["preview"], {
+      "vars": smoke_test_variables["preview"],
+    }),
+    "smoulder": variant_bases.smoulder|combine(environment_bases["preview"], {
+      "vars": smoulder_test_variables["preview"],
+    }),
+  },
+  "staging": {
+    "smoke": variant_bases.smoke|combine(environment_bases["staging"], {
+      "vars": smoke_test_variables["staging"],
+    }),
+    "smoulder": variant_bases.smoulder|combine(environment_bases["staging"], {
+      "vars": smoulder_test_variables["staging"],
+    }),
+  },
+  "production": {
+    "smoke": variant_bases.smoke|combine(environment_bases["production"], {
+      "vars": smoke_test_variables["production"],
+    }),
+    "smoulder": variant_bases.smoulder|combine(environment_bases["production"], {
+      "vars": smoulder_test_variables["production"],
+    }),
+  },
+} %}
+---
+{% for environment, variants in environments.items() %}
+{% for variant, instance in variants.items() %}
+- job:
+    name: "{{ instance.slugname }}-{{ environment }}"
+    display-name: "{{ instance.displayname }} - {{ environment }}"
+    project-type: pipeline
+    description: |
+      Check that all Digital Marketplace apps are {{ instance.assertion_description }} in the {{ environment|upper }} environment
+    properties:
+      build-discarder:
+        days-to-keep: 4
+        artifact-days-to-keep: 4
+    triggers:
+      - timed: "{{ instance.timing }}"
+    wrappers:
+      - ansicolor
+    dsl: |
+
+      def notify_slack(icon, status) {
+        build job: "notify-slack",
+              parameters: [
+                string(name: 'USERNAME', value: '{{ instance.slack_username }}'),
+                string(name: 'ICON', value: icon),
+                string(name: 'JOB', value: "{{ instance.displayname }} - {{ environment }}"),
+                string(name: 'CHANNEL', value: "#dm-release"),
+                text(name: 'STAGE', value: "{{ environment }}"),
+                text(name: 'STATUS', value: status),
+                text(name: 'URL', value: "<${BUILD_URL}{{ instance.report_name|lower|replace(" ", "_") }}|${BUILD_DISPLAY_NAME}>")
+              ]
+      }
+      node {
+        try {
+          stage('Prepare') {
+            git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+            sh("rbenv install -s")
+            sh("gem install bundler --conservative")
+          }
+          stage('{{ instance.stage_name }}') {
+            sh('''
+              set +x # do not echo credentials - remove for debugging
+
+              export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
+              export DM_API_ACCESS_TOKEN="$DM_DATA_API_TOKEN_{{ environment|upper }}"
+
+              export DM_SEARCH_API_DOMAIN="{{ app_urls[environment].search_api }}"
+              export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ environment|upper }}"
+
+              export DM_ANTIVIRUS_API_DOMAIN="{{ app_urls[environment].antivirus_api }}"
+
+              export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+
+              export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ instance.vars.supplier_email }}"
+              export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ instance.vars.supplier_password }}"
+              export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ instance.vars.supplier_id }}"
+
+              export DM_PRODUCTION_BUYER_USER_EMAIL="{{ instance.vars.buyer_email }}"
+              export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ instance.vars.buyer_password }}"
+
+              export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ instance.vars.admin_email }}"
+              export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ instance.vars.admin_password }}"
+
+              export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ instance.vars.admin_ccs_category_email }}"
+              export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ instance.vars.admin_ccs_category_password }}"
+
+              export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ instance.vars.admin_ccs_sourcing_email }}"
+              export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ instance.vars.admin_ccs_sourcing_password }}"
+
+              export DM_PRODUCTION_ADMIN_MANAGER_USER_EMAIL="{{ instance.vars.admin_manager_email }}"
+              export DM_PRODUCTION_ADMIN_MANAGER_USER_PASSWORD="{{ instance.vars.admin_manager_password }}"
+
+              export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ instance.vars.admin_framework_manager_email }}"
+              export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ instance.vars.admin_framework_manager_password }}"
+
+{% if variant == "smoulder" %}
+              export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
+              export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ environment|upper }}"
+{% endif %}
+
+              set -x # restore echo
+
+              export DM_PAGINATION_LIMIT=100
+
+              export DM_ENVIRONMENT={{ environment }}
+
+              {{ instance.make_command }}
+            ''')
+
+            if (currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause) != null) {
+              notify_slack(':green_heart:', 'SUCCESS')
+            }
+          }
+        } catch(err) {
+        {% if environment == 'production' %}
+          notify_slack(':fire:', 'FAILED')
+        {% else %}
+          try {
+            def migrations_being_run = sh(
+              script: "curl -s http://{{ jenkins_api_user }}:{{ jenkins_api_user_github_personal_access_token }}@localhost:80/job/clean-and-apply-db-dump-{{ environment }}/lastBuild/api/json?tree=building | jq -r '.building'",
+              returnStdout: true
+            ).trim()
+
+            if (migrations_being_run == 'false') {
+              notify_slack(':fire:', 'FAILED')
+            }
+          } catch(err2) {
+            notify_slack(':fire:', 'FAILED')
+          }
+        {% endif %}
+
+          echo "Error caught"
+          currentBuild.result = 'FAILURE'
+          echo "Error: ${err}"
+        } finally {
+          publishHTML(target: [
+            allowMissing: true,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'reports',
+            reportFiles: 'index.html',
+            reportName: '{{ instance.report_name }}'
+          ])
+        }
+      }
+
+
+{% endfor %}
+{% endfor %}
