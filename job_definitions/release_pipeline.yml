@@ -287,17 +287,7 @@
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
           ]
-          try {
-            def smoulder_tests_queued = sh(
-              script: "curl -s http://{{ jenkins_api_user }}:{{ jenkins_api_user_github_personal_access_token }}@localhost:80/queue/api/json | jq '.items | map(.task.name==\"apps-are-working-production\") | any'",
-              returnStdout: true
-            ).trim()
-            if (smoulder_tests_queued == 'false') {
-              build job: "apps-are-working-production", wait: false
-            }
-          } catch(err) {
-            echo "Failed attempting to determine if there are smoulder tests already queued: ${err}"
-          }
+          build job: "apps-are-working-production", wait: false
         }
       }
 {% endfor %}
