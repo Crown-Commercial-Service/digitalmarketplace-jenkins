@@ -92,6 +92,13 @@ the `dm-ssp-jenkins` user. The Client ID and Client Secret must be stored in the
 *jenkins-vars/jenkins.yaml*, and must be stored as a nested dict under `jenkins_github_auth_by_hostname`. This allows
 us to maintain multiple Jenkins instances (if required). These credentials are deployed via the `config` task tag.
 
+## Logging
+
+For audit purposes we have configured the Jenkins server to log various events using the [Jenkins Audit Trail plugin](https://wiki.jenkins.io/display/JENKINS/Audit+Trail+Plugin).
+This was done in PR #171.  The web server has also been configured to log all access (see PR #171), and for
+good measure we've also turned the ssh access logging up to eleven (PR #172). The log files are sent to CloudWatch
+for long term storage; see PR #173 and the `awslogs-config` section in `playbooks/jenkins_playbook.yml` for more details.
+
 ## Backups
 
 In August 2018 our original Jenkins server, which had been running since 2015, was replaced with a new Jenkins server.
