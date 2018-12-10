@@ -1,5 +1,6 @@
 [jenkins]
-ci.marketplace.team
+ci.marketplace.team ansible_user=ubuntu
 
 [jenkins:vars]
 ansible_python_interpreter=/usr/bin/python3
+ec2_region=eu-west-1

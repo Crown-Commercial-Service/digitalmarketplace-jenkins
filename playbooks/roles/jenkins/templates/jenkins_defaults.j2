@@ -65,4 +65,4 @@ PREFIX=/jenkins
 # --webroot=~/.jenkins/war
 # --prefix=$PREFIX
 
-JENKINS_ARGS="--webroot=/var/cache/jenkins/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT"
+JENKINS_ARGS="--webroot=/var/cache/jenkins/war --httpPort=$HTTP_PORT --ajp13Port=$AJP_PORT $JENKINS_ACCESSLOG"
