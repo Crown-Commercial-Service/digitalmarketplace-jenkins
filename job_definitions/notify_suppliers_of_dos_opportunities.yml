@@ -66,6 +66,6 @@
             FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-dos-opportunities-email.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }} $FLAGS
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-new-dos-opportunities.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }} $FLAGS
 {% endfor %}
 {% endfor %}
