@@ -2,6 +2,8 @@
     name: build-and-push-base-images
     display-name: Build and push Digital Marketplace docker base images
     project-type: pipeline
+    triggers:
+      - timed: "H 0 * * MON,THU,SAT"
     dsl: |
       node {
         try {
