@@ -1,0 +1,38 @@
+- job:
+    name: build-and-push-base-images
+    display-name: Build and push Digital Marketplace docker base images
+    project-type: pipeline
+    triggers:
+      - timed: "H 0 * * MON,THU,SAT"
+    dsl: |
+      node {
+        try {
+          stage('Prepare') {
+            git url: "git@github.com:alphagov/digitalmarketplace-docker-base.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
+          }
+          stage('Build') {
+            sh("make build")
+          }
+          stage('Push') {
+            docker_credentials = sh(script: '/var/lib/jenkins/digitalmarketplace-credentials/sops-wrapper -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
+            withEnv(docker_credentials.tokenize("\n")) {
+                sh("docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
+            }
+            sh("make push")
+          }
+        }
+        catch (err)
+        {
+          currentBuild.result = 'FAILURE'
+          echo "Error: ${err}"
+          build job: "notify-slack",
+            parameters: [
+              string(name: 'USERNAME', value: 'build-and-push-base-images'),
+              string(name: 'ICON', value: ':rotating_light:'),
+              string(name: 'JOB', value: "Build and push docker base images"),
+              string(name: 'CHANNEL', value: "#dm-release"),
+              text(name: 'STATUS', value: "FAILED"),
+              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+            ]
+        }
+      }
