@@ -4,11 +4,13 @@
     project-type: pipeline
     triggers:
       - timed: "H 0 * * MON,THU,SAT"
+      - pollscm:
+        cron: "* * * * *"
     dsl: |
       node {
         try {
           stage('Prepare') {
-            git url: "git@github.com:alphagov/digitalmarketplace-docker-base.git", branch: 'master', credentialsId: 'github_com_and_enterprise'
+            git url: "git@github.com:alphagov/digitalmarketplace-docker-base.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
           }
           stage('Build') {
             sh("make build")
