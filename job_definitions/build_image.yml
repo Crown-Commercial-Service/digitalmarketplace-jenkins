@@ -59,7 +59,7 @@
               build job: "notify-slack",
                     parameters: [
                       string(name: 'USERNAME', value: 'build-image'),
-                      string(name: 'ICON', value: ':rotating_light:'),
+                      string(name: 'ICON', value: ':sad-docker:'),
                       string(name: 'JOB', value: "Build Docker image: ${REPOSITORY} - ${RELEASE_NAME}"),
                       string(name: 'CHANNEL', value: "#dm-release"),
                       string(name: 'PROJECT', value: "${REPOSITORY}"),

@@ -22,6 +22,16 @@
             }
             sh("make push")
           }
+
+          build job: "notify-slack",
+            parameters: [
+              string(name: 'USERNAME', value: 'build-and-push-base-images'),
+              string(name: 'ICON', value: ':happy-docker:'),
+              string(name: 'JOB', value: "Build and push docker base images"),
+              string(name: 'CHANNEL', value: "#dm-release"),
+              text(name: 'STATUS', value: "SUCCESS"),
+              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+            ]
         }
         catch (err)
         {
@@ -30,7 +40,7 @@
           build job: "notify-slack",
             parameters: [
               string(name: 'USERNAME', value: 'build-and-push-base-images'),
-              string(name: 'ICON', value: ':rotating_light:'),
+              string(name: 'ICON', value: ':sad-docker:'),
               string(name: 'JOB', value: "Build and push docker base images"),
               string(name: 'CHANNEL', value: "#dm-release"),
               text(name: 'STATUS', value: "FAILED"),
