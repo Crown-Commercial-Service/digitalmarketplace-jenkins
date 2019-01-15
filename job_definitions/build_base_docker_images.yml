@@ -5,7 +5,7 @@
     triggers:
       - timed: "H 0 * * MON,THU,SAT"
       - pollscm:
-        cron: "* * * * *"
+          cron: "* * * * *"
     dsl: |
       node {
         try {
