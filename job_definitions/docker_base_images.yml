@@ -1,6 +1,8 @@
 - job:
-    name: build-and-push-base-images
-    display-name: Build and push Digital Marketplace docker base images
+    name: docker-base-images
+    display-name: Refresh Docker base images
+    description: |
+      Build Docker base images from digitalmarketplace-docker-base, and push to the digitalmarketplace DockerHub organisation.
     project-type: pipeline
     triggers:
       - timed: "H 0 * * 1,4,6"
