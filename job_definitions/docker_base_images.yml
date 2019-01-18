@@ -2,7 +2,9 @@
     name: docker-base-images
     display-name: Refresh Docker base images
     description: |
-      Build Docker base images from digitalmarketplace-docker-base, and push to the digitalmarketplace DockerHub organisation.
+      Build Docker base images from digitalmarketplace-docker-base,
+      push to the digitalmarketplace DockerHub organisation,
+      and scan using the Snyk CLI.
     project-type: pipeline
     triggers:
       - timed: "H 0 * * 1,4,6"
@@ -23,6 +25,9 @@
                 sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
             }
             sh("make push")
+          }
+          stage ('Scan') {
+            sh("make scan")
           }
 
           build job: "notify-slack",
