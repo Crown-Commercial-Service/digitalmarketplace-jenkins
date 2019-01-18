@@ -3,9 +3,9 @@
     display-name: Build and push Digital Marketplace docker base images
     project-type: pipeline
     triggers:
-      - timed: "H 0 * * MON,THU,SAT"
+      - timed: "H 0 * * 1,4,6"
       - pollscm:
-          cron: "* * * * *"
+          cron: "H/5 * * * *"
     dsl: |
       node {
         try {
