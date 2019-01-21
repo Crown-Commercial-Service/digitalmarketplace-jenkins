@@ -1,11 +1,15 @@
 - job:
-    name: build-and-push-base-images
-    display-name: Build and push Digital Marketplace docker base images
+    name: docker-base-images
+    display-name: Refresh Docker base images
+    description: |
+      Build Docker base images from digitalmarketplace-docker-base,
+      push to the digitalmarketplace DockerHub organisation,
+      and scan using the Snyk CLI.
     project-type: pipeline
     triggers:
-      - timed: "H 0 * * MON,THU,SAT"
+      - timed: "H 0 * * 1,4,6"
       - pollscm:
-          cron: "* * * * *"
+          cron: "H/5 * * * *"
     dsl: |
       node {
         try {
@@ -21,6 +25,14 @@
                 sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
             }
             sh("make push")
+          }
+          stage ('Scan') {
+            sh('''
+              rm -rf reports
+              mkdir reports
+              make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"
+            ''')
+            publishHtml reportName: "Snyk reports", reportDir: "reports", reportFiles: "index.html"
           }
 
           build job: "notify-slack",
