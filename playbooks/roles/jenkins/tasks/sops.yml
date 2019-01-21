@@ -2,8 +2,9 @@
 
 - name: Install SOPS
   get_url:
-    url: https://s3-eu-west-1.amazonaws.com/digitalmarketplace-public/sops_linux_amd64
+    url: https://github.com/mozilla/sops/releases/download/3.2.0/sops-3.2.0.linux
     dest: /usr/local/bin/sops
+    checksum: sha256:fec5b5b5bbae922a829a6277f6d66a061d990c04132da3c82db32ccc309a22e7
     mode: 0755
 
 - name: Install aws-auth
