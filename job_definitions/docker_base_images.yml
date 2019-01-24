@@ -32,7 +32,7 @@
               mkdir reports
               make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"
             ''')
-            publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "index.html"
+            publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "**/snyk_report.html"
           }
 
           build job: "notify-slack",
