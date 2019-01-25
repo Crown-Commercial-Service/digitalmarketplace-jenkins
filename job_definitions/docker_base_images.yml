@@ -27,12 +27,11 @@
             sh("make push")
           }
           stage ('Scan') {
-            sh('''
-              rm -rf reports
-              mkdir reports
-              make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"
-            ''')
-            publishHtml reportName: "Snyk reports", reportDir: "reports", reportFiles: "index.html"
+            sh 'rm -rf reports && mkdir reports'
+            ansiColor('xterm') {
+              sh 'make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"'
+            }
+            publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "**/snyk_report.html"
           }
 
           build job: "notify-slack",
