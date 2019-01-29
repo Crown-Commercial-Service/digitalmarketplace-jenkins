@@ -79,27 +79,27 @@
 
           export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ job.environment|upper }}"
 
-          export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[job.environment].supplier_email }}"
-          export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[job.environment].supplier_password }}"
-          export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[job.environment].supplier_id }}"
+          export DM_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[job.environment].supplier_email }}"
+          export DM_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[job.environment].supplier_password }}"
+          export DM_SUPPLIER_USER_SUPPLIER_ID="{{ smoke_test_variables[job.environment].supplier_id }}"
 
-          export DM_PRODUCTION_BUYER_USER_EMAIL="{{ smoke_test_variables[job.environment].buyer_email }}"
-          export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ smoke_test_variables[job.environment].buyer_password }}"
+          export DM_BUYER_USER_EMAIL="{{ smoke_test_variables[job.environment].buyer_email }}"
+          export DM_BUYER_USER_PASSWORD="{{ smoke_test_variables[job.environment].buyer_password }}"
 
-          export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_email }}"
-          export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_password }}"
+          export DM_ADMIN_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_email }}"
+          export DM_ADMIN_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_password }}"
 
-          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_ccs_category_email }}"
-          export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_ccs_category_password }}"
+          export DM_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_ccs_category_email }}"
+          export DM_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_ccs_category_password }}"
 
-          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_ccs_sourcing_email }}"
-          export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_ccs_sourcing_password }}"
+          export DM_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_ccs_sourcing_email }}"
+          export DM_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_ccs_sourcing_password }}"
 
-          export DM_PRODUCTION_ADMIN_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_manager_email }}"
-          export DM_PRODUCTION_ADMIN_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_manager_password }}"
+          export DM_ADMIN_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_manager_email }}"
+          export DM_ADMIN_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_manager_password }}"
 
-          export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_framework_manager_email }}"
-          export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_framework_manager_password }}"
+          export DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_framework_manager_email }}"
+          export DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_framework_manager_password }}"
 
           export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ job.environment }}-{{ job.environment }}"
 

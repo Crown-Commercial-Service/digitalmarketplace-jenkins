@@ -106,27 +106,27 @@
 
               export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
-              export DM_PRODUCTION_SUPPLIER_USER_EMAIL="{{ instance.vars.supplier_email }}"
-              export DM_PRODUCTION_SUPPLIER_USER_PASSWORD="{{ instance.vars.supplier_password }}"
-              export DM_PRODUCTION_SUPPLIER_USER_SUPPLIER_ID="{{ instance.vars.supplier_id }}"
+              export DM_SUPPLIER_USER_EMAIL="{{ instance.vars.supplier_email }}"
+              export DM_SUPPLIER_USER_PASSWORD="{{ instance.vars.supplier_password }}"
+              export DM_SUPPLIER_USER_SUPPLIER_ID="{{ instance.vars.supplier_id }}"
 
-              export DM_PRODUCTION_BUYER_USER_EMAIL="{{ instance.vars.buyer_email }}"
-              export DM_PRODUCTION_BUYER_USER_PASSWORD="{{ instance.vars.buyer_password }}"
+              export DM_BUYER_USER_EMAIL="{{ instance.vars.buyer_email }}"
+              export DM_BUYER_USER_PASSWORD="{{ instance.vars.buyer_password }}"
 
-              export DM_PRODUCTION_ADMIN_USER_EMAIL="{{ instance.vars.admin_email }}"
-              export DM_PRODUCTION_ADMIN_USER_PASSWORD="{{ instance.vars.admin_password }}"
+              export DM_ADMIN_USER_EMAIL="{{ instance.vars.admin_email }}"
+              export DM_ADMIN_USER_PASSWORD="{{ instance.vars.admin_password }}"
 
-              export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ instance.vars.admin_ccs_category_email }}"
-              export DM_PRODUCTION_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ instance.vars.admin_ccs_category_password }}"
+              export DM_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ instance.vars.admin_ccs_category_email }}"
+              export DM_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ instance.vars.admin_ccs_category_password }}"
 
-              export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_EMAIL="{{ instance.vars.admin_ccs_sourcing_email }}"
-              export DM_PRODUCTION_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ instance.vars.admin_ccs_sourcing_password }}"
+              export DM_ADMIN_CCS_SOURCING_USER_EMAIL="{{ instance.vars.admin_ccs_sourcing_email }}"
+              export DM_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ instance.vars.admin_ccs_sourcing_password }}"
 
-              export DM_PRODUCTION_ADMIN_MANAGER_USER_EMAIL="{{ instance.vars.admin_manager_email }}"
-              export DM_PRODUCTION_ADMIN_MANAGER_USER_PASSWORD="{{ instance.vars.admin_manager_password }}"
+              export DM_ADMIN_MANAGER_USER_EMAIL="{{ instance.vars.admin_manager_email }}"
+              export DM_ADMIN_MANAGER_USER_PASSWORD="{{ instance.vars.admin_manager_password }}"
 
-              export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ instance.vars.admin_framework_manager_email }}"
-              export DM_PRODUCTION_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ instance.vars.admin_framework_manager_password }}"
+              export DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ instance.vars.admin_framework_manager_email }}"
+              export DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ instance.vars.admin_framework_manager_password }}"
 
 {% if variant == "smoulder" %}
               export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
