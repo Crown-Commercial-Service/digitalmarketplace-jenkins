@@ -75,6 +75,9 @@
           export DM_ADMIN_CCS_SOURCING_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_sourcing_email }}"
           export DM_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_sourcing_password }}"
 
+          export DM_ADMIN_CCS_DATA_CONTROLLER_USER_EMAIL="{{ smoke_test_variables[environment].admin_ccs_data_controller_email }}"
+          export DM_ADMIN_CCS_DATA_CONTROLLER_USER_PASSWORD="{{ smoke_test_variables[environment].admin_ccs_data_controller_password }}"
+
           export DM_ADMIN_MANAGER_USER_EMAIL="{{ smoke_test_variables[environment].admin_manager_email }}"
           export DM_ADMIN_MANAGER_USER_PASSWORD="{{ smoke_test_variables[environment].admin_manager_password }}"
 
@@ -100,6 +103,7 @@
             -e DM_ADMIN_USER_EMAIL -e DM_ADMIN_USER_PASSWORD \
             -e DM_ADMIN_CCS_CATEGORY_USER_EMAIL -e DM_ADMIN_CCS_CATEGORY_USER_PASSWORD \
             -e DM_ADMIN_CCS_SOURCING_USER_EMAIL -e DM_ADMIN_CCS_SOURCING_USER_PASSWORD \
+            -e DM_ADMIN_CCS_DATA_CONTROLLER_USER_EMAIL -e DM_ADMIN_CCS_DATA_CONTROLLER_USER_PASSWORD \
             -e DM_ADMIN_MANAGER_USER_EMAIL -e DM_ADMIN_MANAGER_USER_PASSWORD \
             -e DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL -e DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD \
             digitalmarketplace/backstopjs:2.1.0 $COMMAND --configPath=config.js
