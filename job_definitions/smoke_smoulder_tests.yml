@@ -64,9 +64,9 @@
     description: |
       Check that all Digital Marketplace apps are {{ instance.assertion_description }} in the {{ environment|upper }} environment
     properties:
-      build-discarder:
-        days-to-keep: 4
-        artifact-days-to-keep: 4
+      - build-discarder:
+          days-to-keep: 4
+          artifact-days-to-keep: 4
     triggers:
       - timed: "{{ instance.timing }}"
     wrappers:
