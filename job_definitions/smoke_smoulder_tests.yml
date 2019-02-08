@@ -71,6 +71,8 @@
       - timed: "{{ instance.timing }}"
     wrappers:
       - ansicolor
+    logrotate:
+      daysToKeep: 14
     dsl: |
 
       def notify_slack(icon, status) {

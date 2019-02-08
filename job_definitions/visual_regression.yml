@@ -27,6 +27,8 @@
           wipe-workspace: false
     wrappers:
       - ansicolor
+    logrotate:
+      daysToKeep: 60
     publishers:
       - html-publisher:
           name: "Visual Regression Test Report"
