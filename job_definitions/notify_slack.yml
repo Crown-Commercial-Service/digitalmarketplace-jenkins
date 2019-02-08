@@ -5,9 +5,9 @@
     project-type: freestyle
     description:
     properties:
-      build-discarder:
-        days-to-keep: 4
-        artifact-days-to-keep: 4
+      - build-discarder:
+          days-to-keep: 4
+          artifact-days-to-keep: 4
     parameters:
       - string:
           name: USERNAME

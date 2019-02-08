@@ -16,9 +16,9 @@
     project-type: freestyle
     description: "{{ job.description }}"
     properties:
-      build-discarder:
-        days-to-keep: 4
-        artifact-days-to-keep: 4
+      - build-discarder:
+          days-to-keep: 4
+          artifact-days-to-keep: 4
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
