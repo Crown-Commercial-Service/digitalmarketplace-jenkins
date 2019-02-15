@@ -74,6 +74,7 @@
           export DM_SEARCH_API_ACCESS_TOKEN="$DM_SEARCH_API_TOKEN_{{ job.environment|upper }}"
 
           export DM_ANTIVIRUS_API_DOMAIN="{{ app_urls[job.environment].antivirus_api }}"
+          export DM_ASSETS_DOMAIN="{{ app_urls[job.environment].assets }}"
 
           export DM_FRONTEND_DOMAIN="{{ app_urls[job.environment].www }}"
 
