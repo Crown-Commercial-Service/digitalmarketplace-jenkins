@@ -35,7 +35,7 @@
 
 - name: Install AWS cli
   pip:
-    name: awscli==1.15.67
+    name: awscli==1.16.109
     state: present
 
 - name: Install rbenv and pyenv
