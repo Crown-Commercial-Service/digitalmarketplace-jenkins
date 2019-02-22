@@ -47,12 +47,11 @@
             stage('Generate') {
               dir('scripts') {
                 sh('pyenv local 3.6.2')
-                sh('[ -d venv ] || virtualenv venv')
-                sh('source ./venv/bin/activate')
-                sh('pip install --upgrade pip')
-                sh('pip install -r requirements.txt')
+                sh('[ -d venv ] || python3 -m venv venv')
+                sh('venv/bin/pip3 install --upgrade pip')
+                sh('venv/bin/pip3 install -r requirements.txt')
                 sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
-                      python ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
+                      venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
                              {{ environment }} \
                              {{ framework }} \
                              ../agreements \
@@ -62,11 +61,10 @@
             stage('Upload') {
               dir('scripts') {
                 sh('pyenv local 3.6.2')
-                sh('[ -d venv ] || virtualenv venv')
-                sh('source ./venv/bin/activate')
-                sh('pip install --upgrade pip')
-                sh('pip install -r requirements.txt')
-                sh('python ./scripts/upload-counterpart-agreements.py \
+                sh('[ -d venv ] || python3 -m venv')
+                sh('venv/bin/pip3 install --upgrade pip')
+                sh('venv/bin/pip3 install -r requirements.txt')
+                sh('venv/bin/python3 ./scripts/upload-counterpart-agreements.py \
                 {{ environment }} \
                 generated-countersignature-pdfs \
                 {{ framework }} \
@@ -84,12 +82,13 @@
             currentBuild.result = 'FAILURE'
             echo "Error: ${err}"
             build job: 'notify-slack', parameters: [
-              string(name: 'USERNAME', value: 'jenkins'),
+              string(name: 'USERNAME', value: 'generate-upload-and-notify-counterpart-signature-pages'),
               string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
               string(name: 'ICON', value: ':alarm_clock:'),
               string(name: 'STAGE', value: '{{ environment }}'),
               string(name: 'STATUS', value: 'FAILED'),
-              string(name: 'CHANNEL', value: '#dm-release')
+              string(name: 'CHANNEL', value: '#dm-release'),
+              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
             ]
           }
       }
