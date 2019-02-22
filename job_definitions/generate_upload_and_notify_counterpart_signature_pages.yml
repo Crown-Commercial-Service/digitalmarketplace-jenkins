@@ -84,12 +84,13 @@
             currentBuild.result = 'FAILURE'
             echo "Error: ${err}"
             build job: 'notify-slack', parameters: [
-              string(name: 'USERNAME', value: 'jenkins'),
+              string(name: 'USERNAME', value: 'generate-upload-and-notify-counterpart-signature-pages'),
               string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
               string(name: 'ICON', value: ':alarm_clock:'),
               string(name: 'STAGE', value: '{{ environment }}'),
               string(name: 'STATUS', value: 'FAILED'),
-              string(name: 'CHANNEL', value: '#dm-release')
+              string(name: 'CHANNEL', value: '#dm-release'),
+              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
             ]
           }
       }
