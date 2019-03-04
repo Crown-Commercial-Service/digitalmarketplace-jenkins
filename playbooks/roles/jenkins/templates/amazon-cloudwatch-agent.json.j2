@@ -1,9 +1,7 @@
 {
   "agent": {
-    "metrics_collection_interval": 60,
     "region": "eu-west-1",
-    "logfile": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
-    "debug": false
+    "logfile": "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
   },
   "logs": {
     "logs_collected": {
@@ -25,7 +23,7 @@
             "log_stream_name": "jenkins-{instance_id}",
             "timestamp_format": "%b %d, %Y %I:%M:%S,%f %p"
           }, {
-            "file_path": "/opt/aws/amazon-cloudwatch-agent/logs/amazon-cloudwatch-agent.log",
+            "file_path": "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
             "log_group_name": "jenkins-cloudwatch-logs-agent",
             "log_stream_name": "jenkins-{instance_id}",
             "timestamp_format": "%Y/%m/%d %H:%M:%S"
