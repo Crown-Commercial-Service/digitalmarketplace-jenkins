@@ -7,22 +7,7 @@
     - jenkins
     - role: willshersystems.sshd
       tags: [sshd, jenkins]
-    - role: singleplatform-eng.awslogs
-      tags: [awslogs, jenkins]
   vars:
-    awslogs_config:
-      - file: /var/log/auth.log
-        datetime_format: "%b %d %H:%M:%S"
-        log_stream_name: jenkins-{instance_id}
-        log_group_name: server-login-access
-      - file: /var/log/jenkins/access.log
-        datetime_format: "%d/%b/%Y:%H:%M:%S %z"
-        log_stream_name: jenkins-{instance_id}
-        log_group_name: jenkins-access
-      - file: /var/log/jenkins/audit-trail.log.0
-        datetime_format: "%b %d, %Y %I:%M:%S,%f %p"
-        log_stream_name: jenkins-{instance_id}
-        log_group_name: jenkins-audit
     sshd:
       ClientAliveCountMax: 80
       ClientAliveInterval: 45

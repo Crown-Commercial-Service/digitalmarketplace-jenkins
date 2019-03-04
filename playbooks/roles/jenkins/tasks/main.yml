@@ -27,3 +27,6 @@
   tags: [jobs]
 - import_tasks: upgrade_packages.yml
   tags: [upgrade_packages]
+- import_tasks: amazon_cloudwatch_agent.yml
+  tags: [amazon_cloudwatch_agent]
+
