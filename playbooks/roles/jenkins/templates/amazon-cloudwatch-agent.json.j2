@@ -1,0 +1,51 @@
+{
+  "agent": {
+    "region": "eu-west-1",
+    "logfile": "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
+  },
+  "logs": {
+    "logs_collected": {
+      "files": {
+        "collect_list": [
+          {
+            "file_path": "/var/log/auth.log",
+            "log_group_name": "server-login-access",
+            "log_stream_name": "jenkins-{instance_id}",
+            "timestamp_format": "%b %d %H:%M:%S"
+          }, {
+            "file_path": "/var/log/jenkins/access.log",
+            "log_group_name": "jenkins-access",
+            "log_stream_name": "jenkins-{instance_id}",
+            "timestamp_format": "%d/%b/%Y:%H:%M:%S %z"
+          }, {
+            "file_path": "/var/log/jenkins/audit-trail.log.0",
+            "log_group_name": "jenkins-audit",
+            "log_stream_name": "jenkins-{instance_id}",
+            "timestamp_format": "%b %d, %Y %I:%M:%S,%f %p"
+          }, {
+            "file_path": "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log",
+            "log_group_name": "jenkins-cloudwatch-logs-agent",
+            "log_stream_name": "jenkins-{instance_id}",
+            "timestamp_format": "%Y/%m/%d %H:%M:%S"
+          }
+        ]
+      }
+    }
+  },
+  "metrics": {
+    "metrics_collected": {
+      "disk": {
+        "resources": [
+          "/",
+          "/data"
+        ],
+        "measurement": [
+          "free",
+          "total",
+          "used"
+        ]
+      }
+    }
+  }
+}
+

@@ -36,7 +36,9 @@
   vars:
     logrotate_scripts:
       - name: jenkins
-        path: /var/log/jenkins/access.log
+        paths:
+          - "/var/log/jenkins/access.log"
+          - "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log"
         options:
           - weekly
           - copytruncate
