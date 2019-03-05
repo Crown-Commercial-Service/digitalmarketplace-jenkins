@@ -67,7 +67,7 @@ jenkins_plugins:
   - greenballs
   - htmlpublisher
   - lockable-resources
-  - nextexecutions
+  - next-executions
   - nodejs
   - parameterized-trigger
   - postbuildscript
