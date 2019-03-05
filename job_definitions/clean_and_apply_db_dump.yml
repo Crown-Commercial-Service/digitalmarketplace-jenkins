@@ -1,11 +1,11 @@
-{% set environments = ['google-drive', 'preview', 'staging'] %}
+{% set environments = ['s3', 'preview', 'staging'] %}
 ---
 {% for environment in environments %}
 - job:
     name: "clean-and-apply-db-dump-{{ environment }}"
     display-name: "Clean and apply database dump - {{ environment }}"
     project-type: pipeline
-    description: "Takes the latest production database dump, cleans it, and applies it to target stage. Also Google Drive."
+    description: "Takes the latest production database dump, cleans it, and applies it to target stage. Also S3."
     concurrent: false
 {% if environment == 'staging' %}
     triggers:
@@ -77,12 +77,9 @@
                 )
               }
 
-              stage('Apply data to target stage and google drive') {
+              stage('Apply data to target stage and s3') {
                 sh(
                    script: '''
-                     set +x
-                     export GDRIVE_EXPORTDATA_FOLDER_ID="{{ jenkins_gdrive_db_dumps_folder_id }}"
-                     set -x
                      export TARGET="{{ environment }}"
                      make apply-cleaned-db-dump
                    '''
