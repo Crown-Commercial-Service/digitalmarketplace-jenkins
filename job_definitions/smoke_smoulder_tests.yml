@@ -1,5 +1,6 @@
-{% set variant_bases = {
+{% set test_types = {
   "smoke": {
+    "name": "smoke",
     "timing": "H/5 * * * *",
     "slugname": "apps-are-up",
     "displayname": "Apps are up",
@@ -10,6 +11,7 @@
     "stage_name": "Run smoke tests",
   },
   "smoulder": {
+    "name": "smoulder"
     "timing": "H * * * *",
     "slugname": "apps-are-working",
     "displayname": "Apps are working",
@@ -20,55 +22,28 @@
     "stage_name": "Run smoulder tests",
   },
 } %}
-{% set environment_bases = {
-  "preview": {
-  },
-  "staging": {
-  },
-  "production": {
-  },
-} %}
-{% set environments = {
-  "preview": {
-    "smoke": variant_bases.smoke|combine(environment_bases["preview"], {
-      "vars": smoke_test_variables["preview"],
-    }),
-    "smoulder": variant_bases.smoulder|combine(environment_bases["preview"], {
-      "vars": smoulder_test_variables["preview"],
-    }),
-  },
-  "staging": {
-    "smoke": variant_bases.smoke|combine(environment_bases["staging"], {
-      "vars": smoke_test_variables["staging"],
-    }),
-    "smoulder": variant_bases.smoulder|combine(environment_bases["staging"], {
-      "vars": smoulder_test_variables["staging"],
-    }),
-  },
-  "production": {
-    "smoke": variant_bases.smoke|combine(environment_bases["production"], {
-      "vars": smoke_test_variables["production"],
-    }),
-    "smoulder": variant_bases.smoulder|combine(environment_bases["production"], {
-      "vars": smoulder_test_variables["production"],
-    }),
-  },
-} %}
+{% set environments = (
+  ("preview", smoke_test_variables["preview"], variant_bases["smoke"]),
+  ("preview", smoulder_test_variables["preview"], variant_bases["smoulder"]),
+  ("staging", smoke_test_variables["staging"], variant_bases["smoke"]),
+  ("staging", smoulder_test_variables["staging"], variant_bases["smoulder"]),
+  ("production", smoke_test_variables["production"], variant_bases["smoke"]),
+  ("production", smoulder_test_variables["production"], variant_bases["smoulder"])
+) %}
 ---
-{% for environment, variants in environments.items() %}
-{% for variant, instance in variants.items() %}
+{% for environment, vars, test_type in environments %}
 - job:
-    name: "{{ instance.slugname }}-{{ environment }}"
-    display-name: "{{ instance.displayname }} - {{ environment }}"
+    name: "{{ test_type.slugname }}-{{ environment }}"
+    display-name: "{{ test_type.displayname }} - {{ environment }}"
     project-type: pipeline
     description: |
-      Check that all Digital Marketplace apps are {{ instance.assertion_description }} in the {{ environment|upper }} environment
+      Check that all Digital Marketplace apps are {{ test_type.assertion_description }} in the {{ environment|upper }} environment
     properties:
       - build-discarder:
           days-to-keep: 4
           artifact-days-to-keep: 4
     triggers:
-      - timed: "{{ instance.timing }}"
+      - timed: "{{ test_type.timing }}"
     wrappers:
       - ansicolor
     dsl: |
@@ -76,13 +51,13 @@
       def notify_slack(icon, status) {
         build job: "notify-slack",
               parameters: [
-                string(name: 'USERNAME', value: '{{ instance.slack_username }}'),
+                string(name: 'USERNAME', value: '{{ test_type.slack_username }}'),
                 string(name: 'ICON', value: icon),
-                string(name: 'JOB', value: "{{ instance.displayname }} - {{ environment }}"),
+                string(name: 'JOB', value: "{{ test_type.displayname }} - {{ environment }}"),
                 string(name: 'CHANNEL', value: "#dm-release"),
                 text(name: 'STAGE', value: "{{ environment }}"),
                 text(name: 'STATUS', value: status),
-                text(name: 'URL', value: "<${BUILD_URL}{{ instance.report_name|lower|replace(" ", "_") }}|${BUILD_DISPLAY_NAME}>")
+                text(name: 'URL', value: "<${BUILD_URL}{{ test_type.report_name|lower|replace(" ", "_") }}|${BUILD_DISPLAY_NAME}>")
               ]
       }
       node {
@@ -92,7 +67,7 @@
             sh("rbenv install -s")
             sh("gem install bundler --conservative")
           }
-          stage('{{ instance.stage_name }}') {
+          stage('{{ test_type.stage_name }}') {
             sh('''
               set +x # do not echo credentials - remove for debugging
 
@@ -106,32 +81,33 @@
 
               export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
 
-              export DM_SUPPLIER_USER_EMAIL="{{ instance.vars.supplier_email }}"
-              export DM_SUPPLIER_USER_PASSWORD="{{ instance.vars.supplier_password }}"
-              export DM_SUPPLIER_USER_SUPPLIER_ID="{{ instance.vars.supplier_id }}"
+              export DM_SUPPLIER_USER_EMAIL="{{ vars.supplier_email }}"
+              export DM_SUPPLIER_USER_PASSWORD="{{ vars.supplier_password }}"
+              export DM_SUPPLIER_USER_SUPPLIER_ID="{{ vars.supplier_id }}"
 
-              export DM_BUYER_USER_EMAIL="{{ instance.vars.buyer_email }}"
-              export DM_BUYER_USER_PASSWORD="{{ instance.vars.buyer_password }}"
+              export DM_BUYER_USER_EMAIL="{{ vars.buyer_email }}"
+              export DM_BUYER_USER_PASSWORD="{{ vars.buyer_password }}"
 
-              export DM_ADMIN_USER_EMAIL="{{ instance.vars.admin_email }}"
-              export DM_ADMIN_USER_PASSWORD="{{ instance.vars.admin_password }}"
+              export DM_ADMIN_USER_EMAIL="{{ vars.admin_email }}"
+              export DM_ADMIN_USER_PASSWORD="{{ vars.admin_password }}"
 
-              export DM_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ instance.vars.admin_ccs_category_email }}"
-              export DM_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ instance.vars.admin_ccs_category_password }}"
+              export DM_ADMIN_CCS_CATEGORY_USER_EMAIL="{{ vars.admin_ccs_category_email }}"
+              export DM_ADMIN_CCS_CATEGORY_USER_PASSWORD="{{ vars.admin_ccs_category_password }}"
 
-              export DM_ADMIN_CCS_SOURCING_USER_EMAIL="{{ instance.vars.admin_ccs_sourcing_email }}"
-              export DM_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ instance.vars.admin_ccs_sourcing_password }}"
+              export DM_ADMIN_CCS_SOURCING_USER_EMAIL="{{ vars.admin_ccs_sourcing_email }}"
+              export DM_ADMIN_CCS_SOURCING_USER_PASSWORD="{{ vars.admin_ccs_sourcing_password }}"
 
-              export DM_ADMIN_CCS_DATA_CONTROLLER_USER_EMAIL="{{ instance.vars.admin_ccs_data_controller_email }}"
-              export DM_ADMIN_CCS_DATA_CONTROLLER_USER_PASSWORD="{{ instance.vars.admin_ccs_data_controller_password }}"
+              export DM_ADMIN_CCS_DATA_CONTROLLER_USER_EMAIL="{{ vars.admin_ccs_data_controller_email }}"
+              export DM_ADMIN_CCS_DATA_CONTROLLER_USER_PASSWORD="{{ vars.admin_ccs_data_controller_password }}"
 
-              export DM_ADMIN_MANAGER_USER_EMAIL="{{ instance.vars.admin_manager_email }}"
-              export DM_ADMIN_MANAGER_USER_PASSWORD="{{ instance.vars.admin_manager_password }}"
+              export DM_ADMIN_MANAGER_USER_EMAIL="{{ vars.admin_manager_email }}"
+              export DM_ADMIN_MANAGER_USER_PASSWORD="{{ vars.admin_manager_password }}"
 
-              export DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ instance.vars.admin_framework_manager_email }}"
-              export DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ instance.vars.admin_framework_manager_password }}"
+              export DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ vars.admin_framework_manager_email }}"
+              export DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ vars.admin_framework_manager_password }}"
 
-{% if variant == "smoulder" %}
+
+{% if test_type["name"] == "smoulder" %}
               export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
               export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ environment|upper }}"
 {% endif %}
@@ -142,7 +118,7 @@
 
               export DM_ENVIRONMENT={{ environment }}
 
-              {{ instance.make_command }}
+              {{ test_type.make_command }}
             ''')
 
             if (currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause) != null) {
@@ -177,7 +153,7 @@
             keepAll: true,
             reportDir: 'reports',
             reportFiles: 'index.html',
-            reportName: '{{ instance.report_name }}'
+            reportName: '{{ test_type.report_name }}'
           ])
         }
       }
