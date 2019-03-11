@@ -28,7 +28,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-release
+              CHANNEL=#dm-2ndline
     builders:
       - shell: |
           docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ performance_platform_bearer_tokens[pp_service] }} {{ pp_service }} --{{ period }}

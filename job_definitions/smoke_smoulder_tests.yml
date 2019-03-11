@@ -48,7 +48,7 @@
       - ansicolor
     dsl: |
 
-      def notify_slack(icon, status) {
+      def notify_slack(icon, status, channel = "#dm-release") {
         build job: "notify-slack",
               parameters: [
                 string(name: 'USERNAME', value: '{{ test_type.slack_username }}'),
@@ -127,7 +127,7 @@
           }
         } catch(err) {
         {% if environment == 'production' %}
-          notify_slack(':fire:', 'FAILED')
+          notify_slack(':fire:', 'FAILED', "#dm-2ndline")
         {% else %}
           try {
             def migrations_being_run = sh(
