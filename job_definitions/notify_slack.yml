@@ -17,9 +17,11 @@
           default: ":shipit:"
       - string:
           name: TEXT
-      - string:
+      - choice:
           name: CHANNEL
-          default: "#dm-release"
+          choices:
+            - "#dm-release"
+            - "#dm-2ndline"
       - string:
           name: PROJECT
       - text:
@@ -41,11 +43,11 @@
           import os
           import urllib2
 
-          SLACK_URL = '{{ jenkins_slack_url }}'
 
           USERNAME = os.getenv('USERNAME', 'deploy')
           ICON = os.getenv('ICON', ':shipit:')
           CHANNEL = os.getenv('CHANNEL', '#dm-release')
+          SLACK_URL = '{{ jenkins_slack_dm2ndline_url }}' if CHANNEL == '#dm-2ndline' else '{{ jenkins_slack_dmrelease_url }}'
 
           TEXT = os.getenv('TEXT', '')
 

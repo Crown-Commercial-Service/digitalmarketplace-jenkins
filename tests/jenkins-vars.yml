@@ -3,7 +3,8 @@ jenkins_api_user_github_personal_access_token: --jenkins-api-user-github-persona
 jenkins_github_email: jenkins+github@example.com
 jenkins_gdrive_db_dumps_folder_id: __jenkins_gdrive_db_dumps_folder_id__
 jenkins_gdrive_csv_data_export_folder_id: __jenkins_gdrive_csv_data_export_folder_id__
-jenkins_slack_url: slack.example.com/?user=jenkins
+jenkins_slack_dmrelease_url: slack.example.com/?user=jenkins&channel=dm-release
+jenkins_slack_dm2ndline_url: slack.example.com/?user=jenkins&channel=dm-2ndline
 performance_platform_bearer_tokens:
   digital-outcomes-specialists: SuperSecretPerformancePlatformBearerTokenForDOS
 smoke_test_variables:
