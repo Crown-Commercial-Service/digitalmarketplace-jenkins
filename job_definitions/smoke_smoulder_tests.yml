@@ -11,7 +11,7 @@
     "stage_name": "Run smoke tests",
   },
   "smoulder": {
-    "name": "smoulder"
+    "name": "smoulder",
     "timing": "H * * * *",
     "slugname": "apps-are-working",
     "displayname": "Apps are working",
@@ -20,15 +20,15 @@
     "report_name": "smoulder test report",
     "make_command": "make smoulder-tests-parallel && make build-report || ( make build-report; make rerun )",
     "stage_name": "Run smoulder tests",
-  },
+  }
 } %}
 {% set environments = (
-  ("preview", smoke_test_variables["preview"], variant_bases["smoke"]),
-  ("preview", smoulder_test_variables["preview"], variant_bases["smoulder"]),
-  ("staging", smoke_test_variables["staging"], variant_bases["smoke"]),
-  ("staging", smoulder_test_variables["staging"], variant_bases["smoulder"]),
-  ("production", smoke_test_variables["production"], variant_bases["smoke"]),
-  ("production", smoulder_test_variables["production"], variant_bases["smoulder"])
+  ("preview", smoke_test_variables["preview"], test_types["smoke"]),
+  ("preview", smoulder_test_variables["preview"], test_types["smoulder"]),
+  ("staging", smoke_test_variables["staging"], test_types["smoke"]),
+  ("staging", smoulder_test_variables["staging"], test_types["smoulder"]),
+  ("production", smoke_test_variables["production"], test_types["smoke"]),
+  ("production", smoulder_test_variables["production"], test_types["smoulder"])
 ) %}
 ---
 {% for environment, vars, test_type in environments %}
@@ -159,5 +159,4 @@
       }
 
 
-{% endfor %}
 {% endfor %}
