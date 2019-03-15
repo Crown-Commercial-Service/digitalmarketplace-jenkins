@@ -54,7 +54,7 @@
                 string(name: 'USERNAME', value: '{{ test_type.slack_username }}'),
                 string(name: 'ICON', value: icon),
                 string(name: 'JOB', value: "{{ test_type.displayname }} - {{ environment }}"),
-                string(name: 'CHANNEL', value: "#dm-release"),
+                string(name: 'CHANNEL', value: channel),
                 text(name: 'STAGE', value: "{{ environment }}"),
                 text(name: 'STATUS', value: status),
                 text(name: 'URL', value: "<${BUILD_URL}{{ test_type.report_name|lower|replace(" ", "_") }}|${BUILD_DISPLAY_NAME}>")
