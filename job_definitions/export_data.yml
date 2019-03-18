@@ -19,7 +19,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-2nd-line
+              CHANNEL=#dm-2ndline
     builders:
       - shell: |
 
