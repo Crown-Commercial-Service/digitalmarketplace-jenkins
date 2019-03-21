@@ -1,10 +1,12 @@
 {% set environments = ['preview', 'production'] %}
+{% set disabled = 'true' %}
 ---
 {% for environment in environments %}
 - job:
     name: "export-data-{{ environment }}"
     display-name: "Export API model data as CSV - {{ environment }}"
     project-type: freestyle
+    disabled: {{ disabled }}
     description: "Runs the get-model-data.py script and uploads the generated CSV files to Google Drive (everything, for us) and S3 (just the opportunity data, for the public)"
     triggers:
       - timed: "H 5 * * *"
