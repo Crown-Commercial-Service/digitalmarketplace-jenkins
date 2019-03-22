@@ -193,6 +193,13 @@ jenkins_list_views:
       - publish-g-cloud-draft-services-preview
       - publish-g-cloud-draft-services-staging
       - publish-g-cloud-draft-services-production
+      - performance-platform-stats-g-cloud-11-per-hour-preview
+      - performance-platform-stats-g-cloud-11-per-day-preview
+      - performance-platform-stats-g-cloud-11-per-hour-production
+      - performance-platform-stats-g-cloud-11-per-day-production
+      - snapshot-stats-g-cloud-11-preview
+      - snapshot-stats-g-cloud-11-production
+
 
 app_urls:
   preview:

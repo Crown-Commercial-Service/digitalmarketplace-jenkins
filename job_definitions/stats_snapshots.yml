@@ -1,5 +1,5 @@
-{% set environments = ['preview'] %}
-{% set frameworks = [('g-cloud-11', 'true')] %}
+{% set environments = ['production'] %}
+{% set frameworks = [('g-cloud-11', 'false')] %}
 ---
 {% for environment in environments %}
 {% for framework, disabled in frameworks %}
