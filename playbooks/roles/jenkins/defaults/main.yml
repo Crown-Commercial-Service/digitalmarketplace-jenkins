@@ -102,6 +102,7 @@ build_monitor_jobs:
   - visual-regression-preview
 
 jenkins_list_views:
+
   - name: "Data"
     jobs:
       - clean-and-apply-db-dump-s3
@@ -205,28 +206,22 @@ jenkins_list_views:
       - backup-digitalmarketplace-agreements
       - backup-digitalmarketplace-antivirus-api
       - backup-digitalmarketplace-api
-      - backup-digitalmarketplace-api-docs
       - backup-digitalmarketplace-apiclient
       - backup-digitalmarketplace-aws
       - backup-digitalmarketplace-bad-words
       - backup-digitalmarketplace-brief-responses-frontend
       - backup-digitalmarketplace-briefs-frontend
       - backup-digitalmarketplace-buyer-frontend
-      - backup-digitalmarketplace-cloudwatch-to-graphite
       - backup-digitalmarketplace-content-loader
       - backup-digitalmarketplace-credentials
-      - backup-digitalmarketplace-deployment
       - backup-digitalmarketplace-docker-base
-      - backup-digitalmarketplace-framework-application-guidance
       - backup-digitalmarketplace-frameworks
       - backup-digitalmarketplace-frontend-toolkit
       - backup-digitalmarketplace-functional-tests
-      - backup-digitalmarketplace-g-cloud-service-submission
       - backup-digitalmarketplace-jenkins
       - backup-digitalmarketplace-maintenance
       - backup-digitalmarketplace-manual
       - backup-digitalmarketplace-performance-testing
-      - backup-digitalmarketplace-prototype
       - backup-digitalmarketplace-router
       - backup-digitalmarketplace-runner
       - backup-digitalmarketplace-scripts

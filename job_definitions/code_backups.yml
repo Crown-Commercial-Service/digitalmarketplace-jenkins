@@ -33,27 +33,25 @@
 {% for package in packages %}
 - job:
     name: 'backup-{{ package }}'
-    display-name: "Backup {{ package }} Github repo to AWS CodeCommit"
+    display-name: "{code-backup} {{ package }}"
     project-type: freestyle
     description: "Backup repo: https://github.com/alphagov/{{ package }} to https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/{{ package }}"
     properties:
       - build-discarder:
           days-to-keep: 20
           artifact-days-to-keep: 20
-    scm:
-      - git:
-          url: git@github.com:alphagov/{{ package }}.git
-          credentials-id: github_com_and_enterprise
-          clean: true
     triggers:
-      - pollscm:
-          cron: "H/30 * * * *"
+      - timed: "H/30 * * * *"
     wrappers:
       - ansicolor
     builders:
       - shell: |
-          git remote add {{ package }}-aws-backup https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/{{ package }}
+          git clone https://$GITHUB_ACCESS_TOKEN@github.com/alphagov/{{ package }} {{ package }} --mirror
+          cd {{ package }}
+          git remote add {{ package }}-aws-backup-remote https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/{{ package }}
           git config --local credential.helper '!aws codecommit credential-helper $@'
           git config --local credential.UseHttpPath true
-          git push {{ package }}-aws-backup --mirror
+          git push {{ package }}-aws-backup-remote --mirror
+          cd ..
+          rm -rf {{ package }}
 {% endfor %}
