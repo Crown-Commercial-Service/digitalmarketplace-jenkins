@@ -36,12 +36,22 @@
     display-name: "{code-backup} {{ package }}"
     project-type: freestyle
     description: "Backup repo: https://github.com/alphagov/{{ package }} to https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/{{ package }}"
+    scm:
+      - git:
+          url: git@github.com:alphagov/{{ package }}.git
+          basedir: polling_checkout
+          credentials-id: github_com_and_enterprise
+          branches:
+            - master
+          wipe-workspace: false
     properties:
       - build-discarder:
           days-to-keep: 20
           artifact-days-to-keep: 20
     triggers:
-      - timed: "H/30 * * * *"
+      - pollscm:
+          cron: "H/2 * * * *"
+          ignore-post-commit-hooks: True
     wrappers:
       - ansicolor
     builders:
