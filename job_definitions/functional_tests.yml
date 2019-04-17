@@ -17,8 +17,8 @@
     description: "{{ job.description }}"
     properties:
       - build-discarder:
-          days-to-keep: 4
-          artifact-days-to-keep: 4
+          days-to-keep: 60
+          artifact-days-to-keep: 60
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
