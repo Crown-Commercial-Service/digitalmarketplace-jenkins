@@ -40,8 +40,8 @@
       Check that all Digital Marketplace apps are {{ test_type.assertion_description }} in the {{ environment|upper }} environment
     properties:
       - build-discarder:
-          days-to-keep: 4
-          artifact-days-to-keep: 4
+          days-to-keep: 30
+          artifact-days-to-keep: 30
     triggers:
       - timed: "{{ test_type.timing }}"
     wrappers:
