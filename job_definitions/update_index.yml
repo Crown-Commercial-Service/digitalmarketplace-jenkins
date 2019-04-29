@@ -4,21 +4,21 @@
     display-name: "Update index - {{ environment }}"
     project-type: freestyle
     description: |
-      This job updates an existing ElasticSearch index with services or briefs as they exist in the database
-
-      In all likelihood you want to reindex all existing briefs or services to their corresponding index.
-
-      Visiting either https://search-api.<STAGE>.marketplace.team/_status or
+      <p>This job updates an existing ElasticSearch index with services or briefs as they exist in the database</p>
+      </br>
+      <p>In all likelihood you want to reindex all existing briefs or services to their corresponding index.</p>
+      </br>
+      <p>Visiting either https://search-api.&lt;STAGE&gt;.marketplace.team/_status or
       https://search-api.digitalmarketplace.service.gov.uk/_status will show you currently available indexes and their
-      aliases.
-
-      To reindex all briefs your object will be 'briefs', the index will be 'briefs-digital-outcomes-and-specialists'
-      and the frameworks should be 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'
-
-      To reindex the g-cloud services list the object is 'services', the index is 'g-cloud-10' and the frameworks would
-      be 'g-cloud-10'
-
-      However you may be testing a new index and want to input its name and frameworks manually.
+      aliases.</p>
+      </br>
+      <p>To reindex all briefs your object will be 'briefs', the index will be 'briefs-digital-outcomes-and-specialists'
+      and the frameworks should be 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'.</br>
+      </p>
+      <p>To reindex the g-cloud services list the object is 'services', the index is 'g-cloud-10' and the frameworks would
+      be 'g-cloud-10'.</p>
+      </br>
+      <p>However you may be testing a new index and want to input its name and frameworks manually.</p>
     parameters:
       - choice:
           name: OBJECTS
