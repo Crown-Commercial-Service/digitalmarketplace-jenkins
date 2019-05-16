@@ -3,7 +3,7 @@
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
 ---
 {% for environment in environments %}
-{% for framework, pp_service, disabled in frameworks %}
+{% for framework, pp_service, token_group, disabled in frameworks %}
 {% for schedule, period in schedules %}
 - job:
     name: 'performance-platform-stats-{{ framework }}-per-{{ period }}-{{ environment }}'
@@ -31,7 +31,7 @@
               CHANNEL=#dm-2ndline
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/framework-applications/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ pp_service }} --{{ period }}
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/framework-applications/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ pp_service }} --{{ period }} {{ performance_platform_bearer_tokens[token_group] }}
 
 {% endfor %}
 {% endfor %}
