@@ -53,7 +53,9 @@
           condition-string2: test
           condition-case-insensitive: true
           steps:
-            - shell: rm -rf backstop_data/bitmaps_test
+            - shell: |
+                rm -rf backstop_data/html_report
+                rm -rf backstop_data/bitmaps_test/*
 
       - shell: |
 
@@ -97,8 +99,12 @@
           curl ${DM_FRONTEND_DOMAIN}/user/_status
 
           BACKSTOP_VERSION="$(jq -r '.dependencies.backstopjs.version' package-lock.json)"
+          DOCKER_UID="$(id -u)"
+          DOCKER_GID="$(getent group docker | awk -F ':' '{print $3}')"
 
-          docker run --pull --rm -v $(pwd):/src \
+          docker pull backstopjs/backstopjs:$BACKSTOP_VERSION
+
+          docker run --rm -v $(pwd):/src -u $DOCKER_UID:$DOCKER_GID \
             -e DM_ENVIRONMENT -e DM_FRONTEND_DOMAIN \
             -e DM_SUPPLIER_USER_EMAIL -e DM_SUPPLIER_USER_PASSWORD \
             -e DM_BUYER_USER_EMAIL -e DM_BUYER_USER_PASSWORD \
