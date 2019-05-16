@@ -52,7 +52,7 @@
               sh('''
                 pyenv local 3.6.2
                 make requirements
-                DUMP_FILE_NAME=${DUMP_FILE_NAME} make ${STAGE} deploy-db-backup-app
+                make ${STAGE} deploy-db-backup-app DUMP_FILE_NAME=${DUMP_FILE_NAME}
               ''')
               timeout(10) {
                 waitUntil {
