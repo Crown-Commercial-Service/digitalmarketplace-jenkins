@@ -53,7 +53,9 @@
           condition-string2: test
           condition-case-insensitive: true
           steps:
-            - shell: rm -rf backstop_data/bitmaps_test/*
+            - shell: |
+                rm -rf backstop_data/html_report
+                rm -rf backstop_data/bitmaps_test/*
 
       - shell: |
 
