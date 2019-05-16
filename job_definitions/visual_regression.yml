@@ -96,7 +96,9 @@
           curl ${DM_FRONTEND_DOMAIN}/admin/_status
           curl ${DM_FRONTEND_DOMAIN}/user/_status
 
-          docker run --rm -v $(pwd):/src \
+          BACKSTOP_VERSION="$(jq -r '.dependencies.backstopjs.version' package-lock.json)"
+
+          docker run --pull --rm -v $(pwd):/src \
             -e DM_ENVIRONMENT -e DM_FRONTEND_DOMAIN \
             -e DM_SUPPLIER_USER_EMAIL -e DM_SUPPLIER_USER_PASSWORD \
             -e DM_BUYER_USER_EMAIL -e DM_BUYER_USER_PASSWORD \
@@ -106,7 +108,7 @@
             -e DM_ADMIN_CCS_DATA_CONTROLLER_USER_EMAIL -e DM_ADMIN_CCS_DATA_CONTROLLER_USER_PASSWORD \
             -e DM_ADMIN_MANAGER_USER_EMAIL -e DM_ADMIN_MANAGER_USER_PASSWORD \
             -e DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL -e DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD \
-            digitalmarketplace/backstopjs:2.1.0 $COMMAND --configPath=config.js
+            backstopjs/backstopjs:$BACKSTOP_VERSION $COMMAND --configPath=config.js
 
       - conditional-step:
           condition-kind: and
