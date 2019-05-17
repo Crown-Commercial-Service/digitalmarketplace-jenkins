@@ -42,6 +42,12 @@
               }
 
               stage('Prepare') {
+                  if (RELEASE_NAME ==~ /release-\d+/ && HEAD_BRANCH != "master") {
+                    input("WARNING: It is probably a bad idea to create a release- tagged image from a non-master HEAD_BRANCH!")
+                  }
+                  if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "master") {
+                    input("WARNING: It is probably a bad idea to mark a non-master HEAD_BRANCH image as 'latest'")
+                  }
                   git url: "git@github.com:alphagov/digitalmarketplace-${REPOSITORY}.git", branch: HEAD_BRANCH, credentialsId: 'github_com_and_enterprise'
                   echo "Cleaning repository"
                   sh("git clean -fdx")
