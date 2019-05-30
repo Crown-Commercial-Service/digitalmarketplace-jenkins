@@ -41,8 +41,12 @@
   with_fileglob:
     - '../../../../job_definitions/{{ jobs }}.yml'
 
-- name: Test job definitions before updating
-  command: su - jenkins -c "jenkins-jobs test /etc/jenkins_jobs/definitions"
+- name: Test job definitions before updating (as jenkins user)
+  command: jenkins-jobs test /etc/jenkins_jobs/definitions
+  become: yes
+  become_user: jenkins
 
-- name: Update job definitions
-  command: su - jenkins -c "jenkins-jobs update /etc/jenkins_jobs/definitions"
+- name: Update job definitions (as jenkins user)
+  command: jenkins-jobs update /etc/jenkins_jobs/definitions
+  become: yes
+  become_user: jenkins
