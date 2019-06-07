@@ -47,7 +47,9 @@ jenkins: requirements ## Run Jenkins playbook
 	JENKINS_VARS_FILE=$$(mktemp) ;\
 	PRIVATE_KEY_FILE=$$(mktemp) ;\
 	trap 'rm $$JENKINS_VARS_FILE $$PRIVATE_KEY_FILE' EXIT ;\
-	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/jenkins-vars/jenkins.yaml > $$JENKINS_VARS_FILE ;\
+	for varfile in ${DM_CREDENTIALS_REPO}/jenkins-vars/*.yaml; do \
+	${DM_CREDENTIALS_REPO}/sops-wrapper -d $$varfile >> $$JENKINS_VARS_FILE ;\
+	done ;\
 	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > $$PRIVATE_KEY_FILE ;\
 	ANSIBLE_CONFIG=playbooks/ansible.cfg ${VIRTUALENV_ROOT}/bin/ansible-playbook \
 		-i playbooks/hosts playbooks/jenkins_playbook.yml \
