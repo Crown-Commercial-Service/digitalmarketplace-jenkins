@@ -1,0 +1,92 @@
+---
+- job:
+    name: validate-cloudtrail-logs
+    project-type: freestyle
+    display-name: Validate logs stored by Amazon CloudWatch in S3.
+    parameters:
+      - choice:
+          name: ACCOUNT
+          choices:
+            - main
+            - development
+            - production
+            - backups
+      - string:
+          name: START_FROM
+          default: "3 days ago"
+          description: Logs delivered on or after the specified time will be validated. Can be in any format accepted by GNU date.
+      - string:
+          name: UP_TO
+          default: "now"
+          description: Logs delivered on or before the specified time will be validated. Can be in any format accepted by GNU date.
+      - bool:
+          name: VERBOSE
+          default: false
+          description: Print verbose log validation information.
+    builders:
+      - shell: |
+          docker run --rm \
+            -v /var/lib/jenkins/digitalmarketplace-credentials:/digitalmarketplace-credentials \
+            -e DM_CREDENTIALS_REPO=/digitalmarketplace-credentials \
+            -e VERBOSE=$VERBOSE \
+            digitalmarketplace/scripts \
+            scripts/validate-cloudtrail-logs.sh $ACCOUNT $START_FROM $UP_TO
+
+- job:
+    name: validate-cloudtrail-logs-periodic
+    project-type: pipeline
+    display-name: Validate the last 3 days of logs every hour or so.
+    triggers:
+      - timed: '@hourly'
+    dsl: |
+
+      def notify_slack(accounts, status) {
+        build job: "notify-slack",
+        parameters: [
+          string(name: 'USERNAME', value: "validate-cloudtrail-logs"),
+          string(name: 'ICON', value: ":red_circle:"),
+          string(name: 'JOB', value: "Validating CloudTrail logs in ${accounts.join(', ')} account ${status}"),
+          string(name: 'CHANNEL', value: "#dm-2ndline"),
+          text(name: 'STATUS', value: status),
+          text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+        ]
+      }
+
+      failed_accounts = []
+
+      def do_validate(account) {
+        try {
+          build job: "validate-cloudtrail-logs"
+          parameters: [
+            string(name: "ACCOUNT", value: account),
+            string(name: "START_FROM", value: "3 days ago"),
+            string(name: "UP_TO", value: "now"),
+          ]
+        } catch(err) {
+          failed_accounts << account
+          currentBuild.result = 'FAILURE'
+        }
+      }
+
+      node {
+        stage('main') {
+          do_validate("main")
+        }
+
+        stage('development') {
+          do_validate("development")
+        }
+
+        stage('production') {
+          do_validate("production")
+        }
+
+        stage('backups') {
+          do_validate("backups")
+        }
+
+        if ( currentBuild.result == 'FAILURE' ) {
+          notify_slack(failed_accounts, 'FAILED')
+        }
+      }
+
