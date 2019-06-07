@@ -1,0 +1,43 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "publish-draft-services-{{ environment }}"
+    display-name: "Publish draft services - {{ environment }}"
+    project-type: freestyle
+    description: "This publishes draft services by promoting them from draft to published, and copying associated documents into the appropriate S3 bucket."
+    parameters:
+      - string:
+          name: FRAMEWORK
+          description: "Framework slug for filtering the services to publish."
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "Do everything except publish draft services and copying the documents to the appropriate bucket. Will list random service ID's to stdout instead of actual published IDs."
+      - bool:
+          name: SKIP_DOCS_IF_PUBLISHED
+          default: false
+          description: "If script comes across an already-published draft service, don't bother copying its documents"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=publish-draft-services.py
+              JOB=Publish draft services - {{ environment }}
+              ICON=:alarm_clock:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="--dry-run"
+          fi
+          if [ "$SKIP_DOCS_IF_PUBLISHED" = "true" ]; then
+            FLAGS="$FLAGS --skip-docs-if-published"
+          fi
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts ./scripts/framework-applications/publish-draft-services.py $FRAMEWORK "{{ environment }}" digitalmarketplace-submissions-{{ environment }}-{{ environment }} digitalmarketplace-documents-{{ environment }}-{{ environment }} $FLAGS
+{% endfor %}
