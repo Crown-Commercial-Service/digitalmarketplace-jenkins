@@ -15,6 +15,9 @@
       - string:
           name: FRAMEWORK_SLUG
           description: "The framework slug for which applications have just closed (e.g. g-cloud-10)."
+      - string:
+          name: SUPPLIER_IDS
+          description: "Comma separated list of supplier IDs to restrict notifications to."
     publishers:
       - trigger-parameterized-builds:
           - project: notify-slack
@@ -41,6 +44,10 @@
       - shell: |
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
+          fi
+
+          if [ -n "$SUPPLIER_IDS"; then
+            $FLAGS="$FLAGS --supplier-id='$SUPPLIER_IDS'"
           fi
 
           docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-whether-application-made-for-framework.py "{{ environment }}" "$FRAMEWORK_SLUG" "$NOTIFY_API_TOKEN" $FLAGS
