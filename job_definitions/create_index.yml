@@ -22,10 +22,10 @@
             - services
       - string:
           name: INDEX_NAME
-          description: "A new name for your new index (eg 'g-cloud-9-2017-05-22', 'briefs-digital-outcomes-and-specialists-2017-05-22')"
+          description: "A name for your new index (eg 'g-cloud-9-2017-05-22', 'briefs-digital-outcomes-and-specialists-2017-05-22') (see https://search-api.<STAGE>.marketplace.team/_status for further examples)"
       - string:
           name: FRAMEWORKS
-          description: "Comma-separated list of framework slugs that should be indexed (eg 'g-cloud-7,g-cloud-8', 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2'). If no frameworks are specified then all currently published services will be indexed."
+          description: "Comma separated framework slugs denoting which objects should appear in the index. Commonly a services index contains only services from a single framework iteration whereas briefs index will contain all briefs for the framework (eg 'g-cloud-9', 'g-cloud-10', 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3')."
       - string:
           name: MAPPING
           description: >
