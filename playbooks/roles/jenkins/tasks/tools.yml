@@ -1,12 +1,6 @@
 ---
-- name: Add Oracle Java Repository
-  apt_repository: repo='ppa:webupd8team/java'
-
-- name: Accept Java 8 License
-  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
-
-- name: Install Oracle Java 8
-  apt: name=oracle-java8-installer state=latest
+- name: Install OpenJDK JRE 8
+  apt: name=openjdk-8-jre state=latest update_cache=yes
 
 - name: Adding APT repository key
   tags: [apt]
