@@ -138,3 +138,4 @@
 
 - name: Restart Jenkins
   service: name=jenkins state=restarted
+  ignore_errors: yes
