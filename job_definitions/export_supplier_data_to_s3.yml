@@ -1,6 +1,7 @@
 {% set environments = ['preview', 'staging', 'production'] %}
 {% set frameworks = [
-    'g-cloud-9', 'g-cloud-10', 'g-cloud-11', 'digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3'
+    'g-cloud-9', 'g-cloud-10', 'g-cloud-11',
+    'digital-outcomes-and-specialists-2', 'digital-outcomes-and-specialists-3', 'digital-outcomes-and-specialists-4'
   ]
 %}
 ---
