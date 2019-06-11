@@ -110,6 +110,22 @@
   tags: [apt]
   apt: pkg=nodejs=4.* state=present
 
+# TODO: Stop installing PhantomJS like this when there is a better
+#       apt source available.
+- name: Download PhantomJS
+  get_url:
+    url: "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
+    dest: /usr/local/src/phantomjs-2.1.1-linux-x86_64.tar.bz2
+
+- name: Unarchive PhantomJS
+  unarchive:
+    src: /usr/local/src/phantomjs-2.1.1-linux-x86_64.tar.bz2
+    dest: /usr/local/src
+    copy: no
+
+- name: Install PhantomJS binary
+  file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
+
 - name: Give jenkins user permissions on its home directory
   file:
     path: /var/lib/jenkins
