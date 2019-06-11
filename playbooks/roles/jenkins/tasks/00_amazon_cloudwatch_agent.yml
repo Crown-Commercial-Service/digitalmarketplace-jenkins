@@ -1,13 +1,13 @@
 ---
-- name: Download CloudWatch logs/ metrics agent
+- name: Download Amazon CloudWatch logs/metrics agent
   get_url:
     url: "https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb"
     dest: /tmp/amazon-cloudwatch-agent.deb
 
-- name: Install CloudWatch agent
+- name: Install Amazon CloudWatch agent
   apt:
     deb: /tmp/amazon-cloudwatch-agent.deb
 
 - name: Create amazon-cloudwatch-agent.json file in /opt/aws/amazon-cloudwatch-agent/etc directory
-  template: src=amazon-cloudwatch-agent.json.j2 dest=/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json owner=jenkins group=jenkins mode=600
+  template: src=amazon-cloudwatch-agent.json.j2 dest=/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json mode=600
   notify: restart amazon-cloudwatch-agent
