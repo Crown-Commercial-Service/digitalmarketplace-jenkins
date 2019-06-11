@@ -44,6 +44,8 @@
     - {repo: "https://github.com/carsomyr/rbenv-bundler.git", path: ".rbenv/plugins/bundler"}
     - {repo: "https://github.com/yyuu/pyenv.git", path: ".pyenv"}
     - {repo: "https://github.com/yyuu/pyenv-virtualenv.git", path: ".pyenv/plugins/pyenv-virtualenv"}
+  become: yes
+  become_user: jenkins
 
 - name: Add .rbenv and .pyenv to PATH
   lineinfile:
@@ -72,8 +74,16 @@
   apt:
     name: libbz2-dev
 
-- name: Install pyenv python3
-  shell: "bash -c 'source /var/lib/jenkins/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && /var/lib/jenkins/.pyenv/shims/pip install virtualenv'"
+- name: Install Python 3 using pyenv
+  shell: |
+    source ~/.bash_profile
+    pyenv install -s 3.6.2
+    pyenv shell 3.6.2
+    pip install -U pip virtualenv
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
 
 - name: Add gpg-agent conf directory
   file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
@@ -125,14 +135,6 @@
 
 - name: Install PhantomJS binary
   file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
-
-- name: Give jenkins user permissions on its home directory
-  file:
-    path: /var/lib/jenkins
-    owner: jenkins
-    group: jenkins
-    state: directory
-    recurse: yes
 
 - name: Restart Jenkins
   service: name=jenkins state=restarted
