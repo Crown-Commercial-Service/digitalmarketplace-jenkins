@@ -13,7 +13,6 @@
   apt_repository:
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
     state: present
-    update_cache: yes
 
 - name: Install tools
   tags: [apt]
