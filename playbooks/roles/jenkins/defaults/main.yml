@@ -1,6 +1,7 @@
 ---
-mount_dir: /data
-jenkins_home: /data/jenkins
+data_volume_mount: /data
+
+jenkins_data_dir: /data/jenkins
 jenkins_logs_dir: /data/logs
 
 jenkins_repo_url: deb http://pkg.jenkins-ci.org/debian binary/

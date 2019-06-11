@@ -2,7 +2,7 @@
 - name: Install OpenJDK JRE 8
   apt: name=openjdk-8-jre state=latest update_cache=yes
 
-- name: Adding APT repository key
+- name: Add postgres repository key
   tags: [apt]
   apt_key:
     id: ACCC4CF8

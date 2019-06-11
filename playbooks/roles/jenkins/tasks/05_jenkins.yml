@@ -62,7 +62,7 @@
   when: jenkins_package_install.changed
 
 - name: Check if first time install
-  command: "test -e {{ jenkins_home }}/secrets/initialAdminPassword"
+  command: "test -e {{ jenkins_data_dir }}/secrets/initialAdminPassword"
   ignore_errors: yes
   register: first_time_install_test
 
@@ -75,7 +75,7 @@
   when: not (first_time_install_test is failed) and ansible_os_family != "Debian"
 
 - name: Remove initial Jenkins password
-  file: name="{{ jenkins_home }}/secrets/initialAdminPassword" state=absent
+  file: name="{{ jenkins_data_dir }}/secrets/initialAdminPassword" state=absent
   ignore_errors: yes
   when: not (first_time_install_test is failed)
 
@@ -85,7 +85,7 @@
   register: jenkins_password_hash
 
 - name: Patch original password hash line
-  lineinfile: dest="{{ jenkins_home }}/users/admin/config.xml" regexp='^(\s)*<passwordHash>(.*)' line='      <passwordHash>ansible_jenkins:{{ jenkins_password_hash.stdout }}</passwordHash>' owner="jenkins"
+  lineinfile: dest="{{ jenkins_data_dir }}/users/admin/config.xml" regexp='^(\s)*<passwordHash>(.*)' line='      <passwordHash>ansible_jenkins:{{ jenkins_password_hash.stdout }}</passwordHash>' owner="jenkins"
   when: not (first_time_install_test is failed)
 
 - name: Forced restart to pick up any changes
