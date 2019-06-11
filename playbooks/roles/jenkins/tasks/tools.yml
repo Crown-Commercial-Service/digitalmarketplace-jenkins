@@ -68,6 +68,10 @@
     - {name: "rbenv"}
     - {name: "pyenv"}
 
+- name: Install Python build requirements
+  apt:
+    name: libbz2-dev
+
 - name: Install pyenv python3
   shell: "bash -c 'source /var/lib/jenkins/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && /var/lib/jenkins/.pyenv/shims/pip install virtualenv'"
 
