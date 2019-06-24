@@ -1,32 +1,31 @@
 ---
-- import_tasks: bootstrap.yml
-  tags: [bootstrap]
-- import_tasks: keys.yml
-  tags: [keys]
-- import_tasks: tools.yml
-  tags: [tools]
-- import_tasks: nginx.yml
-  tags: [nginx]
-- import_tasks: jenkins.yml
-  tags: [jenkins]
-- import_tasks: plugins.yml
-  tags: [plugins]
-- import_tasks: config.yml  # must come after plugins, otherwise we are configuring plugins that are not installed!
-  tags: [config]
-- import_tasks: scripts.yml
-  tags: [scripts]
-- import_tasks: gdrive.yml
-  tags: [gdrive]
-- import_tasks: docker.yml
-  tags: [docker]
-- import_tasks: paas.yml
-  tags: [paas,cloudfoundry]
-- import_tasks: sops.yml
-  tags: [sops]
-- import_tasks: jobs.yml
-  tags: [jobs]
-- import_tasks: upgrade_packages.yml
-  tags: [upgrade_packages]
-- import_tasks: amazon_cloudwatch_agent.yml
+- import_tasks: 00_amazon_cloudwatch_agent.yml
   tags: [amazon_cloudwatch_agent]
-
+- import_tasks: 00_bootstrap.yml
+  tags: [bootstrap]
+- import_tasks: 01_keys.yml
+  tags: [keys]
+- import_tasks: 05_tools.yml
+  tags: [tools]
+- import_tasks: 05_gdrive.yml
+  tags: [gdrive]
+- import_tasks: 05_docker.yml
+  tags: [docker]
+- import_tasks: 05_paas.yml
+  tags: [paas,cloudfoundry]
+- import_tasks: 05_sops.yml
+  tags: [sops]
+- import_tasks: 05_nginx.yml
+  tags: [nginx]
+- import_tasks: 05_jenkins.yml
+  tags: [jenkins]
+- import_tasks: 06_plugins.yml
+  tags: [plugins]
+- import_tasks: 07_config.yml  # must come after plugins, otherwise we are configuring plugins that are not installed!
+  tags: [config]
+- import_tasks: 10_jobs.yml
+  tags: [jobs]
+- import_tasks: 99_scripts.yml
+  tags: [scripts]
+- import_tasks: 99_upgrade_packages.yml
+  tags: [upgrade_packages]

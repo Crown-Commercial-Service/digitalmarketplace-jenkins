@@ -1,14 +1,10 @@
 ---
-- name: Add Oracle Java Repository
-  apt_repository: repo='ppa:webupd8team/java'
+- name: Install OpenJDK JRE 8
+  apt: name=openjdk-8-jre state=latest update_cache=yes
+  notify:
+    - restart jenkins
 
-- name: Accept Java 8 License
-  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
-
-- name: Install Oracle Java 8
-  apt: name=oracle-java8-installer state=latest
-
-- name: Adding APT repository key
+- name: Add postgres repository key
   tags: [apt]
   apt_key:
     id: ACCC4CF8
@@ -19,7 +15,6 @@
   apt_repository:
     repo: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
     state: present
-    update_cache: yes
 
 - name: Install tools
   tags: [apt]
@@ -27,6 +22,8 @@
     update_cache: yes
     state: present
     name: "{{ dist_tools }}"
+  notify:
+    - restart jenkins
 
 - name: Install pinned dist packages
   tags: [apt]
@@ -50,6 +47,8 @@
     - {repo: "https://github.com/carsomyr/rbenv-bundler.git", path: ".rbenv/plugins/bundler"}
     - {repo: "https://github.com/yyuu/pyenv.git", path: ".pyenv"}
     - {repo: "https://github.com/yyuu/pyenv-virtualenv.git", path: ".pyenv/plugins/pyenv-virtualenv"}
+  become: yes
+  become_user: jenkins
 
 - name: Add .rbenv and .pyenv to PATH
   lineinfile:
@@ -74,8 +73,20 @@
     - {name: "rbenv"}
     - {name: "pyenv"}
 
-- name: Install pyenv python3
-  shell: "bash -c 'source /var/lib/jenkins/.bash_profile && pyenv install -s 3.6.2 && pyenv shell 3.6.2 && /var/lib/jenkins/.pyenv/shims/pip install virtualenv'"
+- name: Install Python build requirements
+  apt:
+    name: libbz2-dev
+
+- name: Install Python 3 using pyenv
+  shell: |
+    source ~/.bash_profile
+    pyenv install -s 3.6.2
+    pyenv shell 3.6.2
+    pip install -U pip virtualenv
+  args:
+    executable: /bin/bash
+  become: yes
+  become_user: jenkins
 
 - name: Add gpg-agent conf directory
   file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
@@ -86,6 +97,8 @@
     dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
+  notify:
+    - restart jenkins
 
 - name: Kill gpg-agent
   command: gpgconf --kill gpg-agent
@@ -112,13 +125,18 @@
   tags: [apt]
   apt: pkg=nodejs=4.* state=present
 
-- name: Give jenkins user permissions on its home directory
-  file:
-    path: /var/lib/jenkins
-    owner: jenkins
-    group: jenkins
-    state: directory
-    recurse: yes
+# TODO: Stop installing PhantomJS when it has been fully removed from our tests
+- name: Download PhantomJS
+  get_url:
+    url: "https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2"
+    checksum: md5:1c947d57fce2f21ce0b43fe2ed7cd361
+    dest: /usr/local/src/phantomjs-2.1.1-linux-x86_64.tar.bz2
 
-- name: Restart Jenkins
-  service: name=jenkins state=restarted
+- name: Unarchive PhantomJS
+  unarchive:
+    src: /usr/local/src/phantomjs-2.1.1-linux-x86_64.tar.bz2
+    dest: /usr/local/src
+    copy: no
+
+- name: Install PhantomJS binary
+  file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link

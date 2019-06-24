@@ -51,7 +51,7 @@
 # can be installed via CLI. See: https://gist.github.com/rowan-m/1026918
 - name: Create Jenkins updates folder.
   file:
-    path: "{{ jenkins_home }}/updates"
+    path: "{{ jenkins_data_dir }}/updates"
     owner: jenkins
     group: jenkins
     mode: 0755
@@ -59,12 +59,12 @@
 
 - name: Update Jenkins plugin data.
   shell: >
-    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > "{{ jenkins_home }}/updates/default.json"
-    creates="{{ jenkins_home }}/updates/default.json"
+    curl -L https://updates.jenkins-ci.org/update-center.json | sed '1d;$d' > "{{ jenkins_data_dir }}/updates/default.json"
+    creates="{{ jenkins_data_dir }}/updates/default.json"
 
 - name: Permissions for default.json updates info.
   file:
-    path: "{{ jenkins_home }}/updates/default.json"
+    path: "{{ jenkins_data_dir }}/updates/default.json"
     owner: jenkins
     group: jenkins
     mode: 0755

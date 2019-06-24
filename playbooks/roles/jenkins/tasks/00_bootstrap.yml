@@ -5,14 +5,14 @@
 - name: Create Jenkins user
   user: name=jenkins groups=jenkins createhome=no home=/var/lib/jenkins append=yes
 
-- name: Format EBS volume
+- name: Prep data volume
   filesystem: fstype=ext4 dev=/dev/xvdf
 
-- name: Edit fstab and mount the volume
-  mount: name={{ mount_dir }} src=/dev/xvdf opts=noatime fstype=ext4 state=mounted
+- name: Edit fstab and mount data volume
+  mount: name={{ data_volume_mount }} src=/dev/xvdf opts=noatime fstype=ext4 state=mounted
 
 - name: Create jenkins dir
-  file: path={{ jenkins_home }} mode=755 state=directory owner=jenkins
+  file: path={{ jenkins_data_dir }} mode=755 state=directory owner=jenkins
 
 - name: Create logs dir
   file: path={{ jenkins_logs_dir }} mode=755 state=directory owner=jenkins
