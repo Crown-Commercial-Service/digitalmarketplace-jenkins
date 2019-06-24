@@ -39,6 +39,28 @@
     name: awscli==1.16.109
     state: present
 
+- name: Create AWS cli config folder
+  file:
+    path: ~/.aws
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: u=rwx
+  become: true
+  become_user: jenkins
+
+- name: Create AWS cli config file
+  template:
+    src: aws_config.j2
+    dest: ~/.aws/config
+    owner: jenkins
+    group: jenkins
+    mode: u=rw
+  become: true
+  become_user: jenkins
+  vars:
+    assume_roles: "{{ cloudtrail_validate_logs_roles }}"
+
 - name: Install rbenv and pyenv
   git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
   with_items:
