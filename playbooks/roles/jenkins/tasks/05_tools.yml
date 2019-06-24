@@ -1,6 +1,8 @@
 ---
 - name: Install OpenJDK JRE 8
   apt: name=openjdk-8-jre state=latest update_cache=yes
+  notify:
+    - restart jenkins
 
 - name: Add postgres repository key
   tags: [apt]
@@ -20,6 +22,8 @@
     update_cache: yes
     state: present
     name: "{{ dist_tools }}"
+  notify:
+    - restart jenkins
 
 - name: Install pinned dist packages
   tags: [apt]
@@ -93,6 +97,8 @@
     dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
+  notify:
+    - restart jenkins
 
 - name: Kill gpg-agent
   command: gpgconf --kill gpg-agent
@@ -134,7 +140,3 @@
 
 - name: Install PhantomJS binary
   file: src=/usr/local/src/phantomjs-2.1.1-linux-x86_64/bin/phantomjs dest=/usr/local/bin/phantomjs state=link
-
-- name: Restart Jenkins
-  service: name=jenkins state=restarted
-  ignore_errors: yes
