@@ -1,12 +1,18 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('DOS3', 'digital-outcomes-and-specialists-3'), ('G10', 'g-cloud-10')] %}
+{% set frameworks = [
+    ('DOS3', 'digital-outcomes-and-specialists-3', False),
+    ('G10', 'g-cloud-10', False),
+    ('G11', 'g-cloud-11', True),
+  ]
+%}
 ---
 {% for environment in environments %}
-{% for acronym, framework in frameworks %}
+{% for acronym, framework, disabled in frameworks %}
 - job:
     name: 'generate-upload-and-notify-counterpart-signature-pages-{{ environment }}-{{ acronym }}'
     display-name: 'Generate, Upload and Notify Counterpart Signature Pages - {{ environment }}-{{ acronym }}'
     project-type: pipeline
+    disabled: {{ disabled }}
     description: |
         This job will run a series of scripts to
         <ol>
