@@ -106,7 +106,7 @@
                     string(name: 'INDEX_NAME', value: "${INDEX_NAME}"),
                     string(name: 'FRAMEWORKS', value: "{{ search_config['services'][environment].frameworks }}"),
                     string(name: 'MAPPING', value: "{{ search_config['services'][environment].default_mapping_name }}"),
-                    bool(name: 'SERIAL', value: false),
+                    string(name: 'SERIAL', value: 'false'),
                   ]
                 }
                 stage('Update index alias'){
@@ -127,7 +127,7 @@
                     string(name: 'INDEX_NAME', value: "${INDEX_NAME}"),
                     string(name: 'FRAMEWORKS', value: "{{ search_config['briefs'][environment].frameworks }}"),
                     string(name: 'MAPPING', value: "{{ search_config['briefs'][environment].default_mapping_name }}"),
-                    bool(name: 'SERIAL', value: false),
+                    string(name: 'SERIAL', value: 'false'),
                   ]
                 }
                 stage('Update index alias'){
