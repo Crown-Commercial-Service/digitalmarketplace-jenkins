@@ -268,14 +268,14 @@ search_config:
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
   services:
     preview:
-      default_index: g-cloud-10
-      frameworks: g-cloud-10
-      default_mapping_name: services-g-cloud-10
+      default_index: g-cloud-11
+      frameworks: g-cloud-11
+      default_mapping_name: services-g-cloud-11
     staging:
-      default_index: g-cloud-10
-      frameworks: g-cloud-10
-      default_mapping_name: services-g-cloud-10
+      default_index: g-cloud-11
+      frameworks: g-cloud-11
+      default_mapping_name: services-g-cloud-11
     production:
-      default_index: g-cloud-10
-      frameworks: g-cloud-10
-      default_mapping_name: services-g-cloud-10
+      default_index: g-cloud-11
+      frameworks: g-cloud-11
+      default_mapping_name: services-g-cloud-11
