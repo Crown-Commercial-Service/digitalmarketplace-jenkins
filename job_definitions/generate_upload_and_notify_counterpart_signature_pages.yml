@@ -1,8 +1,8 @@
 {% set environments = ['production'] %}
 {% set frameworks = [
     ('DOS3', 'digital-outcomes-and-specialists-3', False),
-    ('G10', 'g-cloud-10', False),
-    ('G11', 'g-cloud-11', True),
+    ('G10', 'g-cloud-10', True),
+    ('G11', 'g-cloud-11', False),
   ]
 %}
 ---
