@@ -1,5 +1,5 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('g-cloud-11', 'true')] %}
+{% set frameworks = [('digital-outcomes-and-specialists-4', 'true')] %}
 ---
 {% for environment in environments %}
 {% for framework, disabled in frameworks %}

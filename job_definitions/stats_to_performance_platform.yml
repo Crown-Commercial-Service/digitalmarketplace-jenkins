@@ -1,5 +1,5 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('g-cloud-11', 'gcloud', 'g-cloud', 'true')] %}
+{% set frameworks = [('digital-outcomes-and-specialists-4', 'digital-outcomes-specialists', 'digital-outcomes-specialists', 'true')] %}
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
 ---
 {% for environment in environments %}
