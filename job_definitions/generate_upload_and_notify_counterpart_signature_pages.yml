@@ -56,7 +56,7 @@
                 sh('[ -d venv ] || python3 -m venv venv')
                 sh('venv/bin/pip3 install --upgrade pip')
                 sh('venv/bin/pip3 install -r requirements.txt')
-                sh('xvfb-run --server-args="-screen 0, 1024x768x24" \
+                sh('xvfb-run -a --server-args="-screen 0, 1024x768x24" \
                       venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
                              {{ environment }} \
                              {{ framework }} \
