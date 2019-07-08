@@ -78,6 +78,7 @@
               }
 
               stage('Apply data to target stage and s3') {
+                notify_slack(':building_blue:', 'APPROVED', "#dm-release")
                 sh(
                    script: '''
                      export TARGET="{{ environment }}"
