@@ -4,42 +4,71 @@
 - job:
     name: "scan-g-cloud-services-for-bad-words-{{ environment }}"
     display-name: "Scan G-Cloud services for bad words - {{ environment }}"
-    project-type: freestyle
+    project-type: pipeline
     description: "Scans G-Cloud services for bad words contained in a list in our bad words repo."
     parameters:
       - string:
           name: FRAMEWORK
           description: "Slug of framework to scan for bad words"
-    scm:
-      - git:
-          url: git@github.com:alphagov/digitalmarketplace-bad-words.git
-          credentials-id: github_com_and_enterprise
-          branches:
-            - master
-          wipe-workspace: false
-    publishers:
-      - html-publisher:
-          name: "bad words report"
-          dir: data
-          files: ${FRAMEWORK}-services-with-blacklisted-words.csv
-          keep-all: true
-          allow-missing: true
-          link-to-last-build: true
-      - trigger-parameterized-builds:
-          - project: notify-slack
-            condition: UNSTABLE_OR_WORSE
-            predefined-parameters: |
-              USERNAME=scan-g-cloud-services-for-bad-words.py
-              JOB=Scan G-Cloud services for bad words - {{ environment }}
-              ICON=:zipper_mouth_face:
-              STAGE={{ environment }}
-              STATUS=FAILED
-              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-release
-    builders:
-      - shell: |
-          rm -rf ./data && mkdir data
-          cp ./blacklist.txt ./data/blacklist.txt
+    dsl: |
+      def notify_slack(status) {
+        build job: "notify-slack",
+          parameters: [
+            string(name: 'USERNAME', value: "scan-g-cloud-services-for-bad-words"),
+            string(name: 'ICON', value: ":zipper_mouth_face:"),
+            string(name: 'JOB', value: "Scan G-Cloud services for bad words - {{ environment }}"),
+            string(name: 'CHANNEL', value: "#dm-release"),
+            text(name: 'STAGE', value: "{{ environment }}"),
+            text(name: 'STATUS', value: status),
+            text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+          ]
+      }
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --volume $(pwd)/data:/app/data digitalmarketplace/scripts ./scripts/framework-applications/scan-g-cloud-services-for-bad-words.py "{{ environment }}" /app/data/blacklist.txt $FRAMEWORK /app/data
+      node {
+        try {
+          stage('Create data directory') {
+           sh("rm -rf ./data && mkdir data")
+          }
+          stage('Clone frameworks') {
+            dir('data/digitalmarketplace-frameworks') {
+              git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'master'
+            }
+          }
+          stage('Clone bad words') {
+            dir('data/digitalmarketplace-bad-words') {
+              git url: 'git@github.com:alphagov/digitalmarketplace-bad-words.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+            }
+          }
+          stage('Run bad words script') {
+            sh('''
+              docker run \
+                -e DM_DATA_API_TOKEN_{{ environment|upper }} \
+                --volume \$(pwd)/data:/app/data digitalmarketplace/scripts \
+                ./scripts/framework-applications/scan-g-cloud-services-for-bad-words.py \
+                "{{ environment }}" \
+                /app/data/digitalmarketplace-frameworks \
+                /app/data/digitalmarketplace-bad-words/blacklist.txt \
+                $FRAMEWORK \
+                /app/data
+            ''')
+          }
+          stage('Publish report') {
+            publishHTML (target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: true,
+              reportDir: 'data',
+              reportFiles: '**/${FRAMEWORK}-services-with-blacklisted-words.csv',
+              reportName: 'bad-words-report'
+            ])
+          }
+
+          notify_slack('SUCCESS')
+        } catch (err) {
+          currentBuild.result = 'FAILURE'
+          echo "Error: ${err}"
+          notify_slack('FAILED')
+        }
+      }
 {% endfor %}
+
