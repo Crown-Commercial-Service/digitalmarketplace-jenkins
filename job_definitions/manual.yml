@@ -15,8 +15,13 @@
           cron: "H/2 * * * *"
     builders:
       - shell: |
-          [ -x /tmp/dm-manual-venv/bin/pip ] || virtualenv /tmp/dm-manual-venv
-          . /tmp/dm-manual-venv/bin/activate
+          docker pull digitalmarketplace/manual || true
+          docker build --pull -t digitalmarketplace/manual .
+          docker push digitalmarketplace/manual
 
-          pip install -r requirements.txt
-          make clean html pages
+          docker run -it --rm \
+            -v $(pwd):/app \
+            digitalmarketplace/manual \
+            make clean html
+          
+          make pages
