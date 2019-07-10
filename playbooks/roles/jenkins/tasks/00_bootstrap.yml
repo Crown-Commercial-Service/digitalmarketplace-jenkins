@@ -12,10 +12,10 @@
   mount: name={{ data_volume_mount }} src=/dev/xvdf opts=noatime fstype=ext4 state=mounted
 
 - name: Create jenkins dir
-  file: path={{ jenkins_data_dir }} mode=755 state=directory owner=jenkins
+  file: path={{ jenkins_data_dir }} mode=755 state=directory owner=jenkins group=jenkins
 
 - name: Create logs dir
-  file: path={{ jenkins_logs_dir }} mode=755 state=directory owner=jenkins
+  file: path={{ jenkins_logs_dir }} mode=755 state=directory owner=jenkins group=jenkins
 
 - set_fact:
     jobs_disabled: true  # when first setting up a box, disable the jobs!
