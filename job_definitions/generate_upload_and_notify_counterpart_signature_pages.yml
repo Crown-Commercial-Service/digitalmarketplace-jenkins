@@ -93,7 +93,7 @@
               string(name: 'ICON', value: ':alarm_clock:'),
               string(name: 'STAGE', value: '{{ environment }}'),
               string(name: 'STATUS', value: 'FAILED'),
-              string(name: 'CHANNEL', value: '#dm-release'),
+              string(name: 'CHANNEL', value: '#dm-2ndline'),
               text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
             ]
           }
