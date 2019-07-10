@@ -44,7 +44,7 @@
                   build job: "update-credentials"
                   currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
                   sh('make paas-clean')
-                  sh('pyenv local 3.6.2 && make requirements')
+                  sh('make requirements')
               }
 
               stage('Run database migration') {

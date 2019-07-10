@@ -65,7 +65,6 @@
               stage('Import and clean lastest production db-dump') {
                 sh(
                   script: '''
-                    pyenv local 3.6.2
                     make requirements
                     make import-and-clean-db-dump
                   ''',

@@ -1,8 +1,4 @@
 ---
-
-- name: Install pip
-  apt: name=python-pip state=present
-
 - name: copy a requirements file with pinned Python dependencies
   copy:
     src: ../../../../requirements-jenkins-job-builder.txt
