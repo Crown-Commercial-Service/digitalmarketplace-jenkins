@@ -189,12 +189,10 @@ jenkins_list_views:
   - name: "Framework lifecycle jobs"
     jobs:
       - notify-suppliers-whether-application-made-for-framework-production
-      - performance-platform-stats-g-cloud-11-per-hour-preview
-      - performance-platform-stats-g-cloud-11-per-day-preview
-      - performance-platform-stats-g-cloud-11-per-hour-production
-      - performance-platform-stats-g-cloud-11-per-day-production
-      - snapshot-stats-g-cloud-11-preview
-      - snapshot-stats-g-cloud-11-production
+      - performance-platform-stats-digital-outcomes-and-specialists-4-per-hour-production
+      - performance-platform-stats-digital-outcomes-and-specialists-4-per-day-production
+      - scan-g-cloud-services-for-bad-words
+      - snapshot-stats-digital-outcomes-and-specialists-4-production
   - name: "Code backups"
     jobs:
       - backup-digitalmarketplace-admin-frontend
