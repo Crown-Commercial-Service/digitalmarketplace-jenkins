@@ -19,7 +19,10 @@
           docker build --pull -t digitalmarketplace/manual .
           docker push digitalmarketplace/manual
 
-          docker run -it --rm \
+          DOCKER_UID="$(id -u)"
+          DOCKER_GID="$(getent group docker | awk -F ':' '{print $3}')"
+
+          docker run --rm \
             -v $(pwd):/app \
             digitalmarketplace/manual \
             make clean html
