@@ -36,12 +36,12 @@
           name: JOB
     builders:
       - shell: |
-          #!/usr/bin/env python
+          #!/usr/bin/env python3
           # encoding: utf-8
 
           import json
           import os
-          import urllib2
+          import requests
 
 
           USERNAME = os.getenv('USERNAME', 'deploy')
@@ -110,4 +110,4 @@
               return message
 
 
-          urllib2.urlopen(SLACK_URL, data=json.dumps(build_message()))
+          requests.post(SLACK_URL, data=json.dumps(build_message()))
