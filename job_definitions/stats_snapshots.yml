@@ -1,11 +1,10 @@
 {% set environments = ['production'] %}
-{% set frameworks = [('digital-outcomes-and-specialists-4', 'false')] %}
+{% set frameworks = ['digital-outcomes-and-specialists-4'] %}
 ---
 {% for environment in environments %}
-{% for framework, disabled in frameworks %}
+{% for framework in frameworks %}
 - job:
     name: 'snapshot-stats-{{ framework }}-{{ environment }}'
-    disabled: {{ disabled }}
     display-name: "Snapshot {{ framework }} stats - {{ environment }}"
     project-type: freestyle
     description: Creates an hourly snapshot of framework stats and stores it in the API audit event
