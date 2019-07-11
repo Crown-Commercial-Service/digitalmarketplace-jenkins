@@ -10,6 +10,8 @@ jenkins_repo_key_url: http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key
 jenkins_connection_delay: 1
 jenkins_connection_retries: 60
 
+jenkins_domain_name: marketplace.team
+jenkins_server_name: "{{ inventory_hostname | regex_replace('^(.*)' + jenkins_domain_name, '\\1') }}"
 jenkins_hostname: localhost
 jenkins_java_args: ""
 

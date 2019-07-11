@@ -12,8 +12,12 @@
   notify: reload nginx
 
 - name: Ensure that the default site is disabled
-  command: rm /etc/nginx/sites-available/default
-           removes=/etc/nginx/sites-available/default
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/nginx/sites-available/default
+    - /etc/nginx/sites-enabled/default
   notify: reload nginx
 
 - name: Ensure that the configuration files are enabled
@@ -21,6 +25,3 @@
            /etc/nginx/sites-enabled/jenkins
            creates=/etc/nginx/sites-enabled/jenkins
   notify: reload nginx
-
-- name: Restart nginx
-  service: name=nginx state=reloaded
