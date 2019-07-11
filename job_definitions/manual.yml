@@ -23,8 +23,9 @@
           DOCKER_GID="$(getent group docker | awk -F ':' '{print $3}')"
 
           docker run --rm \
+            -u $DOCKER_UID:$DOCKER_GID \
             -v $(pwd):/app \
             digitalmarketplace/manual \
             make clean html
-          
+
           make pages
