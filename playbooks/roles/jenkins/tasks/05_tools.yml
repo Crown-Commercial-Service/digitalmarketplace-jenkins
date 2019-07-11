@@ -84,7 +84,12 @@
     group: jenkins
 
 - name: Add gpg-agent conf directory
-  file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
+  file:
+    path: /var/lib/jenkins/.gnupg
+    state: directory
+    group: jenkins
+    owner: jenkins
+    mode: 0700
 
 - name: Add gpg-agent conf file
   copy:
@@ -92,6 +97,8 @@
     dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
+    mode: 0600
+    recurse: yes
   notify:
     - restart jenkins
 
