@@ -1,10 +1,16 @@
 ---
+- name: Add CloudFoundry APT repository key
+  tags: [apt]
+  apt_key:
+    url: https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key
 
-- name: Download CloudFoundry Debian package
-  get_url:
-    url: "https://packages.cloudfoundry.org/stable?release=debian64&version=6.32.0&source=github-rel"
-    dest: /tmp/cloudfoundry-cli.deb
+- name: Add CloudFoundry repository
+  apt_repository:
+    repo: "deb https://packages.cloudfoundry.org/debian stable main"
+    state: present
 
-- name: Install CloudFoundry CLI
+- name: Install or update CloudFoundry package
   apt:
-    deb: /tmp/cloudfoundry-cli.deb
+    name: "cf-cli"
+    state: latest
+    update_cache: yes

@@ -4,18 +4,6 @@
   notify:
     - restart jenkins
 
-- name: Add postgres repository key
-  tags: [apt]
-  apt_key:
-    id: ACCC4CF8
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-
-- name: Add postgres repository
-  tags: [apt]
-  apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
-    state: present
-
 - name: Install tools
   tags: [apt]
   apt:
@@ -33,6 +21,7 @@
     name:
       - wkhtmltopdf=0.12.2.4-1
       - jq=1.5+dfsg-1ubuntu0.1
+      - nodejs=4.*
 
 - name: Install AWS cli
   pip:
@@ -124,28 +113,6 @@
 
 - name: Kill gpg-agent
   command: gpgconf --kill gpg-agent
-
-- name: Copy the NodeSource GPG key to the remote
-  copy:
-    src: ../files/nodesource.gpg.key
-    dest: /tmp/nodesource.gpg.key
-
-- name: Import the NodeSource GPG key into apt
-  tags: [apt]
-  apt_key:
-    file: /tmp/nodesource.gpg.key
-    state: present
-
-- name: Add NodeJS apt repository
-  tags: [apt]
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_4.x xenial main"
-    state: present
-    update_cache: yes
-
-- name: Install NodeJS
-  tags: [apt]
-  apt: pkg=nodejs=4.* state=present
 
 # TODO: Stop installing PhantomJS when it has been fully removed from our tests
 - name: Download PhantomJS
