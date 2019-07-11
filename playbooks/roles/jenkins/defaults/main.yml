@@ -11,7 +11,6 @@ jenkins_connection_delay: 1
 jenkins_connection_retries: 60
 
 jenkins_hostname: localhost
-jenkins_jar_location: /opt/jenkins-cli.jar
 jenkins_java_args: ""
 
 jobs: '*'
