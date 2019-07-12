@@ -1,78 +1,93 @@
-{% set environments = ['production'] %}
-{% set frameworks = [('DOS3', 'digital-outcomes-and-specialists-3'), ('G11', 'g-cloud-11')]%}
+{# frameworks = (acronym, framework_slug, enabled?) #}
+{% set frameworks = [
+  ('DOS3', 'digital-outcomes-and-specialists-3', True),
+  ('G10', 'g-cloud-11', False),
+  ('G11', 'g-cloud-11', True),
+]%}
 ---
-{% for environment in environments %}
-{% for acronym, framework in frameworks %}
 - job:
-    name: 'generate-upload-and-notify-counterpart-signature-pages-{{ environment }}-{{ acronym }}'
-    display-name: 'Generate, Upload and Notify Counterpart Signature Pages - {{ environment }}-{{ acronym }}'
-    project-type: pipeline
+    name: generate-upload-and-notify-counterpart-signature-pages
+    display-name: Generate, upload and notify counterpart signature pages
     description: |
-        This job will run a series of scripts to
+        <p>This job will run a series of scripts to</p>
         <ol>
           <li>Generate framework agreement counterpart signature pages for suppliers approved for countersignature but
               without a countersigned agreement</li>
           <li>Upload the generated files to S3 and set the path in the relevant FrameworkAgreement record</li>
           <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
         </ol>
+    project-type: pipeline
     concurrent: false
-    triggers:
-      - timed: 'H 1 * * *'
     properties:
       - build-discarder:
           days-to-keep: 7
           artifact-days-to-keep: 7
+    parameters:
+      - choice:
+          name: ENVIRONMENT
+          choices:
+            - preview
+            - staging
+            - production
+      - string:
+          name: FRAMEWORK
+      - bool:
+          name: DRY_RUN
+          default: false
     dsl: |
       node {
           try {
-            stage('Prepare') {
-              dir('scripts/generated-countersignature-pdfs') {
-                deleteDir()
+            stage('Create data directory') {
+              sh('rm -rf ./data && mkdir data')
+            }
+            stage('Clone agreements') {
+              dir('digitalmarketplace-agreements') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-agreements.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
               }
-              dir('scripts') {
-                git url: "git@github.com:alphagov/digitalmarketplace-scripts.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-                echo "Cleaning scripts repository"
-                sh('pwd')
-                sh("git clean -fdx")
-                sh("git reset --hard origin/master")
-              }
-              dir('agreements') {
-                git url: "git@github.com:alphagov/digitalmarketplace-agreements.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-                echo "Cleaning agreements repository"
-                sh('pwd')
-                sh("git clean -fdx")
-                sh("git reset --hard origin/master")
+            }
+{# TODO: make this job work with a docker container #}
+            stage('Build scripts') {
+              dir('digitalmarketplace-scripts') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+                sh('''
+                  git clean -fdx
+                  git reset --hard origin/master
+
+                  make virtualenv
+                  ./venv/bin/pip install --upgrade pip
+                  make requirements
+                ''')
               }
             }
             stage('Generate') {
-              dir('scripts') {
-                sh('[ -d venv ] || python3 -m venv venv')
-                sh('venv/bin/pip3 install --upgrade pip')
-                sh('venv/bin/pip3 install -r requirements.txt')
-                sh('xvfb-run -a --server-args="-screen 0, 1024x768x24" \
-                      venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
-                             {{ environment }} \
-                             {{ framework }} \
-                             ../agreements \
-                             generated-countersignature-pdfs')
+              dir('digitalmarketplace-scripts') {
+                sh('''
+                  xvfb-run -a --server-args="-screen 0, 1024x768x24" \
+                    venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
+                      "$ENVIRONMENT" \
+                      "$FRAMEWORK" \
+                      ../digitalmarketplace-agreements \
+                      ../data/generated-countersignature-pdfs
+                ''')
               }
             }
             stage('Upload') {
-              dir('scripts') {
-                sh('[ -d venv ] || python3 -m venv')
-                sh('venv/bin/pip3 install --upgrade pip')
-                sh('venv/bin/pip3 install -r requirements.txt')
-                sh('venv/bin/python3 ./scripts/upload-counterpart-agreements.py \
-                {{ environment }} \
-                generated-countersignature-pdfs \
-                {{ framework }} \
-                --notify-key="$NOTIFY_API_TOKEN" \
-                --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
-                ')
+              dir('digitalmarketplace-scripts') {
+                sh('''
+                  [ "$DRY_RUN" = "true" ] && FLAGS="$FLAGS --dry-run"
+
+                  venv/bin/python3 ./scripts/upload-counterpart-agreements.py \
+                  "$ENVIRONMENT" \
+                  ../data/generated-countersignature-pdfs \
+                  "$FRAMEWORK" \
+                  --notify-key="$NOTIFY_API_TOKEN" \
+                  --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
+                  $FLAGS \
+                ''')
               }
             }
             stage('Cleanup') {
-              dir('scripts/generated-countersignature-pdfs') {
+              dir('data/generated-countersignature-pdfs') {
                 deleteDir()
               }
             }
@@ -81,9 +96,9 @@
             echo "Error: ${err}"
             build job: 'notify-slack', parameters: [
               string(name: 'USERNAME', value: 'generate-upload-and-notify-counterpart-signature-pages'),
-              string(name: 'JOB', value: 'Generate {{ framework }} counterpart signature pages'),
+              string(name: 'JOB', value: "Generate counterpart signature pages for ${FRAMEWORK}"),
               string(name: 'ICON', value: ':alarm_clock:'),
-              string(name: 'STAGE', value: '{{ environment }}'),
+              string(name: 'STAGE', value: "${ENVIRONMENT}"),
               string(name: 'STATUS', value: 'FAILED'),
               string(name: 'CHANNEL', value: '#dm-2ndline'),
               text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
@@ -91,5 +106,34 @@
           }
       }
 
-{% endfor %}
+- job:
+    name: generate-upload-and-notify-counterpart-signature-pages-production
+    display-name: 'Generate, upload and notify counterpart signature pages for {{frameworks|selectattr(2)|join(', ', attribute=0)}} - production'
+    project-type: pipeline
+    description: |
+        <p>This job will run a series of scripts to</p>
+        <ol>
+          <li>Generate framework agreement counterpart signature pages for suppliers approved for countersignature but
+              without a countersigned agreement</li>
+          <li>Upload the generated files to S3 and set the path in the relevant FrameworkAgreement record</li>
+          <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
+        </ol>
+        <p>It uses the <a href="../generate-upload-and-notify-counterpart-signature-pages">generate-upload-and-notify-counterpart-signature-pages</a> job.</p>
+    concurrent: false
+    triggers:
+      - timed: 'H 1 * * *'
+    properties:
+      - build-discarder:
+          days-to-keep: 7
+          artifact-days-to-keep: 7
+    dsl: |
+
+{% for acronym, framework_slug, enabled in frameworks if enabled %}
+      stage('{{acronym}}') {
+        build job: 'generate-upload-and-notify-counterpart-signature-pages',
+        parameters: [
+          string(name: 'ENVIRONMENT', value: 'production'),
+          string(name: 'FRAMEWORK', value: '{{ framework_slug }}'),
+        ]
+      }
 {% endfor %}
