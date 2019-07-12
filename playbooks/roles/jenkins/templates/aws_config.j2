@@ -1,7 +1,7 @@
 {% for role in assume_roles %}
 
 [profile {{role.profile.name}}]
-credentials_source=Ec2InstanceMetadata
+credential_source=Ec2InstanceMetadata
 region={{role.profile.region}}
 role_arn={{role.profile.role_arn}}
 {% endfor %}
