@@ -4,7 +4,7 @@ upstream jenkins {
 
 server {
   listen 80 ;
-  server_name ci.*;
+  server_name {{ jenkins_server_name }}.*;
 
   ignore_invalid_headers off;
 

@@ -4,18 +4,6 @@
   notify:
     - restart jenkins
 
-- name: Add postgres repository key
-  tags: [apt]
-  apt_key:
-    id: ACCC4CF8
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-
-- name: Add postgres repository
-  tags: [apt]
-  apt_repository:
-    repo: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
-    state: present
-
 - name: Install tools
   tags: [apt]
   apt:
@@ -31,8 +19,16 @@
     update_cache: yes
     state: present
     name:
-      - wkhtmltopdf=0.12.2.4-1
-      - jq=1.5+dfsg-1ubuntu0.1
+      - wkhtmltopdf=0.12.*
+      - jq=1.5+dfsg-*
+      - nodejs=8.*
+      - libssl1.0-dev
+
+- name: Update Python 3 pip
+  pip:
+    name:
+      - pip
+    state: latest
 
 - name: Install AWS cli
   pip:
@@ -61,57 +57,39 @@
   vars:
     assume_roles: "{{ cloudtrail_validate_logs_roles }}"
 
-- name: Install rbenv and pyenv
+- name: Install rbenv
   git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
   with_items:
     - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
     - {repo: "https://github.com/sstephenson/ruby-build.git", path: ".rbenv/plugins/ruby-build"}
     - {repo: "https://github.com/carsomyr/rbenv-bundler.git", path: ".rbenv/plugins/bundler"}
-    - {repo: "https://github.com/yyuu/pyenv.git", path: ".pyenv"}
-    - {repo: "https://github.com/yyuu/pyenv-virtualenv.git", path: ".pyenv/plugins/pyenv-virtualenv"}
   become: yes
   become_user: jenkins
 
-- name: Add .rbenv and .pyenv to PATH
+- name: Add .rbenv to PATH
   lineinfile:
     dest: /var/lib/jenkins/.bash_profile
     create: yes
-    regexp: 'export PATH="/var/lib/jenkins/{{ item.path }}/bin'
-    line: 'export PATH="/var/lib/jenkins/{{ item.path }}/bin:$PATH" && export {{ item.env_var }}="/var/lib/jenkins/{{ item.path }}"'
+    regexp: 'export PATH="/var/lib/jenkins/.rbenv/bin'
+    line: 'export PATH="/var/lib/jenkins/.rbenv/bin:$PATH" && export RBENV_ROOT="/var/lib/jenkins/.rbenv"'
     owner: jenkins
     group: jenkins
-  with_items:
-    - {path: ".rbenv", env_var: "RBENV_ROOT"}
-    - {path: ".pyenv", env_var: "PYENV_ROOT"}
 
-- name: Add rbenv and pyenv init
+- name: Add rbenv init
   lineinfile:
     dest: /var/lib/jenkins/.bash_profile
-    regexp: '{{ item.name }} init'
-    line: 'eval "$({{ item.name }} init -)"'
+    regexp: 'rbenv init'
+    line: 'eval "$(rbenv init -)"'
     owner: jenkins
     group: jenkins
-  with_items:
-    - {name: "rbenv"}
-    - {name: "pyenv"}
-
-- name: Install Python build requirements
-  apt:
-    name: libbz2-dev
-
-- name: Install Python 3 using pyenv
-  shell: |
-    source ~/.bash_profile
-    pyenv install -s 3.6.2
-    pyenv shell 3.6.2
-    pip install -U pip virtualenv
-  args:
-    executable: /bin/bash
-  become: yes
-  become_user: jenkins
 
 - name: Add gpg-agent conf directory
-  file: path=/var/lib/jenkins/.gnupg state=directory owner=jenkins group=jenkins
+  file:
+    path: /var/lib/jenkins/.gnupg
+    state: directory
+    group: jenkins
+    owner: jenkins
+    mode: 0700
 
 - name: Add gpg-agent conf file
   copy:
@@ -119,33 +97,13 @@
     dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
+    mode: 0600
+    recurse: yes
   notify:
     - restart jenkins
 
 - name: Kill gpg-agent
   command: gpgconf --kill gpg-agent
-
-- name: Copy the NodeSource GPG key to the remote
-  copy:
-    src: ../files/nodesource.gpg.key
-    dest: /tmp/nodesource.gpg.key
-
-- name: Import the NodeSource GPG key into apt
-  tags: [apt]
-  apt_key:
-    file: /tmp/nodesource.gpg.key
-    state: present
-
-- name: Add NodeJS apt repository
-  tags: [apt]
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_4.x xenial main"
-    state: present
-    update_cache: yes
-
-- name: Install NodeJS
-  tags: [apt]
-  apt: pkg=nodejs=4.* state=present
 
 # TODO: Stop installing PhantomJS when it has been fully removed from our tests
 - name: Download PhantomJS

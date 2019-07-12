@@ -52,7 +52,6 @@
             }
             stage('Generate') {
               dir('scripts') {
-                sh('pyenv local 3.6.2')
                 sh('[ -d venv ] || python3 -m venv venv')
                 sh('venv/bin/pip3 install --upgrade pip')
                 sh('venv/bin/pip3 install -r requirements.txt')
@@ -66,7 +65,6 @@
             }
             stage('Upload') {
               dir('scripts') {
-                sh('pyenv local 3.6.2')
                 sh('[ -d venv ] || python3 -m venv')
                 sh('venv/bin/pip3 install --upgrade pip')
                 sh('venv/bin/pip3 install -r requirements.txt')

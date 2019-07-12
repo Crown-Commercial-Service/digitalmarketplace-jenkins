@@ -1,0 +1,19 @@
+---
+
+- name: Configure Jenkins log rotation
+  include_role:
+    name: nickhammond.logrotate
+  vars:
+    logrotate_scripts:
+      - name: jenkins
+        paths:
+          - "/var/log/jenkins/access.log"
+          - "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log"
+        options:
+          - weekly
+          - copytruncate
+          - missingok
+          - rotate 52
+          - compress
+          - delaycompress
+          - notifempty

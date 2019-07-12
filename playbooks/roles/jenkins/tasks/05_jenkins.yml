@@ -1,52 +1,15 @@
 ---
-# copied, modified, from https://github.com/softasap/sa-box-jenkins/blob/master/tasks/main.yml
 
-- block:
+- name: Add Jenkins apt repository key.
+  apt_key: url="http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key" state=present
 
-  - name: Add Jenkins apt repository key.
-    apt_key: url="http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key" state=present
-
-  - name: Add Jenkins apt repository.
-    apt_repository: repo="deb http://pkg.jenkins-ci.org/debian binary/"  state=present update_cache=yes
-
-  when: ansible_os_family == "Debian"
-
-- block:
-
-  - name: Add Jenkins yum repository
-    get_url:
-      url: "http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo"
-      dest: /etc/yum.repos.d/jenkins.repo
-
-  - name: Add Jenkins repo GPG key.
-    rpm_key:
-      state: present
-      key: "https://jenkins-ci.org/redhat/jenkins-ci.org.key"
-
-  when: ansible_os_family != "Debian"
+- name: Add Jenkins apt repository.
+  apt_repository: repo="deb http://pkg.jenkins-ci.org/debian binary/"  state=present update_cache=yes
 
 - name: Set Jenkins service boot config
   template: src=jenkins_defaults.j2
             dest=/etc/default/jenkins
             backup=no
-
-- name: Configure Jenkins log rotation
-  include_role:
-    name: nickhammond.logrotate
-  vars:
-    logrotate_scripts:
-      - name: jenkins
-        paths:
-          - "/var/log/jenkins/access.log"
-          - "/var/log/amazon/amazon-cloudwatch-agent/amazon-cloudwatch-agent.log"
-        options:
-          - weekly
-          - copytruncate
-          - missingok
-          - rotate 52
-          - compress
-          - delaycompress
-          - notifempty
 
 - name: Ensure Jenkins is installed.
   apt:
@@ -68,11 +31,7 @@
 
 - name: Supress wizard mode (debian)
   lineinfile: dest="/etc/default/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
-  when: not (first_time_install_test is failed) and ansible_os_family == "Debian"
-
-- name: Supress wizard mode (centos)
-  lineinfile: dest="/etc/sysconfig/jenkins" insertbefore="^JENKINS_ARGS.*" line="JAVA_ARGS=\"{{ jenkins_java_args }}\""
-  when: not (first_time_install_test is failed) and ansible_os_family != "Debian"
+  when: not (first_time_install_test is failed)
 
 - name: Remove initial Jenkins password
   file: name="{{ jenkins_data_dir }}/secrets/initialAdminPassword" state=absent
@@ -104,14 +63,3 @@
   service: name=jenkins state=restarted
 
 - wait_for: port=8080 delay=20
-
-# TODO unclear if we still need the below
-
-- name: Get the jenkins-cli jarfile from the Jenkins server.
-  get_url:
-    url: "https://{{ inventory_hostname }}/jnlpJars/jenkins-cli.jar"
-    dest: "{{ jenkins_jar_location }}"
-  register: jarfile_get
-  until: "'OK' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
-  retries: 5
-  delay: 10

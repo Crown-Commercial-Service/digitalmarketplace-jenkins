@@ -1,10 +1,11 @@
 ---
 
-- name: Download gdrive (google drive command line interface client)
+- name: Install gdrive (google drive command line interface client)
   get_url:
-    url: "https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download"
+    url: "https://drive.google.com/uc?id=1Ej8VgsW5RgK66Btb9p74tSdHMH3p4UNb&export=download"
     dest: /usr/local/bin/gdrive
-    mode: 755
+    checksum: sha1:6ef7c740e980358a9a5de36c1aac7ea375319aa3
+    mode: 0755
 
 - name: Add local .gdrive directory
   file: path=/var/lib/jenkins/.gdrive state=directory owner=jenkins group=jenkins
