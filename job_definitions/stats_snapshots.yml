@@ -1,13 +1,17 @@
+{# frameworks = (framework_slug, enabled?) #}
+{% set frameworks = [('digital-outcomes-and-specialists-4', True)] %}
 {% set environments = ['production'] %}
-{% set frameworks = ['digital-outcomes-and-specialists-4'] %}
 ---
 {% for environment in environments %}
-{% for framework in frameworks %}
+{% for framework, enabled in frameworks %}
 - job:
-    name: 'snapshot-stats-{{ framework }}-{{ environment }}'
-    display-name: "Snapshot {{ framework }} stats - {{ environment }}"
-    project-type: freestyle
+    name: stats-snapshot-{{ framework }}-{{ environment }}
+    display-name: Snapshot stats for {{ framework }} - {{ environment }}
     description: Creates an hourly snapshot of framework stats and stores it in the API audit event
+{% if not enabled %}
+    disabled: true
+{% endif %}
+    project-type: freestyle
     properties:
       - build-discarder:
           days-to-keep: 20
@@ -28,6 +32,9 @@
               CHANNEL=#dm-2ndline
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/snapshot-framework-stats.py "{{ framework }}" "{{ environment }}"
+          docker run --rm \
+            -e DM_DATA_API_TOKEN_{{ environment|upper }} \
+            digitalmarketplace/scripts \
+              scripts/snapshot-framework-stats.py "{{ framework }}" "{{ environment }}"
 {% endfor %}
 {% endfor %}
