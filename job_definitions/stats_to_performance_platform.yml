@@ -1,15 +1,21 @@
-{% set environments = ['production'] %}
-{% set frameworks = [('digital-outcomes-and-specialists-4', 'digital-outcomes-specialists', 'digital-outcomes-specialists')] %}
+{# frameworks = (framework_slug, performance_platform_service, token_group, enabled?) #}
+{% set frameworks = [
+  ('digital-outcomes-and-specialists-4', 'digital-outcomes-specialists', 'digital-outcomes-specialists', True)
+]%}
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
+{% set environments = ['production'] %}
 ---
 {% for environment in environments %}
-{% for framework, pp_service, token_group in frameworks %}
+{% for framework, pp_service, token_group, enabled in frameworks %}
 {% for schedule, period in schedules %}
 - job:
-    name: 'performance-platform-stats-{{ framework }}-per-{{ period }}-{{ environment }}'
-    display-name: "Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}"
-    project-type: freestyle
+    name: stats-performance-platform-{{ framework }}-per-{{ period }}-{{ environment }}
+    display-name: Send {{ framework }} stats to performance platform per {{ period }} - {{ environment }}
     description: Sends a regular snapshot of framework stats to the performance platform
+{% if not enabled %}
+    disabled: true
+{% endif %}
+    project-type: freestyle
     properties:
       - build-discarder:
           days-to-keep: 20
@@ -30,7 +36,15 @@
               CHANNEL=#dm-2ndline
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/framework-applications/send-stats-to-performance-platform.py {{ framework }} {{ environment }} {{ pp_service }} --{{ period }} {{ performance_platform_bearer_tokens[token_group] }}
+          docker run --rm \
+            -e DM_DATA_API_TOKEN_{{ environment|upper }} \
+            digitalmarketplace/scripts \
+              scripts/framework-applications/send-stats-to-performance-platform.py \
+                "{{ framework }}" \
+                "{{ environment }}" \
+                "{{ pp_service }}" \
+                --{{ period }} \
+                "{{ performance_platform_bearer_tokens[token_group] }}"
 
 {% endfor %}
 {% endfor %}

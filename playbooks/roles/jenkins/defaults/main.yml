@@ -205,9 +205,9 @@ jenkins_list_views:
       - generate-upload-and-notify-counterpart-signature-pages-production-G10
       - generate-upload-and-notify-counterpart-signature-pages-production-G11
       - notify-suppliers-whether-application-made-for-framework-production
-      - performance-platform-stats-digital-outcomes-and-specialists-4-per-hour-production
-      - performance-platform-stats-digital-outcomes-and-specialists-4-per-day-production
       - scan-g-cloud-services-for-bad-words
+      - stats-performance-platform-digital-outcomes-and-specialists-4-per-hour-production
+      - stats-performance-platform-digital-outcomes-and-specialists-4-per-day-production
       - stats-snapshot-digital-outcomes-and-specialists-4-production
   - name: "Code backups"
     jobs:
