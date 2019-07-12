@@ -110,6 +110,9 @@ jenkins_list_views:
       - clean-and-apply-db-dump-preview
       - clean-and-apply-db-dump-staging
       - database-backup
+      - data-retention-preview
+      - data-retention-staging
+      - data-retention-production
       - export-data-preview
       - export-data-production
       - export-supplier-csv-preview
@@ -155,12 +158,21 @@ jenkins_list_views:
       - upload-dos3-opportunities-email-list-production
   - name: "Utils and toolkit"
     jobs:
+      - build-image
       - build-scripts
+      - clean-docker-images
+      - docker-base-images
+      - docker script runner
+      - maintenance-mode
+      - notify-slack
+      - publish-manual
       - publish-toolkit-documentation
+      - rerelease-all-apps
       - tag-application-deloyment
       - tag-dmapiclient
       - tag-dmcontent-loader
       - tag-dmutils
+      - tag-dmtest-utils
       - tag-frameworks
       - tag-toolkit
       - update-credentials
@@ -188,6 +200,9 @@ jenkins_list_views:
       - release-app-paas
   - name: "Framework lifecycle jobs"
     jobs:
+      - generate-upload-and-notify-counterpart-signature-pages-production-DOS3
+      - generate-upload-and-notify-counterpart-signature-pages-production-G10
+      - generate-upload-and-notify-counterpart-signature-pages-production-G11
       - notify-suppliers-whether-application-made-for-framework-production
       - publish-dos-draft-services-preview
       - publish-dos-draft-services-staging
