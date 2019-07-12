@@ -1,6 +1,5 @@
 [jenkins]
-ci.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/xvdf
-ci2.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0d3a14aa8d2898e11
+ci.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol06bc719ccbe9a20db
 
 [jenkins:vars]
 ansible_python_interpreter=/usr/bin/python3
