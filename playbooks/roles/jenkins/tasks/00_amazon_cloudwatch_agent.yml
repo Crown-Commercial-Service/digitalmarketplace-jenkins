@@ -8,6 +8,11 @@
   apt:
     deb: /tmp/amazon-cloudwatch-agent.deb
 
+- name: Ensure Amazon CloudWatch agent is started on boot
+  service:
+    name: amazon-cloudwatch-agent
+    enabled: true
+
 - name: Create amazon-cloudwatch-agent.json file in /opt/aws/amazon-cloudwatch-agent/etc directory
   template: src=amazon-cloudwatch-agent.json.j2 dest=/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json mode=600
   notify: restart amazon-cloudwatch-agent
