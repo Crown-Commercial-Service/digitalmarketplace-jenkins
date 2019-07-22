@@ -42,6 +42,10 @@
       - build-discarder:
           days-to-keep: 30
           artifact-days-to-keep: 30
+    parameters:
+      - string:
+          name: FT_BRANCH_NAME
+          default: "master"
     triggers:
       - timed: "{{ test_type.timing }}"
     wrappers:
@@ -63,7 +67,7 @@
       node {
         try {
           stage('Prepare') {
-            git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+            git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: '${FT_BRANCH_NAME}', credentialsId: 'github_com_and_enterprise'
             sh("rbenv install -s")
             sh("gem install bundler --conservative")
           }
