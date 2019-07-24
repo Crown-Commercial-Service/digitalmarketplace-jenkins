@@ -64,6 +64,7 @@
                 text(name: 'URL', value: "<${BUILD_URL}{{ test_type.report_name|lower|replace(" ", "_") }}|${BUILD_DISPLAY_NAME}>")
               ]
       }
+      currentBuild.displayName = "#${BUILD_NUMBER} - ${FT_BRANCH_NAME}"
       node {
         try {
           stage('Prepare') {
