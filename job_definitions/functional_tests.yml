@@ -19,12 +19,16 @@
       - build-discarder:
           days-to-keep: 60
           artifact-days-to-keep: 60
+    parameters:
+      - string:
+          name: FT_BRANCH_NAME
+          default: "master"
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
           credentials-id: github_com_and_enterprise
           branches:
-            - "master"
+            - "${FT_BRANCH_NAME}"
           wipe-workspace: false
     triggers:
       - pollscm:
@@ -61,6 +65,9 @@
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
     builders:
+      - build-name-setter:
+          template: "#${BUILD_NUMBER} - ${FT_BRANCH_NAME}"
+          macro: true
       - shell: |
           rbenv install -s
           gem install bundler --conservative
