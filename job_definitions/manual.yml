@@ -2,7 +2,7 @@
 - job:
     name: 'publish-manual'
     display: "Publish manual"
-    project-type: freestyle
+    project-type: pipeline
     description: "Automatically publish digitalmarketplace manual to gh pages."
     scm:
       - git:
@@ -13,19 +13,30 @@
     triggers:
       - pollscm:
           cron: "H/2 * * * *"
-    builders:
-      - shell: |
-          docker pull digitalmarketplace/manual || true
-          docker build --pull -t digitalmarketplace/manual .
-          docker push digitalmarketplace/manual
+    dsl: |
+      node {
+        stage('Prepare') {
+          sh("git config user.name 'Jenkins'")
+          sh("git config user.email '{{ jenkins_github_email }}'")
+          git url: "git@github.com:alphagov/digitalmarketplace-manual.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+        }
 
-          DOCKER_UID="$(id -u)"
-          DOCKER_GID="$(getent group docker | awk -F ':' '{print $3}')"
+        stage('Build') {
+          build job: "tag-release-and-build-image", parameters: [
+            string(name: "REPOSITORY", value: "manual")
+          ]
+        }
 
-          docker run --rm \
-            -u $DOCKER_UID:$DOCKER_GID \
-            -v $(pwd):/app \
-            digitalmarketplace/manual \
-            make clean html
+        stage('Make HTML') {
+          script {
+            env.DOCKER_UID = sh(script:"id -u", returnStdout: true).trim()
+            env.DOCKER_GID = sh(script:"getent group docker | awk -F ':' '{print \$3}'", returnStdout: true).trim()
 
-          make pages
+            sh(script:"docker run --rm -u ${env.DOCKER_UID}:${env.DOCKER_GID} -v \$(pwd):/app digitalmarketplace/manual make clean html")
+          }
+        }
+
+        stage('Push pages') {
+          sh("make pages")
+        }
+      }
