@@ -18,6 +18,7 @@
         try {
           sh("git config user.name 'Jenkins'")
           sh("git config user.email '{{ jenkins_github_email }}'")
+          sh("git fetch --prune origin '+refs/tags/*:refs/tags/*'")
           sh("git tag -a ${tag} -m ${tag}")
           sh("git push origin ${tag} -f")
         } catch(e) {
