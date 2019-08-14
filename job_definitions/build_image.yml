@@ -12,7 +12,6 @@
             - {{ application }}
 {% endfor %}
             - scripts
-            - manual
       - string:
           name: RELEASE_NAME
           description: "git ref (eg 'release-42') to checkout for building the artefact. This will also become the image release name."
