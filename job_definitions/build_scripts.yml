@@ -8,10 +8,40 @@
       - pollscm:
           cron: "* * * * *"
     dsl: |
+
+      def tag_release(tag) {
+          try {
+            sh("git config user.name 'Jenkins'")
+            sh("git config user.email '{{ jenkins_github_email }}'")
+            sh("git tag -a ${tag} -m ${tag}")
+            sh("git push origin ${tag} -f")
+          } catch(e) {
+            echo "${tag} tag already exists"
+          }
+        }
+        stage('Create release tag') {
+          node {
+            git url: "git@github.com:alphagov/digitalmarketplace-scripts.git",
+                branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+            releaseNumber = sh(
+                script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
+                returnStdout: true
+            ).trim()
+            if (releaseNumber == "") {
+                throw new Exception('Release number can not be found')
+            }
+            releaseName = "release-${releaseNumber}"
+            tag_release(releaseName)
+            echo "Release number: ${releaseNumber}"
+            currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
+          }
+        }
+
       stage('Build') {
         node {
-          build job: "tag-release-and-build-image", parameters: [
+          build job: "build-image", parameters: [
             string(name: "REPOSITORY", value: "scripts"),
+            string(name: "RELEASE_NAME", value: "${releaseName}"),
           ]
         }
       }
