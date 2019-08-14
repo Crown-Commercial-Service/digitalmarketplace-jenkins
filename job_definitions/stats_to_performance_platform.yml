@@ -1,6 +1,6 @@
 {# frameworks = (framework_slug, performance_platform_service, token_group, enabled?) #}
 {% set frameworks = [
-  ('digital-outcomes-and-specialists-4', 'digital-outcomes-specialists', 'digital-outcomes-specialists', True)
+  ('digital-outcomes-and-specialists-4', 'digital-outcomes-specialists', 'digital-outcomes-specialists', False)
 ]%}
 {% set schedules = [('1 */1 *  * *', 'hour'), ('1 0 * * *', 'day')] %}
 {% set environments = ['production'] %}
