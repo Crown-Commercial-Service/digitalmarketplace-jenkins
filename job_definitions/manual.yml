@@ -30,4 +30,3 @@
             make clean html
 
           make pages
-      }
