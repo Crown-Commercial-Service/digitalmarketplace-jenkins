@@ -1,0 +1,44 @@
+{% for environment in ['preview', 'production'] %}
+- job:
+    name: "mark-definite-framework-results-{{ environment }}"
+    display-name: "Mark definite framework results - {{ environment }}"
+    project-type: freestyle
+    disabled: true
+    description: |
+      This job runs the mark-definite-framework-results script at the end of a framework application period. It should
+       be triggered manually, after suppliers have been notified whether they made an application or not.
+      The script sets the 'onFramework' value for each supplier application in the database, based on their declaration
+      answers. The JSON schemas in the scripts repo determine which answers are a 'pass', which are a 'fail', and which
+      are a 'discretionary pass'. This script ignores discretionary passes (the database values are left as 'null').
+
+    parameters:
+      - string:
+          name: FRAMEWORK_SLUG
+          description: "The framework slug to set results for, e.g. 'g-cloud-11'."
+      - string:
+          name: PASS_SCHEMA
+          description: "Path to the declaration assessment schema in the scripts repo, e.g. 'schemas/digital-outcomes-and-specialists-4.declaration.json'"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "Dry run - do not set values in the database"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=mark-definite-framework-results
+              JOB=Mark definite framework results {{ environment }}
+              ICON=:heavy_check_mark:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/framework-applications/mark-definite-framework-results.py '{{ environment }}' "${FRAMEWORK_SLUG}" "${PASS_SCHEMA}" $FLAGS
+{% endfor %}
