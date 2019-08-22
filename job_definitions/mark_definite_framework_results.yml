@@ -29,10 +29,20 @@
             predefined-parameters: |
               USERNAME=mark-definite-framework-results
               JOB=Mark definite framework results {{ environment }}
-              ICON=:heavy_check_mark:
+              ICON=:heavy_multiplication_x:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=mark-definite-framework-results
+              JOB=Mark definite framework results {{ environment }}
+              ICON=:heavy_check_mark:
+              STAGE={{ environment }}
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
     builders:
       - shell: |
