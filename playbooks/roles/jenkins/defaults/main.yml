@@ -202,6 +202,8 @@ jenkins_list_views:
   - name: "Framework lifecycle jobs"
     jobs:
       - generate-upload-and-notify-counterpart-signature-pages-production
+      - mark-definite-framework-results-preview
+      - mark-definite-framework-results-production
       - notify-suppliers-whether-application-made-for-framework-production
       - scan-g-cloud-services-for-bad-words
       - stats-performance-platform-digital-outcomes-and-specialists-4-per-hour-production
