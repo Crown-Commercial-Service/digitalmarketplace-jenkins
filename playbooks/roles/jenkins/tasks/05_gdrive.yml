@@ -2,7 +2,7 @@
 
 - name: Install gdrive (google drive command line interface client)
   get_url:
-    url: "https://drive.google.com/uc?id=1Ej8VgsW5RgK66Btb9p74tSdHMH3p4UNb&export=download"
+    url: "https://github.com/gdrive-org/gdrive/releases/download/2.1.0/gdrive-linux-x64"
     dest: /usr/local/bin/gdrive
     checksum: sha1:6ef7c740e980358a9a5de36c1aac7ea375319aa3
     mode: 0755
