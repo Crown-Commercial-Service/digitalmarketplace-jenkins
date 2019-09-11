@@ -1,0 +1,32 @@
+{% set environments = ['preview', 'staging', 'production'] %}
+---
+{% for environment in environments %}
+- job:
+    name: "export-dos-opportunities-{{ environment }}"
+    display-name: "Export DOS opportunities as CSV - {{ environment }}"
+    project-type: freestyle
+    description: "Runs the export-dos-opportunities.py script and uploads the generated CSV file to the (public) communications S3 bucket"
+    triggers:
+      - timed: "H 4 * * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=export-dos-opportunities
+              JOB=Export data {{ environment }}
+              ICON=:no-dos:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-2ndline
+    builders:
+      - shell: |
+
+          # We need to recreate the directory manually since the one created by Docker
+          # when mounting the volume will otherwise be owned by the root user.
+          rm -rf ./data && mkdir data
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/export-dos-opportunities.py '{{ environment }}'
+
+{% endfor %}

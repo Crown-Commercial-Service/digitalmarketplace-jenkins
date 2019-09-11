@@ -5,7 +5,7 @@
     name: "export-data-{{ environment }}"
     display-name: "Export API model data as CSV - {{ environment }}"
     project-type: freestyle
-    description: "Runs the get-model-data.py script and uploads the generated CSV files to Google Drive (everything, for us) and S3 (just the opportunity data, for the public)"
+    description: "Runs the get-model-data.py script and uploads the generated CSV files to Google Drive."
     triggers:
       - timed: "H 5 * * *"
     publishers:
@@ -28,7 +28,6 @@
           rm -rf ./data && mkdir data
 
           docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/get-model-data.py '{{ environment }}'
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/upload-file-to-s3.py data/opportunity-data.csv digitalmarketplace-communications-{{ environment }}-{{ environment }} digital-outcomes-and-specialists-3/communications/data/opportunity-data.csv opportunity-data.csv --public
 
           {% if environment == "production" %}
           /usr/local/bin/gdrive --config "/var/lib/jenkins/.gdrive" sync upload --delete-extraneous ./data "{{ jenkins_gdrive_csv_data_export_folder_id }}"
