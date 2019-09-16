@@ -98,7 +98,6 @@
     group: jenkins
     owner: jenkins
     mode: 0600
-    recurse: yes
   notify:
     - restart jenkins
 
