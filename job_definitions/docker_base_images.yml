@@ -5,6 +5,19 @@
       Build Docker base images from digitalmarketplace-docker-base,
       push to the digitalmarketplace DockerHub organisation,
       and scan using the Snyk CLI.
+    parameters:
+      - string:
+          name: HEAD_BRANCH
+          default: "master"
+          description: "*USE WITH CARE* - production releases should *ALWAYS* be from master"
+      - bool:
+          name: MARK_LATEST
+          default: true
+          description: "Whether to mark the built image as the 'latest'"
+      - bool:
+          name: SCAN
+          default: true
+          description: "Whether to perform snyk scan on generated image"
     project-type: pipeline
     triggers:
       - timed: "H 0 * * 1,4,6"
@@ -14,7 +27,8 @@
       node {
         try {
           stage('Prepare') {
-            git url: "git@github.com:alphagov/digitalmarketplace-docker-base.git", branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+            currentBuild.displayName = "#${BUILD_NUMBER} - ${HEAD_BRANCH}"
+            git url: "git@github.com:alphagov/digitalmarketplace-docker-base.git", branch: HEAD_BRANCH, credentialsId: 'github_com_and_enterprise', poll: true
           }
           stage('Build') {
             sh("make build")
@@ -22,16 +36,30 @@
           stage('Push') {
             docker_credentials = sh(script: '/var/lib/jenkins/digitalmarketplace-credentials/sops-wrapper -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
             withEnv(docker_credentials.tokenize("\n")) {
-                sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
+              sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
             }
-            sh("make push")
+
+            if (HEAD_BRANCH != "master" && sh(script: "cat VERSION", returnStdout: true) ==~ /\d.*/) {
+              input("WARNING: VERSION looks numeric - it is probably a bad idea to create a release- tagged image from a non-master HEAD_BRANCH!")
+            }
+            if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "master") {
+              input("WARNING: It is probably a bad idea to mark a non-master HEAD_BRANCH image as 'latest'")
+            }
+
+            withEnv(MARK_LATEST.toString() == "true" ? [] : ["NOT_LATEST=1"]) {
+              sh("make push")
+            }
           }
           stage ('Scan') {
-            sh 'rm -rf reports && mkdir reports'
-            ansiColor('xterm') {
-              sh 'make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"'
+            if (SCAN.toString() == "true") {
+              sh 'rm -rf reports && mkdir reports'
+              ansiColor('xterm') {
+                sh 'make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"'
+              }
+              publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "**/snyk_report.html"
+            } else {
+              echo "Skipping Snyk scan"
             }
-            publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "**/snyk_report.html"
           }
 
           build job: "notify-slack",
