@@ -1,11 +1,9 @@
 {% set environments = ['production'] %}
-{% set framework_slugs = ['digital-outcomes-and-specialists-3'] %}
 ---
 {% for environment in environments %}
-{% for framework_slug in framework_slugs %}
 - job:
-    name: "notify-suppliers-of-dos{{ framework_slug[-1] }}-opportunities-{{ environment }}"
-    display-name: "Notify suppliers of DOS{{ framework_slug[-1] }} opportunities - {{ environment }}"
+    name: "notify-suppliers-of-dos-opportunities-{{ environment }}"
+    display-name: "Notify suppliers of DOS opportunities - {{ environment }}"
     project-type: freestyle
     description: "Create and send mailchimp campaign to suppliers for the latest Digital Outcomes and Specialists opportunities"
     parameters:
@@ -23,7 +21,7 @@
             - production-list
             {% endif %}
             - test-list
-          description: "To send the email to the briefs team instead of production users then choose 'test-list'"
+          description: "To send the email to the test list instead of production users then choose 'test-list'"
       - choice:
           name: NUMBER_OF_DAYS
           choices:
@@ -31,6 +29,9 @@
             - "1"
             - "3"
           description: "How many days worth of briefs to include in the email. By default will send 3 days worth on a Monday and 1 days worth on Tue-Fri"
+      - string:
+          name: FRAMEWORK_SLUG
+          description: "Only send emails for a single framework iteration, e.g. 'digital-outcomes-and-specialists-3'."
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-scripts.git
@@ -45,8 +46,8 @@
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
-              USERNAME=dos{{ framework_slug[-1] }}-opportunities
-              JOB=Notify suppliers of the latest DOS{{ framework_slug[-1] }} opportunities - {{ environment }}
+              USERNAME=dos-opportunities
+              JOB=Notify suppliers of the latest DOS opportunities - {{ environment }}
               ICON=:briefs:
               STAGE={{ environment }}
               STATUS=FAILED
@@ -66,6 +67,9 @@
             FLAGS="$FLAGS --number_of_days=$NUMBER_OF_DAYS"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-dos-opportunities-email.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }} $FLAGS
-{% endfor %}
+          if [ -n "$FRAMEWORK_SLUG" ]; then
+            FLAGS="$FLAGS --framework_slug=$FRAMEWORK_SLUG"
+          fi
+
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/send-dos-opportunities-email.py "{{ environment }}" "jenkins" "$MAILCHIMP_API_TOKEN" $FLAGS
 {% endfor %}
