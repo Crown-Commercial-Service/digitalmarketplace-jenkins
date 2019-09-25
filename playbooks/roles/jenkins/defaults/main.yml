@@ -103,7 +103,7 @@ build_monitor_jobs:
   - index-services-preview
   - index-services-production
   - notify-buyers-when-requirements-close-production
-  - notify-suppliers-of-dos3-opportunities-production
+  - notify-suppliers-of-dos-opportunities-production
   - notify-suppliers-of-new-questions-answers-production
   - upload-dos3-opportunities-email-list-production
   - visual-regression-preview
@@ -160,7 +160,7 @@ jenkins_list_views:
       - notify-buyers-to-award-closed-briefs-8-weeks-production
       - notify-buyers-when-requirements-close-production
       - notify-suppliers-of-awarded-briefs-production
-      - notify-suppliers-of-dos3-opportunities-production
+      - notify-suppliers-of-dos-opportunities-production
       - notify-suppliers-of-new-questions-answers-production
       - notify-suppliers-of-brief-withdrawals-production
       - upload-dos3-opportunities-email-list-production
