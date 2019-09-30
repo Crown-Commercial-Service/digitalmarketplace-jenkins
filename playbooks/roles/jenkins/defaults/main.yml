@@ -105,7 +105,7 @@ build_monitor_jobs:
   - notify-buyers-when-requirements-close-production
   - notify-suppliers-of-dos-opportunities-production
   - notify-suppliers-of-new-questions-answers-production
-  - upload-dos3-opportunities-email-list-production
+  - upload-dos4-opportunities-email-list-production
   - visual-regression-preview
 
 jenkins_list_views:
