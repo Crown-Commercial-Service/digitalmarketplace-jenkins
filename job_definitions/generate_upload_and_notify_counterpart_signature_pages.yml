@@ -1,6 +1,7 @@
 {# frameworks = (acronym, framework_slug, enabled?) #}
 {% set frameworks = [
-  ('DOS3', 'digital-outcomes-and-specialists-3', True),
+  ('DOS4', 'digital-outcomes-and-specialists-4', True),
+  ('DOS3', 'digital-outcomes-and-specialists-3', False),
   ('G10', 'g-cloud-11', False),
   ('G11', 'g-cloud-11', True),
 ]%}
