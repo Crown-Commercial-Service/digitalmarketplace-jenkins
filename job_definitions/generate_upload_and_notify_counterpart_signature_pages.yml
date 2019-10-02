@@ -56,6 +56,7 @@
 
                   make virtualenv
                   ./venv/bin/pip install --upgrade pip
+                  ./venv/bin/pip install wheel  # this allows pip to cache compiled packages instead of rebuilding them all on every invocation
                   make requirements
                 ''')
               }
