@@ -1,5 +1,5 @@
-{% set environment = "preview" %}
 ---
+{% for environment in ("preview", "staging") %}
 - job:
     name: "visual-regression-{{ environment }}"
     display-name: "Visual regression - {{ environment }}"
@@ -159,3 +159,4 @@
                   STATUS=APPROVED
                   URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
                   CHANNEL=#dm-release
+{% endfor %}

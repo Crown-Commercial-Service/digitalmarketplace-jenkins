@@ -13,6 +13,43 @@
 {% endif %}
     dsl: |
 
+      def run_visual_regression_tests(stage) {
+        def job_name = "visual-regression-${stage}"
+        def vr_job = null
+
+        node {
+          vr_job = build job: job_name, parameters: [
+            string(name: "COMMAND", value: "test"),
+          ], propagate: false
+        }
+
+        def vr_job_result = vr_job.result
+        def vr_job_number = vr_job.number
+        vr_job = null
+
+        if (vr_job_result == 'SUCCESS') {
+          return true
+        } else {
+          echo "Visual regression tests build result: ${vr_job_result}"
+
+          echo "Assuming that these changes are due to database restore. Approving."
+          try {
+            node {
+              build job: job_name, parameters: [
+                string(name: "COMMAND", value: "approve"),
+              ]
+            }
+
+          } catch(inside_error) {
+            echo "Approving visual regression tests failed: ${inside_error}"
+            currentBuild.result = 'UNSTABLE'
+            return false
+          }
+
+          return true
+        }
+      }
+
       def notify_slack(icon, status, channel = "#dm-release") {
         build job: "notify-slack",
         parameters: [
@@ -138,6 +175,13 @@
                     string(name: 'DELETE_OLD_INDEX', value: 'yes')
                   ]
                 }
+              }
+{% endif %}
+
+
+{% if environment in ['preview', 'staging'] %}
+              stage('Run visual regression tests') {
+                run_visual_regression_tests("{{ environment }}")
               }
 {% endif %}
 
