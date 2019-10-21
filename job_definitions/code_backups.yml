@@ -16,6 +16,7 @@
     "digitalmarketplace-frameworks",
     "digitalmarketplace-frontend-toolkit",
     "digitalmarketplace-functional-tests",
+    "digitalmarketplace-govuk-frontend",
     "digitalmarketplace-jenkins",
     "digitalmarketplace-maintenance",
     "digitalmarketplace-manual",
