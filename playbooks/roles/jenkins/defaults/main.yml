@@ -234,6 +234,7 @@ jenkins_list_views:
       - backup-digitalmarketplace-frameworks
       - backup-digitalmarketplace-frontend-toolkit
       - backup-digitalmarketplace-functional-tests
+      - backup-digitalmarketplace-govuk-frontend
       - backup-digitalmarketplace-jenkins
       - backup-digitalmarketplace-maintenance
       - backup-digitalmarketplace-manual
