@@ -179,7 +179,7 @@
 {% endif %}
 
 
-{% if environment in ['preview'] %}
+{% if environment in ['preview', 'staging'] %}
               stage('Run visual regression tests') {
                 run_visual_regression_tests("{{ environment }}")
               }

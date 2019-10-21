@@ -255,6 +255,12 @@
         milestone()
       }
 
+      stage('Visual regression tests - staging') {
+        milestone()
+        run_visual_regression_tests("staging")
+        milestone()
+      }
+
       {% if application in dm_db_applications %}
       stage('DB migration on production') {
         milestone()
