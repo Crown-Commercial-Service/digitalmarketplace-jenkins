@@ -178,6 +178,7 @@ jenkins_list_views:
       - publish-toolkit-documentation
       - rerelease-all-apps
       - tag-application-deloyment
+      - tag-digitalmarketplace-govuk-frontend
       - tag-dmapiclient
       - tag-dmcontent-loader
       - tag-dmutils
