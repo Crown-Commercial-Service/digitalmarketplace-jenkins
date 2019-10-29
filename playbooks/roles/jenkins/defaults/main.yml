@@ -71,7 +71,6 @@ jenkins_plugins:
   - git
   - github
   - github-oauth
-  - greenballs
   - htmlpublisher
   - lockable-resources
   - next-executions
