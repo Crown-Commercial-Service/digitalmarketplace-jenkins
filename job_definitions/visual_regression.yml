@@ -25,6 +25,9 @@
           branches:
             - "master"
           wipe-workspace: false
+    triggers:
+      - pollscm:
+          cron: "H/2 * * * *"
     wrappers:
       - ansicolor
     publishers:
