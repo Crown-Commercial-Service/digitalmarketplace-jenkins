@@ -187,6 +187,7 @@ jenkins_list_views:
       - update-credentials
       - rotate-api-tokens
       - rotate-production-notify-callback-token
+      - rotate-ft-account-passwords
       - virus-scan-s3-buckets-preview
       - virus-scan-s3-buckets-staging
       - virus-scan-s3-buckets-production
