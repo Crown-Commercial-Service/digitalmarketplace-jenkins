@@ -40,8 +40,8 @@
               CHANNEL=#dm-2ndline
     builders:
       - shell: |
-          if [ -n "RESUME_RUN_ID" ]; then
-            FLAGS="--resume-run-id=RESUME_RUN_ID"
+          if [ -n "$RESUME_RUN_ID" ]; then
+            FLAGS="--resume-run-id=$RESUME_RUN_ID"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
