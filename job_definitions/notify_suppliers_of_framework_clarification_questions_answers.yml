@@ -36,7 +36,7 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=framework-question-and-answers
-              JOB=Notify suppliers of new framework clarification questions and answers {{ environment }}
+              JOB=Notify suppliers of new ${FRAMEWORK_SLUG} clarification questions and answers {{ environment }}
               ICON=:frame_with_picture:
               STAGE={{ environment }}
               STATUS=FAILED
