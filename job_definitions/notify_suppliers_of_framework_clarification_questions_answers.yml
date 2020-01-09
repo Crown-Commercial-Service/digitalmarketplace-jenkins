@@ -1,6 +1,6 @@
 {% set environments = ['preview', 'production'] %}
 {% set notify_template_id = 'ed9944eb-112e-4f04-a4bb-19f397550ffe' %}
-{% set framework_slug = 'g-cloud-12' %}
+{% set default_framework_slug = 'g-cloud-12' %}
 ---
 {% for environment in environments %}
 - job:
@@ -15,6 +15,10 @@
       - string:
           name: RESUME_RUN_ID
           description: "UUID of a previously failed run to use for resending (this will skip any users who were successfully emailed)"
+      - string:
+          name: FRAMEWORK_SLUG
+          default: {{ default_framework_slug }}
+          description: "Framework to send notifications about, e.g. 'g-cloud-12'. Must have status 'open' or the script will fail."
       - bool:
           name: DRY_RUN
           default: false
@@ -48,5 +52,5 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-new-fw-cq-answers.py {{ environment }} {{ framework_slug }} $NOTIFY_API_TOKEN {{ notify_template_id }} $FLAGS
+          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-new-fw-cq-answers.py {{ environment }} $FRAMEWORK_SLUG $NOTIFY_API_TOKEN {{ notify_template_id }} $FLAGS
 {% endfor %}
