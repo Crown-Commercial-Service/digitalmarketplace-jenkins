@@ -53,7 +53,7 @@
       def notify_slack(icon, status) {
         build job: "notify-slack",
         parameters: [
-          string(name: 'USERNAME', value: "clean-prod-db-dump-and-apply"),
+          string(name: 'USERNAME', value: "clean-and-apply-db-dump"),
           string(name: 'ICON', value: icon),
           string(name: 'JOB', value: "Clean and apply database dump to {{ environment }}"),
           string(name: 'CHANNEL', value: "#dm-release"),
