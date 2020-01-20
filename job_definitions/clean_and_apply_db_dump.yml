@@ -99,7 +99,7 @@
                 sh('make run-postgres-container')
               }
 
-              stage('Import and clean lastest production db-dump') {
+              stage('Import and clean latest production db-dump') {
                 sh(
                   script: '''
                     make requirements
