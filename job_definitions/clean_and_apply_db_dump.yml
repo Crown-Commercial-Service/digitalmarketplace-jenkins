@@ -50,13 +50,13 @@
         }
       }
 
-      def notify_slack(icon, status, channel = "#dm-release") {
+      def notify_slack(icon, status) {
         build job: "notify-slack",
         parameters: [
           string(name: 'USERNAME', value: "clean-prod-db-dump-and-apply"),
           string(name: 'ICON', value: icon),
           string(name: 'JOB', value: "Clean and apply database dump to {{ environment }}"),
-          string(name: 'CHANNEL', value: channel),
+          string(name: 'CHANNEL', value: "#dm-release"),
           text(name: 'STAGE', value: "{{ environment }}"),
           text(name: 'STATUS', value: status),
           text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
@@ -114,7 +114,7 @@
               }
 
               stage('Apply data to target stage and s3') {
-                notify_slack(':building_blue:', 'APPROVED', "#dm-release")
+                notify_slack(':building_blue:', 'APPROVED')
                 sh(
                    script: '''
                      export TARGET="{{ environment }}"
@@ -193,7 +193,7 @@
               notify_slack(':shower:', 'SUCCESS')
 
             } catch(err) {
-              notify_slack(':sadparrot:', 'FAILED', "#dm-2ndline")
+              notify_slack(':sadparrot:', 'FAILED')
               echo "Error caught"
               currentBuild.result = 'FAILURE'
               echo "Error: ${err}"
