@@ -181,7 +181,7 @@
 
 {% if environment in ['preview', 'staging'] %}
               stage('Run functional tests') {
-                # running the functional tests should get the database in the right state for VR tests to produce identical results
+                // running the functional tests should get the database in the right state for VR tests to produce identical results
                 build job: "functional-tests-{{ environment }}"
               }
 
