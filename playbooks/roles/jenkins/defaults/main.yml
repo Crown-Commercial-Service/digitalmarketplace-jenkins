@@ -163,7 +163,7 @@ jenkins_list_views:
       - notify-suppliers-of-dos-opportunities-production
       - notify-suppliers-of-new-questions-answers-production
       - notify-suppliers-of-brief-withdrawals-production
-      - upload-dos3-opportunities-email-list-production
+      - upload-dos4-opportunities-email-list-production
   - name: "Utils and toolkit"
     jobs:
       - build-image
