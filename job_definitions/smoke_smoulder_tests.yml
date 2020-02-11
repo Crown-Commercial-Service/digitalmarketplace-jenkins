@@ -41,7 +41,6 @@
     properties:
       - build-discarder:
           days-to-keep: 30
-          artifact-days-to-keep: 30
     parameters:
       - string:
           name: FT_BRANCH_NAME

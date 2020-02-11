@@ -9,8 +9,6 @@
       - build-discarder:
           days-to-keep: 14
           num-to-keep: 50
-          artifact-days-to-keep: 14
-          artifact-num-to-keep: 50
     parameters:
       - choice:
           name: COMMAND
