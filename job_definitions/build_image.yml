@@ -59,7 +59,7 @@
                   sh("docker tag digitalmarketplace/${REPOSITORY} digitalmarketplace/${REPOSITORY}:${RELEASE_NAME}")
               }
               stage('Upload') {
-                  docker_credentials = sh(script: '/var/lib/jenkins/digitalmarketplace-credentials/sops-wrapper -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
+                  docker_credentials = sh(script: 'sops -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
                   withEnv(docker_credentials.tokenize("\n")) {
                       sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
                   }
