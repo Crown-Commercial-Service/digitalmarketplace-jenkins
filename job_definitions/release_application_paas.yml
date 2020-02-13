@@ -51,7 +51,7 @@
 
           stage('Deploy') {
             withEnv(["DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials", "CF_HOME=${pwd()}"]) {
-              paas_credentials = sh(script: '$DM_CREDENTIALS_REPO/sops-wrapper -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
+              paas_credentials = sh(script: 'sops -d $DM_CREDENTIALS_REPO/jenkins-vars/paas_credentials_env.enc', returnStdout: true).trim()
               withEnv(paas_credentials.tokenize("\n")) {
                 sh('make paas-login')
               }
