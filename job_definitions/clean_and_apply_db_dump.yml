@@ -69,7 +69,8 @@
         withEnv([
           "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
           "CF_HOME=${pwd()}",
-          "PAAS_SPACE={{ environment }}"
+          "PAAS_SPACE={{ environment }}",
+          "POSTGRES_NAME=dm_db_clean_{{ environment }}",
         ]) {
           try {
             stage('Prepare') {
@@ -93,6 +94,10 @@
                 ).trim()
 {% endif %}
 
+                // Generate a random password for PostgreSQL container
+                postgres_password = sh(script: 'openssl rand -base64 32', returnStdout:true).trim()
+                env.POSTGRES_PASSWORD = postgres_password
+                env.PGPASSWORD = postgres_password
               }
 
               stage('Run postgres container') {
