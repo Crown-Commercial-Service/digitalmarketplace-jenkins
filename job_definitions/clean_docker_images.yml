@@ -16,6 +16,6 @@
             fi
           done
 
-          docker image prune -f
+          docker image prune -af
     triggers:
-      - timed: "H H * * 0"
+      - timed: "H H * * *"
