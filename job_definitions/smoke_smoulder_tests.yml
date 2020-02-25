@@ -41,7 +41,7 @@
     properties:
       - build-discarder:
           days-to-keep: 30
-          num-to-keep: 100
+          num-to-keep: 1000
     parameters:
       - string:
           name: FT_BRANCH_NAME
