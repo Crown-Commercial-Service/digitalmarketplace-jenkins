@@ -1,5 +1,5 @@
 {# frameworks = (framework_slug, enabled?) #}
-{% set frameworks = [('digital-outcomes-and-specialists-4', False)] %}
+{% set frameworks = [('g-cloud-12', False)] %}
 {% set environments = ['production'] %}
 ---
 {% for environment in environments %}
