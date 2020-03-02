@@ -218,7 +218,7 @@ jenkins_list_views:
       - scan-g-cloud-services-for-bad-words
       - stats-performance-platform-digital-outcomes-and-specialists-4-per-hour-production
       - stats-performance-platform-digital-outcomes-and-specialists-4-per-day-production
-      - stats-snapshot-digital-outcomes-and-specialists-4-production
+      - stats-snapshot-g-cloud-12-production
   - name: "Code backups"
     jobs:
       - backup-digitalmarketplace-admin-frontend
