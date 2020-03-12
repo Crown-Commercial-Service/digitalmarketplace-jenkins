@@ -28,11 +28,11 @@
 
 - name: Install plugins
   jenkins_plugin:
+    jenkins_home: "{{ jenkins_data_dir }}"
     name: "{{ item }}"
     url_username: "{{ plugins_username }}"
     url_password: "{{ plugins_password }}"
   with_items: "{{ jenkins_plugins }}"
-
 
 - name: Restart Jenkins to activate new plugins
   service: name=jenkins state=restarted
