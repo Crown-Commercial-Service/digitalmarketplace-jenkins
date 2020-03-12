@@ -17,13 +17,6 @@ JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox all
 # A comment on that page suggests that setting this property to false should be a temporary work-around to avoid getting the error
 JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.User.SECURITY_243_FULL_DEFENSE=false"
 
-# When performing a fresh install of Jenkins server 2.194 we are seeing the error described here:
-# https://stackoverflow.com/questions/57724934/ansible-jenkins-plugin-module-returns-http-error-403-no-valid-crumb-was-includ
-# https://stackoverflow.com/questions/57731818/jenkins-2-192-http-error-403-no-valid-crumb-was-included-in-the-request
-# https://github.com/ansible/ansible/issues/61712
-# Manifests as `HTTP Error 403: No valid crumb was included in the request` error from `jenkins_plugins` Ansible directive
-JAVA_ARGS="${JAVA_ARGS} -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"
-
 PIDFILE=/var/run/jenkins/jenkins.pid
 
 # user id to be invoked as (otherwise will run as root; not wise!)

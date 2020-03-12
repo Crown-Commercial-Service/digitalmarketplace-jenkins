@@ -13,12 +13,7 @@ jenkins_connection_retries: 60
 jenkins_domain_name: marketplace.team
 jenkins_server_name: "{{ inventory_hostname | regex_replace('^(.*)' + jenkins_domain_name, '\\1') }}"
 jenkins_hostname: localhost
-# When performing a fresh install of Jenkins server 2.194 we are seeing the error described here:
-# https://stackoverflow.com/questions/57724934/ansible-jenkins-plugin-module-returns-http-error-403-no-valid-crumb-was-includ
-# https://stackoverflow.com/questions/57731818/jenkins-2-192-http-error-403-no-valid-crumb-was-included-in-the-request
-# https://github.com/ansible/ansible/issues/61712
-# Manifests as `HTTP Error 403: No valid crumb was included in the request` error from `jenkins_plugins` Ansible directive
-jenkins_java_args: "-Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"
+jenkins_java_args: ""
 
 jobs: '*'
 jobs_disabled: false
