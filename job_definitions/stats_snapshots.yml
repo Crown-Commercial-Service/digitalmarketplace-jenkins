@@ -18,7 +18,7 @@
 {% for environment in environments %}
 {% for framework, drive_folder, enabled in frameworks %}
 - job:
-    name: stats-snapshot-{{ framework }}-{{ environment }}
+    name: hourly-stats-snapshot-{{ framework }}-{{ environment }}
     display-name: Snapshot stats for {{ framework }} - {{ environment }} - Hourly Audit Event Dump
     description: Creates an hourly snapshot of framework stats and stores it in the API audit event
 {% if not enabled %}
@@ -55,7 +55,7 @@
 {% for environment in environments %}
 {% for framework, drive_folder, enabled in frameworks %}
 - job:
-    name: "export-framework-applicant-details-{{ environment }}"
+    name: daily-stats-snapshot-{{ framework }}-{{ environment }}
     display-name: "Snapshot stats for {{ framework }} - {{ environment }} - Daily GDrive Dump"
 {% if not enabled %}
     disabled: true
