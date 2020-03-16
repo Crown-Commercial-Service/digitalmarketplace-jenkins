@@ -1,0 +1,17 @@
+# PyUp config
+# https://pyup.io/docs/bot/config/
+
+search: False
+schedule: "every week on sunday"
+
+requirements:
+
+  - requirements.txt:
+      update: all
+      pin: True
+
+  - requirements-jenkins-job-builder.txt:
+      update: all
+      pin: True
+
+pr_prefix: "PyUp - "
