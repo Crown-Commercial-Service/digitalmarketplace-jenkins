@@ -75,5 +75,12 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-framework-application-event.py {{ environment }} $FRAMEWORK_SLUG $NOTIFY_API_TOKEN {{ notify_template_map[EMAIL_TYPE] }} $FLAGS
+          docker run -e \
+            DM_DATA_API_TOKEN_{{ environment|upper }} \
+            digitalmarketplace/scripts scripts/notify-suppliers-of-framework-application-event.py \
+            '{{ environment }}' \
+            $FRAMEWORK_SLUG \
+            $NOTIFY_API_TOKEN \
+            '{{ notify_template_map[EMAIL_TYPE] }}' \
+            $FLAGS
 {% endfor %}
