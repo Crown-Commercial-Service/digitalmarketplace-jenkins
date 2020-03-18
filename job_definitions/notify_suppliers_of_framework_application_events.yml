@@ -1,0 +1,86 @@
+{% set environments = ['preview', 'production'] %}
+{% set notify_template_map = {
+    '21_new_clarification_questions_answers': 'ed9944eb-112e-4f04-a4bb-19f397550ffe',
+    '22_clarification_questions_close_next_week': '119dde9a-1e44-4b1d-9224-2f7020a74f9f',
+    '23_clarification_questions_close_today': '1464000b-1027-4fa5-97fe-7280ab9daf1d',
+    '24_clarification_questions_closed': '8f98a25f-0a9e-4a96-9034-2ffc6b91cedc',
+    '26_applications_close_soon': 'efec07be-a914-4b50-b452-48563888930e',
+    '27_applications_close_today': '441142fb-adaf-4510-b1f4-e3f918993881',
+    '40_standstill_starts_today': '8c5b822a-844c-4376-8a76-4bb3706a5e35',
+    '42_standstill_has_ended': '395253ed-1ab6-424e-b032-1f197d9271e7',
+  }
+%}
+{% set default_framework_slug = 'g-cloud-12' %}
+---
+{% for environment in environments %}
+- job:
+    name: "notify-suppliers-of-framework-application-event-{{ environment }}"
+    display-name: "Notify suppliers of new framework application event - {{ environment }}"
+    project-type: freestyle
+    disabled: true
+    description: |
+      Send email notifications to interested supplier users about a framework application event.
+      This job is triggered manually, e.g. after a framework manager admin has uploaded a new set of clarification PDFs.
+    parameters:
+      - string:
+          name: RESUME_RUN_ID
+          description: "UUID of a previously failed run to use for resending (this will skip any users who were successfully emailed)"
+      - string:
+          name: FRAMEWORK_SLUG
+          default: {{ default_framework_slug }}
+          description: "Framework to send notifications about, e.g. 'g-cloud-12'."
+      - choice:
+          name: EMAIL_TYPE
+          default: 21_new_clarification_questions_answers
+          choices:
+            - 21_new_clarification_questions_answers
+            - 22_clarification_questions_close_next_week
+            - 23_clarification_questions_close_today
+            - 24_clarification_questions_closed
+            - 26_applications_close_soon
+            - 27_applications_close_today
+            - 40_standstill_starts_today
+            - 42_standstill_has_ended
+          description: "Type of email to send e.g. 'New clarification questions and answers have been published'"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "List notifications that would be sent without sending the emails"
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-scripts.git
+          credentials-id: github_com_and_enterprise
+          branches:
+            - master
+          wipe-workspace: false
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=framework-application-event-email
+              JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event {{ environment }}
+              ICON=:frame_with_picture:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-2ndline
+    builders:
+      - shell: |
+          if [ -n "$RESUME_RUN_ID" ]; then
+            FLAGS="--resume-run-id=$RESUME_RUN_ID"
+          fi
+
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+
+          docker run -e \
+            DM_DATA_API_TOKEN_{{ environment|upper }} \
+            digitalmarketplace/scripts scripts/notify-suppliers-of-framework-application-event.py \
+            '{{ environment }}' \
+            $FRAMEWORK_SLUG \
+            $NOTIFY_API_TOKEN \
+            '{{ notify_template_map[EMAIL_TYPE] }}' \
+            $FLAGS
+{% endfor %}
