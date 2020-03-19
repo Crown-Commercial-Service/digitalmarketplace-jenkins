@@ -1,7 +1,7 @@
 ---
 - job:
     name: 'publish-manual'
-    display: "Publish manual"
+    display-name: "Publish manual"
     project-type: freestyle
     description: "Automatically publish digitalmarketplace manual to gh pages."
     scm:
