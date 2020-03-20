@@ -49,12 +49,22 @@
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
               USERNAME=framework-application-event-email
-              JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event {{ environment }}
+              JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event - {{ environment }}
               ICON=:frame_with_picture:
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
               CHANNEL=#dm-2ndline
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=framework-application-event-email
+              JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event - {{ environment }}
+              ICON=:time:
+              STAGE={{ environment }}
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
     builders:
       - shell: |
           if [ -n "$RESUME_RUN_ID" ]; then
