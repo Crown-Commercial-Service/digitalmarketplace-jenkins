@@ -1,4 +1,15 @@
 {% set environments = ['preview', 'production'] %}
+{% set notify_template_map = {
+    '21_new_clarification_questions_answers': 'ed9944eb-112e-4f04-a4bb-19f397550ffe',
+    '22_clarification_questions_close_next_week': '119dde9a-1e44-4b1d-9224-2f7020a74f9f',
+    '23_clarification_questions_close_today': '1464000b-1027-4fa5-97fe-7280ab9daf1d',
+    '24_clarification_questions_closed': '8f98a25f-0a9e-4a96-9034-2ffc6b91cedc',
+    '26_applications_close_soon': 'efec07be-a914-4b50-b452-48563888930e',
+    '27_applications_close_today': '441142fb-adaf-4510-b1f4-e3f918993881',
+    '40_standstill_starts_today': '8c5b822a-844c-4376-8a76-4bb3706a5e35',
+    '42_standstill_has_ended': '395253ed-1ab6-424e-b032-1f197d9271e7',
+  }
+%}
 {% set default_framework_slug = 'g-cloud-12' %}
 ---
 {% for environment in environments %}
@@ -20,17 +31,9 @@
           description: "Framework to send notifications about, e.g. 'g-cloud-12'."
       - choice:
           name: EMAIL_TYPE
-          default: '21_new_clarification_questions_answers:ed9944eb-112e-4f04-a4bb-19f397550ffe'
-          choices: [
-            '21_new_clarification_questions_answers:ed9944eb-112e-4f04-a4bb-19f397550ffe',
-            '22_clarification_questions_close_next_week:119dde9a-1e44-4b1d-9224-2f7020a74f9f',
-            '23_clarification_questions_close_today:1464000b-1027-4fa5-97fe-7280ab9daf1d',
-            '24_clarification_questions_closed:8f98a25f-0a9e-4a96-9034-2ffc6b91cedc',
-            '26_applications_close_soon:efec07be-a914-4b50-b452-48563888930e',
-            '27_applications_close_today:441142fb-adaf-4510-b1f4-e3f918993881',
-            '40_standstill_starts_today:8c5b822a-844c-4376-8a76-4bb3706a5e35',
-            '42_standstill_has_ended:395253ed-1ab6-424e-b032-1f197d9271e7',
-          ]
+          default: '21_new_clarification_questions_answers'
+          choices:
+            {{ notify_template_map.keys() | list | to_nice_yaml | trim | indent(12) }}
           description: "Type of email to send e.g. 'New clarification questions and answers have been published'"
       - bool:
           name: DRY_RUN
@@ -51,7 +54,7 @@
               USERNAME=framework-application-event-email
               JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event - {{ environment }}
               ICON=:frame_with_picture:
-              PROJECT=${NOTIFY_TEMPLATE_NAME}
+              PROJECT=${EMAIL_TYPE}
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -62,7 +65,7 @@
               USERNAME=framework-application-event-email
               JOB=Notify suppliers of new ${FRAMEWORK_SLUG} framework event - {{ environment }}
               ICON=:time:
-              PROJECT=${NOTIFY_TEMPLATE_NAME}
+              PROJECT=${EMAIL_TYPE}
               STAGE={{ environment }}
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
@@ -77,8 +80,8 @@
             FLAGS="$FLAGS --dry-run"
           fi
 
-          NOTIFY_TEMPLATE_NAME="$(echo $EMAIL_TYPE | cut -d ':' -f 1 -)"
-          NOTIFY_TEMPLATE_ID="$(echo $EMAIL_TYPE | cut -d ':' -f 2 -)"
+          NOTIFY_TEMPLATE_MAP='{{ notify_template_map | to_json }}'
+          NOTIFY_TEMPLATE_ID="$(echo $NOTIFY_TEMPLATE_MAP | jq '.[env.EMAIL_TYPE]')"
 
           docker run -e \
             "DM_DATA_API_TOKEN_{{ environment|upper }}" \
