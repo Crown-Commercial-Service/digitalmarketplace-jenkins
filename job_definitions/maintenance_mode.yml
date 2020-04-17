@@ -4,7 +4,11 @@
     name: maintenance-mode
     display-name: "Toggle maintenance mode"
     project-type: pipeline
-    description: Enable or disable maintenance mode on the Digital Marketplace
+    description: |
+      Enable or disable maintenance mode on the Digital Marketplace router.
+      Use 'maintenance' mode to block access to APIs and Frontend apps.
+      Use 'recovery' mode to allow access to the APIs but block Frontend apps.
+      Use 'live' mode to allow access to both APIs and Frontend apps.
     concurrent: false
     parameters:
       - choice:
@@ -18,6 +22,7 @@
           choices:
             - maintenance
             - live
+            - recovery
 
     dsl: |
       def notify_slack(icon, status) {
@@ -37,12 +42,7 @@
         currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${MODE}"
         node {
           try {
-            if ("${MODE}" == "maintenance") {
-              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "on" "${STAGE}"')
-            } else {
-              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "off" "${STAGE}"')
-            }
-
+            sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "${MODE}" "${STAGE}"')
           } catch(e) {
             currentBuild.result = 'ABORTED'
             error('Stopping early - possibly no change in maintenance mode, or script failed.')
