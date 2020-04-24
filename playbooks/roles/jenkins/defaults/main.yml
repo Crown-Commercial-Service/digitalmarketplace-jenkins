@@ -113,8 +113,6 @@ jenkins_list_views:
       - data-retention-preview
       - data-retention-staging
       - data-retention-production
-      - export-data-preview
-      - export-data-production
       - export-dos-opportunities-preview
       - export-dos-opportunities-production
       - export-supplier-csv-preview
