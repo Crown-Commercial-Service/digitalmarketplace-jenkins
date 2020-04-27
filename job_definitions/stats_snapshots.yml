@@ -65,10 +65,6 @@
     project-type: pipeline
     triggers:
       - timed: "H 23 * * *"
-    properties:
-      - build-discarder:
-          days-to-keep: 20
-          artifact-days-to-keep: 20
     description: |
       <p>Daily export of application statistics to Google Drive. Also logs to audit event.</p>
     dsl: |
