@@ -133,15 +133,6 @@ The Jenkins server captures the following logs:
 The log files are sent to CloudWatch for long term storage. See PR [PR #173](https://github.com/alphagov/digitalmarketplace-jenkins/pull/173)
 and the `awslogs-config` section in `playbooks/jenkins_playbook.yml` for more details.
 
-## Backups
-
-In August 2018 our original Jenkins server, which had been running since 2015, was replaced with a new Jenkins server.
-The new server is completely managed by Terraform and Ansible. Before being terminated an AMI was created of the old
-server which captured it's setup and both it's volumes. That AMI is stored in the main AWS account, and has AMI ID:
-"ami-0042214035374c7b2" and AMI Name: "Jenkins - 2015 to August 2018". If needed the old server can be completely
-recreated from this image. WARNING! Jobs may start running as soon as the AMI is started as an instance. To prevent any
-unintended actions, it may be a good idea to assign the new image a security group with no egress.
-
 ## Licence
 
 Unless stated otherwise, the codebase is released under [the MIT License][mit].
