@@ -2,7 +2,7 @@
 
 An Ansible project to manage the Digital Marketplace [Jenkins instance](https://ci.marketplace.team/).
 
-We use [Jenkins job builder]((https://jenkins-job-builder.readthedocs.org/en/latest/index.html)) for managing jobs.
+We use [Jenkins job builder](https://jenkins-job-builder.readthedocs.org/en/latest/index.html) for managing jobs.
 
 The infrastructure that Jenkins runs on is now managed via our Terraform code, found in the [digitalmarketplace-aws
 repo](https://github.com/alphagov/digitalmarketplace-aws/tree/master/terraform/modules/jenkins).
