@@ -5,3 +5,9 @@ credential_source=Ec2InstanceMetadata
 region={{role.profile.region}}
 role_arn={{role.profile.role_arn}}
 {% endfor %}
+{% for role in aws_infrastructure_roles %}
+
+[profile {{role.profile.name}}]
+credential_source=Ec2InstanceMetadata
+role_arn={{role.profile.role_arn}}
+{% endfor %}

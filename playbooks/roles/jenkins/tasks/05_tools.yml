@@ -56,6 +56,7 @@
   become_user: jenkins
   vars:
     assume_cloudtrail_roles: "{{ cloudtrail_validate_logs_roles }}"
+    assume_infrastructure_roles: "{{ aws_infrastructure_roles }}"
 
 - name: Install rbenv
   git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
