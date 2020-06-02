@@ -1,0 +1,74 @@
+{% for environment in ['preview', 'production'] %}
+- job:
+    name: "publish-draft-services-{{ environment }}"
+    display-name: "Publish draft services - {{ environment }}"
+    project-type: freestyle
+    disabled: true
+    description: |
+      This job runs the publish-draft-services script, for a 'pending' or 'standstill' framework.
+
+      For each draft service submitted by a successful supplier, a new 'live' service object is created via the API.
+      The draft service is updated with the new service ID. For G-Cloud only, any documents associated with the service
+      are then copied to a public S3 bucket.
+
+      Warning: this job takes approximately 10 hours to run for a G-Cloud framework with 36,000 draft services.
+
+    parameters:
+      - string:
+          name: FRAMEWORK_SLUG
+          description: "The framework slug to publish services for, e.g. 'g-cloud-11'."
+      - string:
+          name: AWS_PROFILE
+          default: "{% if environment == 'production' %}production{% else %}development{% endif %}"
+          description: "AWS profile to copy documents as"
+      - bool:
+          name: SKIP_DOCS_IF_PUBLISHED
+          default: false
+          description: "Don't copy documents if the draft service has already been published."
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "Dry run - do not set values in the database or copy documents"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=publish-draft-services
+              JOB=Publish draft services {{ environment }}
+              ICON=:heavy_multiplication_x:
+              STAGE={{ environment }}
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-release
+          - project: notify-slack
+            condition: SUCCESS
+            predefined-parameters: |
+              USERNAME=publish-draft-services
+              JOB=Publish draft services {{ environment }}
+              ICON=:heavy_check_mark:
+              STAGE={{ environment }}
+              STATUS=SUCCESS
+              URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
+              CHANNEL=#dm-release
+    builders:
+      - shell: |
+          if [ "$DRY_RUN" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+          if [ "SKIP_DOCS_IF_PUBLISHED" = "true" ]; then
+            FLAGS="$FLAGS --skip-docs-if-published"
+          fi
+
+          docker run \
+            -v $HOME/.aws:/root/.aws \
+            -e DM_DATA_API_TOKEN_{{ environment|upper }} \
+            -e AWS_PROFILE="${AWS_PROFILE}-infrastructure" \
+            digitalmarketplace/scripts \
+            scripts/framework-applications/publish-draft-services.py \
+            "${FRAMEWORK_SLUG}" \
+            '{{ environment }}' \
+            "digitalmarketplace-submissions-{{ environment }}-{{ environment }}" \
+            "digitalmarketplace-documents-{{ environment }}-{{ environment }}" \
+            $FLAGS
+{% endfor %}
