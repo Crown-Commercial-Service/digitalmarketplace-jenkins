@@ -11,7 +11,11 @@
       The draft service is updated with the new service ID. For G-Cloud only, any documents associated with the service
       are then copied to a public S3 bucket.
 
-      Warning: this job takes approximately 10 hours to run for a G-Cloud framework with 36,000 draft services.
+      For Digital Outcomes and Specialists frameworks, the script publishes services but there are no documents to copy.
+      The script still accepts the S3 bucket arguments, but does not use them for DOS frameworks.
+
+      Warning: this job will takes several hours to run for a G-Cloud framework, depending on the number of services.
+      Recommend allowing at least 4 hours for this job to complete for a framework with ~36,000 services.
 
     parameters:
       - string:
@@ -20,11 +24,11 @@
       - string:
           name: AWS_PROFILE
           default: "{% if environment == 'production' %}production{% else %}development{% endif %}"
-          description: "AWS profile to copy documents as"
+          description: "AWS profile to copy documents as. Only used for G-Cloud frameworks."
       - bool:
           name: SKIP_DOCS_IF_PUBLISHED
           default: false
-          description: "Don't copy documents if the draft service has already been published."
+          description: "Don't copy documents if the draft service has already been published. Only used for G-Cloud frameworks."
       - bool:
           name: DRY_RUN
           default: false
