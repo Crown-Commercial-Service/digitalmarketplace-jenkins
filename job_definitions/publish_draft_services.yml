@@ -21,10 +21,17 @@
       - string:
           name: FRAMEWORK_SLUG
           description: "The framework slug to publish services for, e.g. 'g-cloud-11'."
-      - string:
+      - choice:
           name: AWS_PROFILE
-          default: "{% if environment == 'production' %}production{% else %}development{% endif %}"
-          description: "AWS profile to copy documents as. Only used for G-Cloud frameworks."
+          choices:
+{% if environment == 'production' %}
+            - production
+            - development
+{% else %}
+            - development
+            - production
+{% endif %}
+          description: "AWS profile to copy documents as. Only used for G-Cloud frameworks - either value can be entered for DOS frameworks."
       - bool:
           name: SKIP_DOCS_IF_PUBLISHED
           default: false
