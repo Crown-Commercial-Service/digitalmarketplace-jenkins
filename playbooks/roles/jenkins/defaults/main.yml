@@ -166,7 +166,6 @@ jenkins_list_views:
       - docker script runner
       - maintenance-mode
       - notify-slack
-      - publish-manual
       - publish-toolkit-documentation
       - rerelease-all-apps
       - tag-application-deloyment
