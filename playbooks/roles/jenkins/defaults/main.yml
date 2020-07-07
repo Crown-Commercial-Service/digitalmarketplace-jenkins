@@ -206,7 +206,6 @@ jenkins_list_views:
       - mark-definite-framework-results-preview
       - mark-definite-framework-results-production
       - notify-suppliers-whether-application-made-for-framework-production
-      - notify-suppliers-of-framework-clarification-questions-answers-production
       - notify-suppliers-of-framework-application-event-production
       - notify-suppliers-with-incomplete-applications-production
       - scan-g-cloud-services-for-bad-words
