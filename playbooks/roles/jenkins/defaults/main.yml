@@ -203,7 +203,6 @@ jenkins_list_views:
   - name: "Framework lifecycle jobs"
     jobs:
       - generate-upload-and-notify-counterpart-signature-pages-production
-      - mark-definite-framework-results-preview
       - mark-definite-framework-results-production
       - notify-suppliers-whether-application-made-for-framework-production
       - notify-suppliers-of-framework-application-event-production
