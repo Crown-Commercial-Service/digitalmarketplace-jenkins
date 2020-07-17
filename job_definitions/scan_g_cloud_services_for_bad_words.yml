@@ -5,7 +5,11 @@
     name: "scan-g-cloud-services-for-bad-words-{{ environment }}"
     display-name: "Scan G-Cloud services for bad words - {{ environment }}"
     project-type: pipeline
-    description: "Scans G-Cloud services for bad words contained in a list in our bad words repo."
+    description: |
+      Scans G-Cloud services for bad words contained in a list in our bad words repo.
+      Select 'draft' Service Type to scan draft services. Only suppliers marked as 'onFramework' in the DB will have
+      their services scanned, so make sure the 'mark-definite-framework-results' script has been run before scanning
+      drafts.
     parameters:
       - string:
           name: FRAMEWORK
