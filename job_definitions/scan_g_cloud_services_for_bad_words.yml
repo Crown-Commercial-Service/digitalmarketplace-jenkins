@@ -10,6 +10,11 @@
       - string:
           name: FRAMEWORK
           description: "Slug of framework to scan for bad words"
+      - choice:
+          name: SERVICE_TYPE
+          choices:
+            - 'live'
+            - 'draft'
     dsl: |
       def notify_slack(status) {
         build job: "notify-slack",
@@ -41,6 +46,10 @@
           }
           stage('Run bad words script') {
             sh('''
+              if [ "$SERVICE_TYPE" = "draft" ]; then
+                FLAGS="--scan-drafts"
+              fi
+
               docker run \
                 -e DM_DATA_API_TOKEN_{{ environment|upper }} \
                 --volume \$(pwd)/data:/app/data digitalmarketplace/scripts \
@@ -49,7 +58,8 @@
                 /app/data/digitalmarketplace-frameworks \
                 /app/data/digitalmarketplace-bad-words/blacklist.txt \
                 $FRAMEWORK \
-                /app/data
+                /app/data \
+                $FLAGS
             ''')
           }
           stage('Publish report') {
