@@ -207,6 +207,7 @@ jenkins_list_views:
       - notify-suppliers-whether-application-made-for-framework-production
       - notify-suppliers-of-framework-application-event-production
       - notify-suppliers-with-incomplete-applications-production
+      - publish-draft-services-production
       - scan-g-cloud-services-for-bad-words-production
       - hourly-stats-snapshot-g-cloud-12-production
       - daily-stats-snapshot-g-cloud-12-production
