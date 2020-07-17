@@ -147,7 +147,7 @@ jenkins_list_views:
       - functional-tests-staging
       - visual-regression-preview
       - visual-regression-staging
-  - name: "Emails"
+  - name: "DOS Emails"
     jobs:
       - notify-buyers-to-award-closed-briefs-4-weeks-production
       - notify-buyers-to-award-closed-briefs-8-weeks-production
