@@ -147,7 +147,7 @@ jenkins_list_views:
       - functional-tests-staging
       - visual-regression-preview
       - visual-regression-staging
-  - name: "Emails"
+  - name: "DOS Emails"
     jobs:
       - notify-buyers-to-award-closed-briefs-4-weeks-production
       - notify-buyers-to-award-closed-briefs-8-weeks-production
@@ -203,15 +203,14 @@ jenkins_list_views:
   - name: "Framework lifecycle jobs"
     jobs:
       - generate-upload-and-notify-counterpart-signature-pages-production
-      - mark-definite-framework-results-preview
       - mark-definite-framework-results-production
       - notify-suppliers-whether-application-made-for-framework-production
       - notify-suppliers-of-framework-application-event-production
       - notify-suppliers-with-incomplete-applications-production
-      - scan-g-cloud-services-for-bad-words
-      - stats-performance-platform-digital-outcomes-and-specialists-4-per-hour-production
-      - stats-performance-platform-digital-outcomes-and-specialists-4-per-day-production
-      - stats-snapshot-g-cloud-12-production
+      - publish-draft-services-production
+      - scan-g-cloud-services-for-bad-words-production
+      - hourly-stats-snapshot-g-cloud-12-production
+      - daily-stats-snapshot-g-cloud-12-production
   - name: "Code backups"
     jobs:
       - backup-digitalmarketplace-admin-frontend
