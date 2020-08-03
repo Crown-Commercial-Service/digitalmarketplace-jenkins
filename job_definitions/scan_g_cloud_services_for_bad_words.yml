@@ -60,7 +60,7 @@
                 ./scripts/framework-applications/scan-g-cloud-services-for-bad-words.py \
                 "{{ environment }}" \
                 /app/data/digitalmarketplace-frameworks \
-                /app/data/digitalmarketplace-bad-words/blacklist.txt \
+                /app/data/digitalmarketplace-bad-words/block-list.txt \
                 $FRAMEWORK \
                 /app/data \
                 $FLAGS
