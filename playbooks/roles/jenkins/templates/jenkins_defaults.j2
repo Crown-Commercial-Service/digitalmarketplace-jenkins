@@ -11,7 +11,7 @@ JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 JAVA_ARGS="-Djava.awt.headless=true -Dfile.encoding=UTF8 -Xmx4096m -XX:MaxPermSize=1024m"  # Allow graphs etc. to work even when an X server is present
 
 # Allow JS and CSS on HTML Publisher pages
-JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-scripts; default-src 'self' 'unsafe-inline' 'unsafe-eval' data:;\""
+JAVA_ARGS="${JAVA_ARGS} -Dhudson.model.DirectoryBrowserSupport.CSP=\"sandbox allow-same-origin allow-scripts; default-src 'self' 'unsafe-inline' 'unsafe-eval' data:;\""
 
 # After upgrading to Jenkins v2.3 we are seeing the error described here: https://issues.jenkins-ci.org/browse/JENKINS-34775
 # A comment on that page suggests that setting this property to false should be a temporary work-around to avoid getting the error
