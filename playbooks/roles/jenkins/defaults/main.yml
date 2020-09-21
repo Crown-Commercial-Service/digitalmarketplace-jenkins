@@ -60,6 +60,7 @@ jenkins_plugins:
   - audit-trail
   - build-monitor-plugin
   - build-name-setter
+  - build-user-vars-plugin
   - conditional-buildstep
   - cvs
   - extended-choice-parameter
