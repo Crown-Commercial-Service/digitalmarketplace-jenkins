@@ -44,11 +44,21 @@
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
               CHANNEL=#dm-release
+    wrappers:
+      - build-user-vars
     builders:
       - shell: |
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/framework-applications/mark-definite-framework-results.py '{{ environment }}' "${FRAMEWORK_SLUG}" "${PASS_SCHEMA}" $FLAGS
+          docker run \
+            -e DM_DATA_API_TOKEN_{{ environment|upper }} \
+            digitalmarketplace/scripts \
+              scripts/framework-applications/mark-definite-framework-results.py \
+                '{{ environment }}' \
+                "${FRAMEWORK_SLUG}" \
+                "${PASS_SCHEMA}" \
+                --updated-by="${BUILD_TAG} started by ${BUILD_USER}" \
+                $FLAGS
 {% endfor %}
