@@ -4,6 +4,7 @@
   ('DOS3', 'digital-outcomes-and-specialists-3', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', False),
   ('G10', 'g-cloud-11', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', False),
   ('G11', 'g-cloud-11', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', True),
+  ('G12', 'g-cloud-12', '5ccee27f-b7b2-4024-a57e-7c98d1f85e27', True),
 ]%}
 ---
 - job:
