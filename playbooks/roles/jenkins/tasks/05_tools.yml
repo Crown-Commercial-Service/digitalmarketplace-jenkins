@@ -4,6 +4,10 @@
   notify:
     - restart jenkins
 
+- name: Accept Microsoft core fonts EULA
+  tags: [apt]
+  shell: 'echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections'
+
 - name: Install tools
   tags: [apt]
   apt:
@@ -19,10 +23,15 @@
     update_cache: yes
     state: present
     name:
-      - wkhtmltopdf=0.12.*
       - jq=1.5+dfsg-*
       - nodejs=8.*
       - libssl1.0-dev
+
+- name: Install wkhtmltopdf with patched qt
+  tags: [apt]
+  apt:
+    deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+    state: present
 
 - name: Update Python 3 pip
   pip:
