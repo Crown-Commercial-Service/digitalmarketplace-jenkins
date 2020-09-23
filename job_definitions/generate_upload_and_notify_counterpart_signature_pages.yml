@@ -64,12 +64,15 @@
             stage('Generate') {
               dir('digitalmarketplace-scripts') {
                 sh('''
+                  [ "$DRY_RUN" = "true" ] && FLAGS="$FLAGS --dry-run"
+                  
                   xvfb-run -a --server-args="-screen 0, 1024x768x24" \
                     venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
                       "$ENVIRONMENT" \
                       "$FRAMEWORK" \
                       ../digitalmarketplace-agreements \
-                      ../data/generated-countersignature-pdfs
+                      ../data/generated-countersignature-pdfs \
+                      $FLAGS \
                 ''')
               }
             }
