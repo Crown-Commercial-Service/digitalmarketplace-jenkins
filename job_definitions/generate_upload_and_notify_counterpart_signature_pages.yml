@@ -1,9 +1,10 @@
-{# frameworks = (acronym, framework_slug, enabled?) #}
+{# frameworks = (acronym, framework_slug, template_id, enabled?) #}
 {% set frameworks = [
-  ('DOS4', 'digital-outcomes-and-specialists-4', True),
-  ('DOS3', 'digital-outcomes-and-specialists-3', False),
-  ('G10', 'g-cloud-11', False),
-  ('G11', 'g-cloud-11', True),
+  ('DOS4', 'digital-outcomes-and-specialists-4', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', True),
+  ('DOS3', 'digital-outcomes-and-specialists-3', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', False),
+  ('G10', 'g-cloud-11', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', False),
+  ('G11', 'g-cloud-11', 'cdd836a0-02e2-4c8d-98a6-2544d63f5ea9', True),
+  ('G12', 'g-cloud-12', '5ccee27f-b7b2-4024-a57e-7c98d1f85e27', True),
 ]%}
 ---
 - job:
@@ -32,6 +33,8 @@
             - production
       - string:
           name: FRAMEWORK
+      - string:
+          name: NOTIFY_TEMPLATE_ID
       - bool:
           name: DRY_RUN
           default: false
@@ -86,7 +89,7 @@
                   ../data/generated-countersignature-pdfs \
                   "$FRAMEWORK" \
                   --notify-key="$NOTIFY_API_TOKEN" \
-                  --notify-template-id=cdd836a0-02e2-4c8d-98a6-2544d63f5ea9 \
+                  --notify-template-id="$NOTIFY_TEMPLATE_ID" \
                   $FLAGS \
                 ''')
               }
@@ -133,12 +136,13 @@
           artifact-days-to-keep: 7
     dsl: |
 
-{% for acronym, framework_slug, enabled in frameworks if enabled %}
+{% for acronym, framework_slug, template_id, enabled in frameworks if enabled %}
       stage('{{acronym}}') {
         build job: 'generate-upload-and-notify-counterpart-signature-pages',
         parameters: [
           string(name: 'ENVIRONMENT', value: 'production'),
           string(name: 'FRAMEWORK', value: '{{ framework_slug }}'),
+          string(name: 'NOTIFY_TEMPLATE_ID', value: '{{ template_id }}'),
         ]
       }
 {% endfor %}
