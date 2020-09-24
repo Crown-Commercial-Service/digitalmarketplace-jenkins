@@ -67,7 +67,7 @@
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
-          if [ "SKIP_DOCS_IF_PUBLISHED" = "true" ]; then
+          if [ "$SKIP_DOCS_IF_PUBLISHED" = "true" ]; then
             FLAGS="$FLAGS --skip-docs-if-published"
           fi
 
