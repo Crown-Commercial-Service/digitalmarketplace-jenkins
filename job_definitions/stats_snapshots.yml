@@ -1,6 +1,5 @@
 {# frameworks = (framework_slug, drive_folder, enabled?) #}
 
-{#    ('digital-outcomes-and-specialists-5', '1KqVLn0yHBt3Sd7BJrNwo1mw7C31HCpPB', False),    #}
 {#    ('digital-outcomes-and-specialists-6', '1QSiKocZbuQeGXqeIKMoNDK4RvvFeNtnb', False),    #}
 {#    ('digital-outcomes-and-specialists-7', '1PZQp2c_3O3fe82POThq6Gea6AHD1L2b0', False),    #}
 {#    ('digital-outcomes-and-specialists-8', '19C-pOTvBh8ki9LOeWBf3AUm_DDVkzqUR', False),    #}
@@ -11,7 +10,8 @@
 {#    ('g-cloud-16', '1fWI3LrnPU1cHVYo_83KWfgND-lng2ztM', False)    #}
 
 {% set frameworks = (
-    ('g-cloud-12', '1LVGqBCRhjpl2OrKaUouh8rEiV3dpBep_', True),
+    ('g-cloud-12', '1LVGqBCRhjpl2OrKaUouh8rEiV3dpBep_', False),
+    ('digital-outcomes-and-specialists-5', '1KqVLn0yHBt3Sd7BJrNwo1mw7C31HCpPB', True),
 ) %}
 
 {% set environments = ['production'] %}
