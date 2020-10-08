@@ -213,6 +213,8 @@ jenkins_list_views:
       - scan-g-cloud-services-for-bad-words-production
       - hourly-stats-snapshot-g-cloud-12-production
       - daily-stats-snapshot-g-cloud-12-production
+      - hourly-stats-snapshot-digital-outcomes-and-specialists-5-production
+      - daily-stats-snapshot-digital-outcomes-and-specialists-5-production
   - name: "Code backups"
     jobs:
       - backup-digitalmarketplace-admin-frontend
