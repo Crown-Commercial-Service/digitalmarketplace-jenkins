@@ -71,7 +71,7 @@ $ open /Applications/Python\ 3.6/Install\ Certificates.command
 
 ## SSH access to Jenkins
 
-You need a private key file, a username (always 'ubuntu'), and the hostname.
+You need a private key file, a username (always 'ubuntu'), and the hostname. You need to be connected to the VPN or corporate network.
 
 ```bash
 ssh -i [path/to/identity/file] {username}@{hostname}
