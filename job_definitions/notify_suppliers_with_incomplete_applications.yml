@@ -1,5 +1,5 @@
 {% set environments = ['preview', 'production'] %}
-{% set default_framework_slug = 'g-cloud-12' %}
+{% set default_framework_slug = 'digital-outcomes-and-specialists-5' %}
 ---
 {% for environment in environments %}
 - job:
