@@ -8,7 +8,7 @@
     '42_standstill_has_ended': '395253ed-1ab6-424e-b032-1f197d9271e7',
   }
 %}
-{% set default_framework_slug = 'g-cloud-12' %}
+{% set default_framework_slug = 'digital-outcomes-and-specialists-5' %}
 ---
 {% for environment in environments %}
 - job:
