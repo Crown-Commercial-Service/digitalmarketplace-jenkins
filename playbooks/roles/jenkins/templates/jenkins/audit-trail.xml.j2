@@ -1,6 +1,6 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <hudson.plugins.audit__trail.AuditTrailPlugin plugin="audit-trail@2.3">
-  <pattern>.*/(?:configure|configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)</pattern>
+  <pattern>.*/(?:configure|configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*</pattern>
   <logBuildCause>true</logBuildCause>
   <loggers>
     <hudson.plugins.audit__trail.LogFileAuditLogger>
