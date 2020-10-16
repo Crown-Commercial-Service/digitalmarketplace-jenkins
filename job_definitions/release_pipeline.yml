@@ -149,7 +149,7 @@
 
           tag_release(releaseName)
 
-          echo "Release number: ${releaseHash}"
+          echo "Release git hash: ${releaseHash}"
           currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
         }
       }
