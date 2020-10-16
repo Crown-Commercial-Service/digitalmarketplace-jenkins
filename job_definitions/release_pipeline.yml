@@ -136,20 +136,20 @@
         node {
           git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
               branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-          releaseNumber = sh(
-              script: "git log -1 --pretty=%B | grep 'Merge pull request' | cut -d ' ' -f 4 | tr -cd '[[:digit:]]'",
+          releaseHash = sh(
+              script: "git rev-parse --short HEAD",
               returnStdout: true
           ).trim()
 
-          if (releaseNumber == "") {
-              throw new Exception('Release number can not be found')
+          if (releaseHash == "") {
+              throw new Exception('Release hash can not be found')
           }
 
-          releaseName = "release-${releaseNumber}"
+          releaseName = "release-${releaseHash}"
 
           tag_release(releaseName)
 
-          echo "Release number: ${releaseNumber}"
+          echo "Release git hash: ${releaseHash}"
           currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
         }
       }
