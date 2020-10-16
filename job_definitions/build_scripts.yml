@@ -23,16 +23,16 @@
           node {
             git url: "git@github.com:alphagov/digitalmarketplace-scripts.git",
                 branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
-            releaseNumber = sh(
+            releaseHash = sh(
                 script: "git rev-parse --short HEAD",
                 returnStdout: true
             ).trim()
-            if (releaseNumber == "") {
-                throw new Exception('Release number can not be found')
+            if (releaseHash == "") {
+                throw new Exception('Release hash can not be found')
             }
-            releaseName = "release-${releaseNumber}"
+            releaseName = "release-${releaseHash}"
             tag_release(releaseName)
-            echo "Release number: ${releaseNumber}"
+            echo "Release number: ${releaseHash}"
             currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
           }
         }
