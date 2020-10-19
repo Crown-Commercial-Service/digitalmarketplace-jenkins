@@ -55,31 +55,6 @@
       <filterQueue>false</filterQueue>
       <properties class="hudson.model.View$PropertyList"/>
     </hudson.model.AllView>
-{% for view in jenkins_list_views %}
-    <listView>
-      <owner class="hudson" reference="../../.."/>
-      <name>{{ view.name }}</name>
-      <filterExecutors>false</filterExecutors>
-      <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View$PropertyList"/>
-      <jobNames>
-        <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        {% for job in view.jobs|sort %}
-        <string>{{ job }}</string>
-        {% endfor %}
-      </jobNames>
-      <columns>
-        <hudson.views.StatusColumn/>
-        <hudson.views.WeatherColumn/>
-        <hudson.views.JobColumn/>
-        <hudson.views.LastSuccessColumn/>
-        <hudson.views.LastFailureColumn/>
-        <hudson.views.LastDurationColumn/>
-        <hudson.views.BuildButtonColumn/>
-      </columns>
-      <recurse>false</recurse>
-    </listView>
-{% endfor %}
     <com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView plugin="build-monitor-plugin@1.6+build.159">
       <owner class="hudson" reference="../../.."/>
       <name>Build Monitor</name>
