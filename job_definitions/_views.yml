@@ -1,0 +1,176 @@
+- list_view_defaults: &list_view
+    name: 'list_view_defaults'  # JJB complains if name isn't present
+    view-type: list
+    columns: &view_columns_default
+      - status
+      - weather
+      - job
+      - last-success
+      - last-failure
+      - last-duration
+      - build-button
+
+- view:
+    name: "Code backups"
+    <<: *list_view
+    job-name:
+      - backup-digitalmarketplace-admin-frontend
+      - backup-digitalmarketplace-agreements
+      - backup-digitalmarketplace-antivirus-api
+      - backup-digitalmarketplace-api
+      - backup-digitalmarketplace-apiclient
+      - backup-digitalmarketplace-aws
+      - backup-digitalmarketplace-bad-words
+      - backup-digitalmarketplace-brief-responses-frontend
+      - backup-digitalmarketplace-briefs-frontend
+      - backup-digitalmarketplace-buyer-frontend
+      - backup-digitalmarketplace-content-loader
+      - backup-digitalmarketplace-credentials
+      - backup-digitalmarketplace-docker-base
+      - backup-digitalmarketplace-frameworks
+      - backup-digitalmarketplace-frontend-toolkit
+      - backup-digitalmarketplace-functional-tests
+      - backup-digitalmarketplace-govuk-frontend
+      - backup-digitalmarketplace-jenkins
+      - backup-digitalmarketplace-maintenance
+      - backup-digitalmarketplace-manual
+      - backup-digitalmarketplace-performance-testing
+      - backup-digitalmarketplace-router
+      - backup-digitalmarketplace-runner
+      - backup-digitalmarketplace-scripts
+      - backup-digitalmarketplace-search-api
+      - backup-digitalmarketplace-supplier-frontend
+      - backup-digitalmarketplace-test-utils
+      - backup-digitalmarketplace-user-frontend
+      - backup-digitalmarketplace-utils
+      - backup-digitalmarketplace-visual-regression
+
+- view:
+    name: "DOS Emails"
+    <<: *list_view
+    job-name:
+      - notify-buyers-to-award-closed-briefs-4-weeks-production
+      - notify-buyers-to-award-closed-briefs-8-weeks-production
+      - notify-buyers-when-requirements-close-production
+      - notify-suppliers-of-awarded-briefs-production
+      - notify-suppliers-of-dos-opportunities-production
+      - notify-suppliers-of-new-questions-answers-production
+      - notify-suppliers-of-brief-withdrawals-production
+      - upload-dos4-opportunities-email-list-production
+
+- view:
+    name: "Data"
+    <<: *list_view
+    job-name:
+      - clean-and-apply-db-dump-s3
+      - clean-and-apply-db-dump-preview
+      - clean-and-apply-db-dump-staging
+      - database-backup
+      - data-retention-preview
+      - data-retention-staging
+      - data-retention-production
+      - export-dos-opportunities-preview
+      - export-dos-opportunities-production
+      - export-supplier-csv-preview
+      - export-supplier-csv-staging
+      - export-supplier-csv-production
+
+- view:
+    name: "ES indexes"
+    <<: *list_view
+    job-name:
+      - create-index-preview
+      - create-index-staging
+      - create-index-production
+      - update-index-preview
+      - update-index-staging
+      - update-index-production
+      - update-index-alias-preview
+      - update-index-alias-staging
+      - update-index-alias-production
+      - update-briefs-index-preview
+      - update-briefs-index-staging
+      - update-briefs-index-production
+      - update-services-index-preview
+      - update-services-index-staging
+      - update-services-index-production
+
+- view:
+    name: "Framework lifecycle jobs"
+    <<: *list_view
+    job-name:
+      - generate-upload-and-notify-counterpart-signature-pages-production
+      - mark-definite-framework-results-production
+      - notify-suppliers-whether-application-made-for-framework-production
+      - notify-suppliers-of-framework-application-event-production
+      - notify-suppliers-with-incomplete-applications-production
+      - publish-draft-services-production
+      - scan-g-cloud-services-for-bad-words-production
+      - hourly-stats-snapshot-g-cloud-12-production
+      - daily-stats-snapshot-g-cloud-12-production
+      - hourly-stats-snapshot-digital-outcomes-and-specialists-5-production
+      - daily-stats-snapshot-digital-outcomes-and-specialists-5-production
+
+- view:
+    name: "Functional, visual, and smoke tests"
+    <<: *list_view
+    job-name:
+      - apps-are-up-preview
+      - apps-are-up-staging
+      - apps-are-up-production
+      - apps-are-working-preview
+      - apps-are-working-staging
+      - apps-are-working-production
+      - functional-tests-preview
+      - functional-tests-staging
+      - visual-regression-preview
+      - visual-regression-staging
+
+- view:
+    name: "Release"
+    <<: *list_view
+    job-name:
+      - release-antivirus-api
+      - release-api
+      - release-admin-frontend
+      - release-briefs-frontend
+      - release-brief-responses-frontend
+      - release-buyer-frontend
+      - release-router
+      - release-search-api
+      - release-supplier-frontend
+      - release-user-frontend
+      - database-migration-paas
+      - release-app-paas
+
+- view:
+    name: "Utils and toolkit"
+    <<: *list_view
+    job-name:
+      - build-image
+      - build-scripts
+      - clean-docker-images
+      - docker-base-images
+      - docker script runner
+      - maintenance-mode
+      - notify-slack
+      - publish-toolkit-documentation
+      - rerelease-all-apps
+      - tag-application-deloyment
+      - tag-digitalmarketplace-govuk-frontend
+      - tag-dmapiclient
+      - tag-dmcontent-loader
+      - tag-dmutils
+      - tag-dmtest-utils
+      - tag-frameworks
+      - tag-toolkit
+      - update-credentials
+      - rotate-api-tokens
+      - rotate-production-notify-callback-token
+      - rotate-ft-account-passwords
+      - virus-scan-s3-buckets-preview
+      - virus-scan-s3-buckets-staging
+      - virus-scan-s3-buckets-production
+      - virus-scan-s3-buckets-nightly-preview
+      - virus-scan-s3-buckets-nightly-staging
+      - virus-scan-s3-buckets-nightly-production
