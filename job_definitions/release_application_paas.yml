@@ -65,8 +65,9 @@
                   echo "Current deployed version of ${APPLICATION_NAME}: ${RELEASE_NAME}"
                   currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${APPLICATION_NAME} - #${RELEASE_NAME}"
                 }
-
-                sh("make ${STAGE} deploy-app")
+                withEnv(paas_credentials.tokenize("\n")) {
+                  sh("make ${STAGE} deploy-app")
+                }
               }
             }
           }
