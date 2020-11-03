@@ -11,6 +11,6 @@
 
 - name: Install or update CloudFoundry package
   apt:
-    name: cf-cli=6.33.*
+    name: cf-cli=6.*
     state: present
     update_cache: yes
