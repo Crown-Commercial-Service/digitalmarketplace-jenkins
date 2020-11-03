@@ -17,6 +17,8 @@
     state: present
     update_cache: true
   register: jenkins_package_install
+  tags:
+    - upgrade_jenkins
 
 - name: Forced restart after first time package installation
   service: name=jenkins state=restarted
