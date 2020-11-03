@@ -13,8 +13,9 @@
 
 - name: Ensure Jenkins is installed.
   apt:
-    name=jenkins=2.*
-    state=present
+    name: jenkins=2.*
+    state: present
+    update_cache: true
   register: jenkins_package_install
 
 - name: Forced restart after first time package installation
