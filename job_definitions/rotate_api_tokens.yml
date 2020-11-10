@@ -17,7 +17,48 @@
     name: rotate-api-tokens
     display-name: "Rotate API tokens"
     project-type: pipeline
-    description: Rotate Data, Search and Antivirus API tokens for a given environment.
+    description: |
+      <p>Rotate Data, Search and Antivirus API tokens for a given environment.<p/>
+
+      <p>This pipeline requires a lot of user interaction to do its job:</p>
+
+      <ol>
+        <li>
+          <p>
+          Step(s) 'Deploy' requires you to approve and merge a PR that the job creates in
+          <a href="https://www.github.com/alphagov/digitalmarketplace-credentials/pulls">
+          digitalmarketplace-credentials
+          </a>.
+          </p>
+          <p>
+          You will need to checkout the changes locally to review them.
+          </p>
+        </li>
+        <li>
+          <p>
+          Step 'Update Jenkins Config' requires you to update the Jenkins config using
+          <a href="https://github.com/alphagov/digitalmarketplace-jenkins#other-commands">
+          digitalmarketplace-jenkins
+          </a>.
+          </p>
+
+          <p>
+          You must make sure you have checked out the latest version of
+          digitalmarketplace-credentials before doing this.
+          </p>
+        </li>
+      </ol>
+
+      <p>
+      Every point where user interaction is required Jenkins will prompt you
+      <em>twice</em> to make sure you have done it.
+      </p>
+
+      <p>
+      This means the pipeline will prompt you a lot. Just remember, if the
+      pipeline isn’t doing anything, that means it’s waiting for you!
+      </p>
+
     concurrent: false
     parameters:
       - choice:

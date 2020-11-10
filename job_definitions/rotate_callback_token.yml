@@ -8,7 +8,47 @@
     name: rotate-{{ environment }}-notify-callback-token
     display-name: "Rotate {{ environment }} Notify callback token"
     project-type: pipeline
-    description: Rotate the {{ environment }} Notify callback token.
+    description: |
+      <p>Rotate the {{ environment }} Notify callback token.</p>
+
+      <p>This pipeline requires a lot of user interaction to do its job:</p>
+
+      <ol>
+        <li>
+          <p>
+          Step(s) 'Checkpoint' requires you to approve and merge a PR that the job creates in
+          <a href="https://www.github.com/alphagov/digitalmarketplace-credentials/pulls">
+          digitalmarketplace-credentials
+          </a>.
+          </p>
+          <p>
+          You will need to checkout the changes locally to review them.
+          </p>
+        </li>
+        <li>
+          <p>
+          Step 'Update token in Notify' requires the new token to be configured in the
+          <a href="https://notifications.service.gov.uk/">Notify dashboard</a>.
+          <p>
+          <p>
+          Documentation on Notify callback tokens including where to update the callback token can be found at
+          <a href="https://docs.notifications.service.gov.uk/python.html#callbacks">
+          https://docs.notifications.service.gov.uk/python.html#callbacks
+          </a>.
+          </p>
+        </li>
+      </ol>
+
+      <p>
+      Every point where user interaction is required Jenkins will prompt you
+      <em>twice</em> to make sure you have done it.
+      </p>
+
+      <p>
+      This means the pipeline will prompt you a lot. Just remember, if the
+      pipeline isn’t doing anything, that means it’s waiting for you!
+      </p>
+
     concurrent: false
     dsl: |
       def notify_slack(icon, status) {
