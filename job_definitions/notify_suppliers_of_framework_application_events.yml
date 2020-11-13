@@ -16,7 +16,6 @@
     name: "notify-suppliers-of-framework-application-event-{{ environment }}"
     display-name: "Notify suppliers of new framework application event - {{ environment }}"
     project-type: freestyle
-    disabled: true
     description: |
       Send email notifications to interested supplier users about a framework application event.
       This job is triggered manually, e.g. after a framework manager admin has uploaded a new set of clarification PDFs.
