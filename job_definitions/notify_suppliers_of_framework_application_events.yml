@@ -4,7 +4,7 @@
     '22_clarification_questions_close_next_week': '119dde9a-1e44-4b1d-9224-2f7020a74f9f',
     '23_clarification_questions_close_today': '1464000b-1027-4fa5-97fe-7280ab9daf1d',
     '24_final_clarification_questions_answers': 'dac3b69b-5672-4c1d-957a-258da8423347',
-    '27_applications_close_today': '441142fb-adaf-4510-b1f4-e3f918993881',
+    '26_applications_close_soon': '441142fb-adaf-4510-b1f4-e3f918993881',
     '40_standstill_starts_today': '8c5b822a-844c-4376-8a76-4bb3706a5e35',
     '42_standstill_has_ended': '395253ed-1ab6-424e-b032-1f197d9271e7',
   }
@@ -16,7 +16,6 @@
     name: "notify-suppliers-of-framework-application-event-{{ environment }}"
     display-name: "Notify suppliers of new framework application event - {{ environment }}"
     project-type: freestyle
-    disabled: true
     description: |
       Send email notifications to interested supplier users about a framework application event.
       This job is triggered manually, e.g. after a framework manager admin has uploaded a new set of clarification PDFs.
