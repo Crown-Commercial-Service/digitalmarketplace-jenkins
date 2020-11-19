@@ -35,7 +35,7 @@
             (eg 'g-cloud-10' or 'digital-outcomes-and-specialists,digital-outcomes-and-specialists-2').
       - bool:
           name: SERIAL
-          default: true
+          default: false
           description: "Perform a non-parallel indexing. Turn this on for clearer debugging."
     publishers:
       - trigger-parameterized-builds:
