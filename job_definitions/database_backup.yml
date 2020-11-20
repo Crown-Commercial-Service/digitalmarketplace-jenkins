@@ -4,6 +4,7 @@
     project-type: pipeline
     description: Takes a dump of the database, compresses it, encrypts it and uploads to S3.
     concurrent: false
+    disabled: true
     triggers:
       - timed: "0 3 * * *"
     parameters:
