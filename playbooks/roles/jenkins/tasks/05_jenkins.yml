@@ -1,10 +1,10 @@
 ---
 
 - name: Add Jenkins apt repository key.
-  apt_key: url="http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key" state=present
+  apt_key: url="https://pkg.jenkins.io/debian-stable/jenkins.io.key" state=present
 
 - name: Add Jenkins apt repository.
-  apt_repository: repo="deb http://pkg.jenkins-ci.org/debian binary/"  state=present update_cache=yes
+  apt_repository: repo="deb https://pkg.jenkins.io/debian-stable binary/"  state=present update_cache=yes
 
 - name: Set Jenkins service boot config
   template: src=jenkins_defaults.j2
