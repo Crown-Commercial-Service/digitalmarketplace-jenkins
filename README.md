@@ -122,6 +122,10 @@ the `dm-ssp-jenkins` user. The Client ID and Client Secret must be stored in the
 *jenkins-vars/jenkins.yaml*, and must be stored as a nested dict under `jenkins_github_auth_by_hostname`. This allows
 us to maintain multiple Jenkins instances (if required). These credentials are deployed via the `config` task tag.
 
+## Creating a new Jenkins instance
+
+The process for creating a new instance is documented in [the team manual](https://alphagov.github.io/digitalmarketplace-manual/2nd-line-runbook/rebuilding-jenkins.html).
+
 ## Logging
 
 The Jenkins server captures the following logs:
