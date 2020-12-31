@@ -49,6 +49,11 @@
                 git url: 'git@github.com:alphagov/digitalmarketplace-agreements.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
               }
             }
+            stage('Clone frameworks') {
+              dir('digitalmarketplace-frameworks') {
+                git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+              }
+            }
 {# TODO: make this job work with a docker container #}
             stage('Build scripts') {
               dir('digitalmarketplace-scripts') {
@@ -88,6 +93,7 @@
                   "$ENVIRONMENT" \
                   ../data/generated-countersignature-pdfs \
                   "$FRAMEWORK" \
+                  ../digitalmarketplace-frameworks \
                   --notify-key="$NOTIFY_API_TOKEN" \
                   --notify-template-id="$NOTIFY_TEMPLATE_ID" \
                   $FLAGS \
