@@ -37,7 +37,7 @@
             CONCURRENCY="0"
           fi
 
-          docker run -e DM_ANTIVIRUS_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py {{ environment }} ${BUCKETS} --concurrency="${CONCURRENCY}" --prefix="${PREFIX}" ${FLAGS}
+          docker run --rm -e DM_ANTIVIRUS_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/virus-scan-s3-bucket.py {{ environment }} ${BUCKETS} --concurrency="${CONCURRENCY}" --prefix="${PREFIX}" ${FLAGS}
 - job:
     name: "virus-scan-s3-buckets-nightly-{{ environment }}"
     display-name: "Virus scan S3 buckets nightly - {{ environment }}"

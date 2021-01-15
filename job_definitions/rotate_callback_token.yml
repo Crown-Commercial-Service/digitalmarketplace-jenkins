@@ -68,7 +68,7 @@
         stage("{{ job_stage.name }}") {
           node {
             try {
-              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ job_stage.command }}" "{{ environment }}"')
+              sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ job_stage.command }}" "{{ environment }}"')
 
               notify_slack(':spinner:', '{{ job_stage.name }} - SUCCESS')
 

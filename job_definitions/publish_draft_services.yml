@@ -71,7 +71,7 @@
             FLAGS="$FLAGS --skip-docs-if-published"
           fi
 
-          docker run \
+          docker run --rm \
             -v $HOME/.aws:/root/.aws \
             -e DM_DATA_API_TOKEN_{{ environment|upper }} \
             -e AWS_PROFILE="${AWS_PROFILE}-infrastructure" \

@@ -55,5 +55,5 @@
             FLAGS="--serial"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py "${OBJECTS}" '{{ environment }}' --index="${INDEX}" --frameworks="${FRAMEWORKS}" $FLAGS
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} -e DM_SEARCH_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/index-to-search-service.py "${OBJECTS}" '{{ environment }}' --index="${INDEX}" --frameworks="${FRAMEWORKS}" $FLAGS
 {% endfor %}

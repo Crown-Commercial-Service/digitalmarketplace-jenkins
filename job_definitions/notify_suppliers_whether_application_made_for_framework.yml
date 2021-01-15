@@ -50,5 +50,5 @@
             $FLAGS="$FLAGS --supplier-id='$SUPPLIER_IDS'"
           fi
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-whether-application-made-for-framework.py "{{ environment }}" "$FRAMEWORK_SLUG" "$NOTIFY_API_TOKEN" $FLAGS
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-whether-application-made-for-framework.py "{{ environment }}" "$FRAMEWORK_SLUG" "$NOTIFY_API_TOKEN" $FLAGS
 {% endfor %}

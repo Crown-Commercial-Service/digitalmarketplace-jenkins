@@ -35,7 +35,7 @@
       node {
         stage('Update alias'){
           sh('''
-            docker run \
+            docker run --rm \
               -e "DM_SEARCH_API_TOKEN_{{ environment|upper }}" \
               -e "DM_DATA_API_TOKEN_{{ environment|upper }}" \
               digitalmarketplace/scripts \

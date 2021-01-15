@@ -32,8 +32,8 @@
           # when mounting the volume will otherwise be owned by the root user.
           rm -rf ./data && mkdir data
 {% for framework in frameworks %}
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' suppliers '{{ framework }}'
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}'
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}' --user-research-opted-in
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' suppliers '{{ framework }}'
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}'
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/generate-supplier-user-csv.py '{{ environment }}' users '{{ framework }}' --user-research-opted-in
 {% endfor %}
 {% endfor %}

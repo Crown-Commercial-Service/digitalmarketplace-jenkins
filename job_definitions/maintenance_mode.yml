@@ -42,7 +42,7 @@
         currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE} - ${MODE}"
         node {
           try {
-            sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "${MODE}" "${STAGE}"')
+            sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/maintenance-mode-pr.sh "${MODE}" "${STAGE}"')
           } catch(e) {
             currentBuild.result = 'ABORTED'
             error('Stopping early - possibly no change in maintenance mode, or script failed.')

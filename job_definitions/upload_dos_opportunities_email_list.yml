@@ -29,5 +29,5 @@
               CHANNEL=#dm-2ndline
     builders:
       - shell: |
-          docker run -e DM_DATA_API_TOKEN_PRODUCTION digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }}
+          docker run --rm -e DM_DATA_API_TOKEN_PRODUCTION digitalmarketplace/scripts scripts/upload-dos-opportunities-email-list.py "production" "jenkins" "$MAILCHIMP_API_TOKEN" {{ framework_slug }}
 {% endfor %}

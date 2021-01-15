@@ -27,6 +27,6 @@
           # when mounting the volume will otherwise be owned by the root user.
           rm -rf ./data && mkdir data
 
-          docker run -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/export-dos-opportunities.py '{{ environment }}'
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} --user $(id -u) --volume $(pwd)/data:/app/data digitalmarketplace/scripts scripts/export-dos-opportunities.py '{{ environment }}'
 
 {% endfor %}
