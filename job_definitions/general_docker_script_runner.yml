@@ -29,4 +29,4 @@
               CHANNEL=#dm-release
     builders:
       - shell: |
-          docker run digitalmarketplace/scripts $RUN_COMMAND
+          docker run --rm digitalmarketplace/scripts $RUN_COMMAND

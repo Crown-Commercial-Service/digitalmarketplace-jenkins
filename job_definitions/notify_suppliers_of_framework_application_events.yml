@@ -81,7 +81,7 @@
           NOTIFY_TEMPLATE_MAP='{{ notify_template_map | to_json }}'
           NOTIFY_TEMPLATE_ID="$(echo $NOTIFY_TEMPLATE_MAP | jq --raw-output '.[env.EMAIL_TYPE]')"
 
-          docker run -e \
+          docker run --rm -e \
             "DM_DATA_API_TOKEN_{{ environment|upper }}" \
             digitalmarketplace/scripts scripts/framework-applications/notify-suppliers-of-framework-application-event.py \
             "{{ environment }}" \

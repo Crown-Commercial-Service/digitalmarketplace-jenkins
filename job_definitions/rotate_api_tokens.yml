@@ -88,7 +88,7 @@
 {% endif %}
           node {
             try {
-              sh('docker run -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ stage.command }}" "${STAGE}"')
+              sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh "{{ stage.command }}" "${STAGE}"')
 
               notify_slack(':spinner:', '{{ stage.name }} - SUCCESS')
 
