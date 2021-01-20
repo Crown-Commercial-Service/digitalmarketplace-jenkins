@@ -1,4 +1,4 @@
-{% set framework_slugs = ['digital-outcomes-and-specialists-4'] %}
+{% set framework_slugs = ['digital-outcomes-and-specialists-4', 'digital-outcomes-and-specialists-5'] %}
 ---
 {% for framework_slug in framework_slugs %}
 - job:
