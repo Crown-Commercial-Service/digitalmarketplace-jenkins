@@ -133,11 +133,11 @@ search_config:
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
     staging:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4
+      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4,digital-outcomes-and-specialists-5
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
     production:
       default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4
+      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4,digital-outcomes-and-specialists-5
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
   services:
     preview:
