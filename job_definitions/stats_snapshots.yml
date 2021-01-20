@@ -11,7 +11,7 @@
 
 {% set frameworks = (
     ('g-cloud-12', '1LVGqBCRhjpl2OrKaUouh8rEiV3dpBep_', False),
-    ('digital-outcomes-and-specialists-5', '1KqVLn0yHBt3Sd7BJrNwo1mw7C31HCpPB', True),
+    ('digital-outcomes-and-specialists-5', '1KqVLn0yHBt3Sd7BJrNwo1mw7C31HCpPB', False),
 ) %}
 
 {% set environments = ['production'] %}
