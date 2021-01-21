@@ -1,0 +1,77 @@
+- job:
+    name: "notify-suppliers-of-intention-to-award-(41)"
+    display-name: "Notify suppliers of Intention To Award (41)"
+    project-type: pipeline
+    description: "Send email notifications to supplier users if they have a completed application to a brief that has been awarded."
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - staging
+            - production
+      - string:
+          name: NOTIFY_TEMPLATE_ID
+          default: "d308ea6a-f218-4191-bb84-9e5f73d46b68"
+          description: "Notify Template ID"
+      - string:
+          name: FRAMEWORK_SLUG
+          default: null
+          description: "Framework Slug e.g. 'digital-outcomes-and-specialists-5'"
+      - string:
+          name: SUPPLIER_IDS
+          default: null
+          description: "Comma-separated list of Supplier IDs to be emailed (e.g. '1234,5678')"
+      - bool:
+          name: DRY_RUN
+          default: false
+          description: "List notifications that would be sent without sending the emails"
+
+    dsl: |
+      node {
+        try {
+          stage('Clone frameworks') {
+             dir('digitalmarketplace-frameworks') {
+               git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+             }
+           }
+          stage('Run script') {
+            sh('''
+                if [ -n "$SUPPLIER_IDS" ]; then
+                            FLAGS="$FLAGS --supplier-id=$SUPPLIER_IDS"
+                fi
+
+                if [ "$DRY_RUN" = "true" ]; then
+                  FLAGS="$FLAGS --dry-run"
+                fi
+
+                docker run --rm \
+                -e DM_DATA_API_TOKEN_${STAGE^^} \
+                --mount type=bind,source="$PWD/digitalmarketplace-frameworks",target=/digitalmarketplace-frameworks \
+                digitalmarketplace/scripts \
+                scripts/framework-applications/notify-successful-suppliers-for-framework.py \
+                ${STAGE} ${FRAMEWORK_SLUG} $NOTIFY_API_TOKEN ${NOTIFY_TEMPLATE_ID} /digitalmarketplace-frameworks $FLAGS
+          ''')
+          }
+        } catch(err) {
+      currentBuild.result = 'FAILURE'
+                            echo "Error: ${err}"
+                            build job: 'notify-slack', parameters: [
+                              string(name: 'USERNAME', value: 'notify-suppliers-of-intention-to-award-(41)'),
+                              string(name: 'JOB', value: "Notify suppliers of Intention To Award (41)"),
+                              string(name: 'ICON', value: ':crystal_ball:'),
+                              string(name: 'STAGE', value: "${STAGE}"),
+                              string(name: 'STATUS', value: 'FAILED'),
+                              string(name: 'CHANNEL', value: '#dm-2ndline'),
+                              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                                  ]}
+      }
+      build job: "notify-slack",
+                  parameters: [
+                    string(name: 'USERNAME', value: 'notify-suppliers-of-intention-to-award-(41)'),
+                    string(name: 'ICON', value: ':e-mail:'),
+                    string(name: 'JOB', value: "Notify suppliers of Intention To Award (41)"),
+                    string(name: 'CHANNEL', value: "#dm-release"),
+                    text(name: 'STATUS', value: "SUCCESS"),
+                    text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                  ]
