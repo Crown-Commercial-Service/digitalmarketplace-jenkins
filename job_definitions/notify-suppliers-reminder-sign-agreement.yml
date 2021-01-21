@@ -17,7 +17,7 @@
       - string:
           name: SUPPLIER_IDS
           default: null
-          description: "Comma-separated list of Supplier IDs to be emailed (e.g. '1234,5678')"
+          description: "Optional comma-separated list of Supplier IDs to be emailed (e.g. '1234,5678'). By default all applicable suppliers will be notified."
       - bool:
           name: DRY_RUN
           default: false
