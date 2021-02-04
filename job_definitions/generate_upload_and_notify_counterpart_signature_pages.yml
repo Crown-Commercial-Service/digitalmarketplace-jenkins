@@ -19,6 +19,7 @@
           <li>Upload the generated files to S3 and set the path in the relevant FrameworkAgreement record</li>
           <li>Send an email to all active users on the supplier account that the counterpart file has been uploaded</li>
         </ol>
+        <p>Do not manually run this job against Production in working hours. There is a possible race condition if suppliers re-sign whilst the script is running as described in <a href="https://trello.com/c/lPJCI12q">https://trello.com/c/lPJCI12q</a></p>
     project-type: pipeline
     concurrent: false
     properties:
