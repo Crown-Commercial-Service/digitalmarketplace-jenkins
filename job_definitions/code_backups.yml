@@ -57,6 +57,7 @@
       - ansicolor
     builders:
       - shell: |
+          rm -rf {{ package }}
           git clone https://$GITHUB_ACCESS_TOKEN@github.com/alphagov/{{ package }} {{ package }} --mirror
           cd {{ package }}
           git remote add {{ package }}-aws-backup-remote https://git-codecommit.eu-west-1.amazonaws.com/v1/repos/{{ package }}
