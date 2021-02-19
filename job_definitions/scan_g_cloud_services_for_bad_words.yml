@@ -40,7 +40,7 @@
           }
           stage('Clone frameworks') {
             dir('data/digitalmarketplace-frameworks') {
-              git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'master'
+              git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'main'
             }
           }
           stage('Clone bad words') {
