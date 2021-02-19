@@ -28,7 +28,7 @@
         try {
           stage('Clone frameworks') {
              dir('digitalmarketplace-frameworks') {
-               git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+               git url: 'git@github.com:alphagov/digitalmarketplace-frameworks.git', branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
              }
            }
           stage('Run script') {
