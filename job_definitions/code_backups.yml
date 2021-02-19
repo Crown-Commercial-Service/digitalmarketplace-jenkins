@@ -44,6 +44,7 @@
           credentials-id: github_com_and_enterprise
           branches:
             - master
+            - main
           wipe-workspace: false
     properties:
       - build-discarder:
