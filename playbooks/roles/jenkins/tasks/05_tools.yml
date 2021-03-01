@@ -9,10 +9,12 @@
   shell: 'echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections'
 
 - name: Add key for Postgres repo
+  tags: [apt]
   apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
   sudo: yes
 
 - name: Add Postgres repo to sources list
+  tags: [apt]
   apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main' state=present
   sudo: yes
 
