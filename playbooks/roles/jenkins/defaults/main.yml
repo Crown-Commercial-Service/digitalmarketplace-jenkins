@@ -76,6 +76,7 @@ jenkins_plugins:
   - parameterized-trigger
   - postbuildscript
   - rebuild
+  - throttle-concurrents
   - translation
   - workflow-aggregator  # aka 'Pipeline' suite
 
