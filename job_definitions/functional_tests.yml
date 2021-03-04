@@ -20,9 +20,8 @@
           days-to-keep: 60
           num-to-keep: 100
       - throttle:
-          max-total: 1
           categories:
-            - EndToEndTests-{{ job.environment }}
+            - EndToEndTest-{{ job.environment }}
           option: category
     parameters:
       - string:
