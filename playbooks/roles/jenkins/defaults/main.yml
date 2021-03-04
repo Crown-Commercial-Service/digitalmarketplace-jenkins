@@ -76,6 +76,7 @@ jenkins_plugins:
   - parameterized-trigger
   - postbuildscript
   - rebuild
+  - throttle-concurrents
   - translation
   - workflow-aggregator  # aka 'Pipeline' suite
 
@@ -88,6 +89,7 @@ jenkins_config_templates:
   - jenkins.model.DownloadSettings.xml
   - com.smartcodeltd.jenkinsci.plugins.buildmonitor.BuildMonitorView.xml
   - jenkins.model.JenkinsLocationConfiguration.xml
+  - hudson.plugins.throttleconcurrents.ThrottleJobProperty.xml
 
 build_monitor_jobs:
   - apps-are-up-preview
