@@ -13,7 +13,7 @@
         https://docs.cloudfoundry.org/devguide/deploy-apps/start-restart-restage.html<br>
         (Restart Your Application)<br><br>
 
-        https://github.com/alphagov/digitalmarketplace-jenkins/blob/master/job_definitions/release_application_paas.yml#L2<br>
+        https://github.com/alphagov/digitalmarketplace-jenkins/blob/main/job_definitions/release_application_paas.yml#L2<br>
         (Runs the update-credentials job on Jenkins)<br><br>
 
         https://github.com/alphagov/digitalmarketplace-aws/blob/master/Makefile#L67 (generate-manifest)<br>
