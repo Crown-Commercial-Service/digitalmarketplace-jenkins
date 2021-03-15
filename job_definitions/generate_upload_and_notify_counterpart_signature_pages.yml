@@ -64,10 +64,9 @@
                   git clean -fdx
                   git reset --hard origin/master
 
-                  make virtualenv
-                  ./venv/bin/pip install --upgrade pip
-                  ./venv/bin/pip install wheel  # this allows pip to cache compiled packages instead of rebuilding them all on every invocation
-                  make requirements
+                  pip install -U digitalmarketplace-developer-tools
+                  invoke virtualenv
+                  invoke requirements
                 ''')
               }
             }
@@ -75,7 +74,7 @@
               dir('digitalmarketplace-scripts') {
                 sh('''
                   [ "$DRY_RUN" = "true" ] && FLAGS="$FLAGS --dry-run"
-                  
+
                   xvfb-run -a --server-args="-screen 0, 1024x768x24" \
                     venv/bin/python3 ./scripts/generate-framework-agreement-counterpart-signature-pages.py \
                       "$ENVIRONMENT" \

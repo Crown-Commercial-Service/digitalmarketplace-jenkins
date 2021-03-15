@@ -1,9 +1,14 @@
 ---
 - name: Create Jenkins user group
-  group: name=jenkins
+  group:
+    name: jenkins
 
 - name: Create Jenkins user
-  user: name=jenkins groups=jenkins createhome=no home=/var/lib/jenkins append=yes
+  user:
+    name: jenkins
+    group: jenkins
+    create_home: yes
+    home: /var/lib/jenkins
 
 - name: Prep data volume
   filesystem: fstype=ext4 dev={{ jenkins_data_device }}

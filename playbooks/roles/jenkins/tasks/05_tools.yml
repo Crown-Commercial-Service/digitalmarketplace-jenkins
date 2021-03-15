@@ -84,22 +84,16 @@
   become: yes
   become_user: jenkins
 
-- name: Add .rbenv to PATH
-  lineinfile:
-    dest: /var/lib/jenkins/.bash_profile
+- name: Add rbenv to shell
+  blockinfile:
+    dest: /var/lib/jenkins/.profile
+    owner: jenkins
+    group: jenkins
     create: yes
-    regexp: 'export PATH="/var/lib/jenkins/.rbenv/bin'
-    line: 'export PATH="/var/lib/jenkins/.rbenv/bin:$PATH" && export RBENV_ROOT="/var/lib/jenkins/.rbenv"'
-    owner: jenkins
-    group: jenkins
-
-- name: Add rbenv init
-  lineinfile:
-    dest: /var/lib/jenkins/.bash_profile
-    regexp: 'rbenv init'
-    line: 'eval "$(rbenv init -)"'
-    owner: jenkins
-    group: jenkins
+    block: |
+      export RBENV_ROOT="/var/lib/jenkins/.rbenv"
+      export PATH="${RBENV_ROOT}/bin:$PATH"
+      eval "$(rbenv init -)"
 
 - name: Add gpg-agent conf directory
   file:
