@@ -6,6 +6,11 @@
     project-type: pipeline
     description: Promote {{ application }} through environments
     concurrent: true
+    properties:
+      - throttle:
+          categories:
+            - AppPipelines
+          option: category
     triggers:
       - pollscm:
           cron: "* * * * *"
