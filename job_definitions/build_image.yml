@@ -17,7 +17,7 @@
           description: "git ref (eg 'release-42') to checkout for building the artefact. This will also become the image release name."
       - bool:
           name: REBUILD
-          default: false
+          default: true
           description: "Rerun the build even if the release already exists"
       - string:
           name: HEAD_BRANCH
