@@ -56,9 +56,10 @@ keys: requirements ## Update all the keys used and accepted by Jenkins
 jobs: requirements ## Update all Jenkins jobs
 	TAGS=jobs ./deploy-jenkins.sh
 
+# Includes 'jobs' - otherwise views disappear
 .PHONY: reconfigure
 reconfigure: requirements ## Update the Jenkins configuration and jobs
-	TAGS=config ./deploy-jenkins.sh
+	TAGS="config,jobs" ./deploy-jenkins.sh
 
 .PHONY: upgrade
 upgrade: requirements ## Upgrade Jenkins
