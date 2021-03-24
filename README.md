@@ -18,22 +18,22 @@ To make changes to Jenkins configuration or jobs, you will need:
 
 ### Updating jobs
 
-The Ansible tasks are grouped by tags. See `/playbooks/roles/jenkins/tasks/main.yml`.
+The Ansible tasks are grouped by tags. See [`playbooks/roles/jenkins/tasks/main.yml`](playbooks/roles/jenkins/tasks/main.yml). Use `make jenkins` to run a particular set of tagged tasks.
 
 To update all job definitions (i.e. run the Ansible tasks tagged as `jobs`):
 ```bash
-$ make jenkins TAGS=jobs
+$ make jobs
 ```
 
 To only update a specific Jenkins job:
 ```bash
-$ make jenkins TAGS=jobs JOBS=index_services
+$ make jobs JOBS=index_services
 ```
 
 Usually, the Jenkins jobs you push onto the server will be enabled. However if you're setting up a new box, you will
 want to disable them, which can be done as follows:
 ```bash
-$ make jenkins TAGS=jobs JOBS_DISABLED=true
+$ make jobs JOBS_DISABLED=true
 ```
 
 Jobs will also be disabled if you are bootstrapping the box from scratch (i.e. if the `bootstrap`
@@ -46,12 +46,12 @@ before running them.
 
 To update Jenkins settings (e.g. adding a job to a tab group in the UI):
 ```bash
-$ make jenkins TAGS=config
+$ make reconfigure
 ```
 
 To upgrade the Jenkins version:
 ```bash
-$ make jenkins TAGS=jenkins
+$ make upgrade
 ```
 
 ### Troubleshooting
@@ -84,7 +84,7 @@ All GitHub-associated SSH keys for trusted users should work. However if the SSH
 been added to the Github account, you may need to re-gather the keys with:
 
 ```bash
-make jenkins TAGS=keys
+make keys
 ```
 
 ## Running scripts with Python3 via a Jenkins job

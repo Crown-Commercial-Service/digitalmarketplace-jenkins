@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
-VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
+export VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || echo ${VIRTUAL_ENV})
 
 export ANSIBLE_ROLES_PATH := ${VIRTUALENV_ROOT}/etc/ansible/roles
 export ANSIBLE_CONFIG := playbooks/ansible.cfg
@@ -40,21 +40,27 @@ clean: ## Clean workspace (delete all generated files)
 	rm -rf venv requirements.txt.md5
 
 .PHONY: jenkins
-jenkins: requirements ## Run Jenkins playbook
+jenkins: requirements ## Run Jenkins playbook specified by TAGS
 	$(if ${TAGS},,$(error Must specify a list of ansible tags in TAGS))
-	@set -e ;\
-	${DM_CREDENTIALS_REPO}/sops-wrapper -v > /dev/null ;\
-	JENKINS_VARS_FILE=$$(mktemp) ;\
-	PRIVATE_KEY_FILE=$$(mktemp) ;\
-	trap 'rm $$JENKINS_VARS_FILE $$PRIVATE_KEY_FILE' EXIT ;\
-	for varfile in ${DM_CREDENTIALS_REPO}/jenkins-vars/*.yaml; do \
-	${DM_CREDENTIALS_REPO}/sops-wrapper -d $$varfile >> $$JENKINS_VARS_FILE ;\
-	done ;\
-	${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > $$PRIVATE_KEY_FILE ;\
-	ANSIBLE_CONFIG=playbooks/ansible.cfg ${VIRTUALENV_ROOT}/bin/ansible-playbook \
-		-i playbooks/hosts playbooks/jenkins_playbook.yml \
-		-e @$$JENKINS_VARS_FILE \
-		-e "jenkins_public_key='$$(ssh-keygen -y -f $$PRIVATE_KEY_FILE)'" \
-		--key-file=$$PRIVATE_KEY_FILE \
-		-e "dm_credentials_repo=${DM_CREDENTIALS_REPO}" \
-		--tags "${TAGS}" ${EXTRA_VARS}
+	./deploy-jenkins.sh
+
+.PHONY: install
+install: requirements ## Completely (re)install Jenkins
+	TAGS=all ./deploy-jenkins.sh
+
+.PHONY: keys
+keys: requirements ## Update all the keys used and accepted by Jenkins
+	TAGS=keys ./deploy-jenkins.sh
+
+.PHONY: jobs
+jobs: requirements ## Update all Jenkins jobs
+	TAGS=jobs ./deploy-jenkins.sh
+
+# Includes 'jobs' - otherwise views disappear
+.PHONY: reconfigure
+reconfigure: requirements ## Update the Jenkins configuration and jobs
+	TAGS="config,jobs" ./deploy-jenkins.sh
+
+.PHONY: upgrade
+upgrade: requirements ## Upgrade Jenkins
+	TAGS=jenkins ./deploy-jenkins.sh
