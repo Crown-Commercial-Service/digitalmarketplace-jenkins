@@ -7,10 +7,10 @@ export ANSIBLE_CONFIG := playbooks/ansible.cfg
 
 # extra variables that, if specified, will override those in playbooks/roles/jenkins/defaults/main.yml
 ifdef JOBS_DISABLED
-	EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
+	export EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
 endif
 ifdef JOBS
-	EXTRA_VARS += -e 'jobs=${JOBS}'
+	export EXTRA_VARS += -e 'jobs=${JOBS}'
 endif
 
 .PHONY: help
