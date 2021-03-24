@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 set -eou pipefail
 # Script to run ansible tasks. Use the Makefile instead of running this directly.
 
