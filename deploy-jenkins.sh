@@ -14,7 +14,7 @@ do
 done
 ${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > $PRIVATE_KEY_FILE
 
-echo ${VIRTUALENV_ROOT}/bin/ansible-playbook \
+${VIRTUALENV_ROOT}/bin/ansible-playbook \
   -i playbooks/hosts playbooks/jenkins_playbook.yml \
   -e @$JENKINS_VARS_FILE \
   -e "jenkins_public_key='$(ssh-keygen -y -f $PRIVATE_KEY_FILE)'" \
