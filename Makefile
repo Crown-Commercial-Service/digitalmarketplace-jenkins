@@ -5,14 +5,6 @@ export VIRTUALENV_ROOT := $(shell [ -z ${VIRTUAL_ENV} ] && echo $$(pwd)/venv || 
 export ANSIBLE_ROLES_PATH := ${VIRTUALENV_ROOT}/etc/ansible/roles
 export ANSIBLE_CONFIG := playbooks/ansible.cfg
 
-# extra variables that, if specified, will override those in playbooks/roles/jenkins/defaults/main.yml
-ifdef JOBS_DISABLED
-	export EXTRA_VARS += -e 'jobs_disabled=${JOBS_DISABLED}'
-endif
-ifdef JOBS
-	export EXTRA_VARS += -e 'jobs=${JOBS}'
-endif
-
 .PHONY: help
 help: ## List available commands
 	@cat $(MAKEFILE_LIST) | grep -E '^[a-zA-Z_-]+:.*?## .*$$' | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
