@@ -14,10 +14,23 @@ do
 done
 ${DM_CREDENTIALS_REPO}/sops-wrapper -d ${DM_CREDENTIALS_REPO}/aws-keys/ci.pem.enc > $PRIVATE_KEY_FILE
 
+EXTRA_VARS=(
+  --extra-vars @$JENKINS_VARS_FILE
+  --extra-vars "jenkins_public_key='$(ssh-keygen -y -f $PRIVATE_KEY_FILE)'"
+  --extra-vars "dm_credentials_repo=${DM_CREDENTIALS_REPO}"
+)
+if [ ! -z ${JOBS+x} ]
+then
+  EXTRA_VARS+=(--extra-vars "jobs=${JOBS}")
+fi
+if [ ! -z ${JOBS_DISABLED+x} ]
+then
+  EXTRA_VARS+=(--extra-vars "jobs_disabled=${JOBS_DISABLED}")
+fi
+
 ${VIRTUALENV_ROOT}/bin/ansible-playbook \
-  -i playbooks/hosts playbooks/jenkins_playbook.yml \
-  -e @$JENKINS_VARS_FILE \
-  -e "jenkins_public_key='$(ssh-keygen -y -f $PRIVATE_KEY_FILE)'" \
+  playbooks/jenkins_playbook.yml \
+  --inventory playbooks/hosts \
   --key-file=$PRIVATE_KEY_FILE \
-  -e "dm_credentials_repo=${DM_CREDENTIALS_REPO}" \
-  --tags "${TAGS}" ${EXTRA_VARS:-}
+  --tags "${TAGS}" \
+  "${EXTRA_VARS[@]}"
