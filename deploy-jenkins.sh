@@ -29,13 +29,13 @@ then
 fi
 
 if [ ! -z ${LOCALHOST+x} ]
-  then 
-    INVENTORY="localhost, ";
-    PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
-    EXTRA_VARS+=(--connection "local")
-  else
-    INVENTORY="playbooks/hosts"
-    PLAYBOOK="playbooks/jenkins_playbook.yml"
+then 
+  INVENTORY="localhost, ";
+  PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
+  EXTRA_VARS+=(--connection "local")
+else
+  INVENTORY="playbooks/hosts"
+  PLAYBOOK="playbooks/jenkins_playbook.yml"
 fi
 
 ${VIRTUALENV_ROOT}/bin/ansible-playbook \
