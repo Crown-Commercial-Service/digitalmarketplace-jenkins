@@ -3,15 +3,12 @@
     display-name: "Update Jenkins Job Definitions"
     project-type: pipeline
     concurrent: false
+    triggers:
+      - pollscm:
+          cron: "* * * * *"
     disabled: false
     description: |
       <p>This job updates Jenkins jobs using the job definitions from https://github.com/alphagov/digitalmarketplace-jenkins</p>
-    scm:
-      - git:
-          url: git@github.com:alphagov/digitalmarketplace-jenkins.git
-          credentials-id: github_com_and_enterprise
-          branches:
-            - "main"
     wrappers:
       - ansicolor
     dsl: |
