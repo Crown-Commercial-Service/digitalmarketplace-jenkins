@@ -30,17 +30,15 @@ fi
 
 if [ ! -z ${LOCALHOST+x} ]
 then 
-  INVENTORY="localhost, ";
   PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
   EXTRA_VARS+=(--connection "local")
 else
-  INVENTORY="playbooks/hosts"
   PLAYBOOK="playbooks/jenkins_playbook.yml"
+  EXTRA_VARS+=(--inventory "playbooks/hosts")
 fi
 
 ${VIRTUALENV_ROOT}/bin/ansible-playbook \
   $PLAYBOOK \
-  --inventory $INVENTORY \
   --key-file=$PRIVATE_KEY_FILE \
   --tags "${TAGS}" \
   "${EXTRA_VARS[@]}"
