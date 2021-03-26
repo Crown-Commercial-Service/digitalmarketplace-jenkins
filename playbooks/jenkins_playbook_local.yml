@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  name: Setup Jenkins CI, config and dependencies
+  roles:
+    - jenkins

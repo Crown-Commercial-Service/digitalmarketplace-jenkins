@@ -1,0 +1,44 @@
+- job:
+    name: "update-jenkins-job-definitions"
+    display-name: "Update Jenkins Job Definitions"
+    project-type: pipeline
+    concurrent: false
+    disabled: false
+    description: |
+      <p>This job updates Jenkins jobs using the job definitions from https://github.com/alphagov/digitalmarketplace-jenkins</p>
+    scm:
+      - git:
+          url: git@github.com:alphagov/digitalmarketplace-jenkins.git
+          credentials-id: github_com_and_enterprise
+          branches:
+            - "main"
+    wrappers:
+      - ansicolor
+    dsl: |
+      node {
+        try {
+            stage('Clone digitalmarketplace-jenkins') {
+              git url: 'git@github.com:alphagov/digitalmarketplace-jenkins.git', branch: 'update-jobs', credentialsId: 'github_com_and_enterprise', poll: true 
+            }
+            stage('Update jobs') {
+              withEnv([
+                "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"
+                ]) {
+                 sh('make jobs LOCALHOST=true') 
+                }
+            }
+          }
+            catch(err) {
+            currentBuild.result = 'FAILURE'
+            echo "Error: ${err}"
+            build job: 'notify-slack', parameters: [
+              string(name: 'USERNAME', value: 'update_jenkins_job_definitions'),
+              string(name: 'JOB', value: "Update Jenkins Job Definitions"),
+              string(name: 'ICON', value: ':jenkins:'),
+              string(name: 'STAGE', value: "production"),
+              string(name: 'STATUS', value: 'FAILED'),
+              string(name: 'CHANNEL', value: '#dm-2ndline'),
+              text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+            ]
+          }
+        }

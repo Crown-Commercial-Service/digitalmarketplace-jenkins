@@ -9,11 +9,11 @@
   pip:
     requirements: /tmp/jenkins-jobs-python-requirements.txt
 
-- name: Create /etc/jenkins_jobs/definitions
-  file: path=/etc/jenkins_jobs/definitions state=directory recurse=yes
+- name: Create /var/lib/jenkins/jenkins_jobs/definitions
+  file: path=/var/lib/jenkins/jenkins_jobs/definitions state=directory recurse=yes owner=jenkins
 
 - name: Deploy jenkins_jobs.ini
-  template: dest=/etc/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2
+  template: dest=/var/lib/jenkins/jenkins_jobs/jenkins_jobs.ini src=jenkins_jobs.ini.j2 owner=jenkins
 
 - name: Clone digitalmarketplace-credentials repository
   tags: [credentials-repo]
@@ -26,23 +26,23 @@
 - name: Remove deleted or renamed definitions
   synchronize:
     src: '../../../../job_definitions/'
-    dest: '/etc/jenkins_jobs/definitions/'
+    dest: '/var/lib/jenkins/jenkins_jobs/definitions'
     delete: yes
     archive: no
     recursive: yes
     rsync_opts: ['--ignore-existing']
 
 - name: Upload jenkins jobs definitions
-  template: src={{ item }} dest=/etc/jenkins_jobs/definitions/
+  template: src={{ item }} dest=/var/lib/jenkins/jenkins_jobs/definitions/ owner=jenkins
   with_fileglob:
     - '../../../../job_definitions/{{ jobs }}.yml'
 
 - name: Test job definitions before updating (as jenkins user)
-  command: jenkins-jobs test /etc/jenkins_jobs/definitions
+  command: jenkins-jobs test /var/lib/jenkins/jenkins_jobs/definitions
   become: yes
   become_user: jenkins
 
 - name: Update job definitions (as jenkins user)
-  command: jenkins-jobs update /etc/jenkins_jobs/definitions
+  command: jenkins-jobs update /var/lib/jenkins/jenkins_jobs/definitions
   become: yes
   become_user: jenkins

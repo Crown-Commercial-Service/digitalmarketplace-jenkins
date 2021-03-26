@@ -20,6 +20,10 @@ To make changes to Jenkins configuration or jobs, you will need:
 
 The Ansible tasks are grouped by tags. See [`playbooks/roles/jenkins/tasks/main.yml`](playbooks/roles/jenkins/tasks/main.yml). Use `make jenkins` to run a particular set of tagged tasks.
 
+All job definitions will be updated automaticaly when merged to `main`. This is perfomed by the [`job_definitions/update_jenkins_job_definitions.yml`](job_definitions/update_jenkins_job_definitions.yml) job.
+
+If you need to test a job from a branch or deploy manually you can run the commands below from your local machine:
+
 To update all job definitions (i.e. run the Ansible tasks tagged as `jobs`):
 ```bash
 $ make jobs

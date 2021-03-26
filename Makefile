@@ -17,6 +17,7 @@ ${VIRTUALENV_ROOT}/activate:
 
 .PHONY: requirements
 requirements: venv ## Install requirements
+	${VIRTUALENV_ROOT}/bin/pip install --upgrade pip
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
 	${VIRTUALENV_ROOT}/bin/ansible-galaxy install -r playbooks/requirements.yml
 
