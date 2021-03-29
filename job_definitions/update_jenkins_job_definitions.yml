@@ -15,7 +15,7 @@
       node {
         try {
             stage('Clone digitalmarketplace-jenkins') {
-              git url: 'git@github.com:alphagov/digitalmarketplace-jenkins.git', branch: 'update-jobs', credentialsId: 'github_com_and_enterprise', poll: true 
+              git url: 'git@github.com:alphagov/digitalmarketplace-jenkins.git', branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
             }
             stage('Update jobs') {
               withEnv([
