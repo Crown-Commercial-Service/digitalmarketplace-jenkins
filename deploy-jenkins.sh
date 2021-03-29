@@ -28,9 +28,17 @@ then
   EXTRA_VARS+=(--extra-vars "jobs_disabled=${JOBS_DISABLED}")
 fi
 
+if [ ! -z ${LOCALHOST+x} ]
+then 
+  PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
+  EXTRA_VARS+=(--connection "local")
+else
+  PLAYBOOK="playbooks/jenkins_playbook.yml"
+  EXTRA_VARS+=(--inventory "playbooks/hosts")
+fi
+
 ${VIRTUALENV_ROOT}/bin/ansible-playbook \
-  playbooks/jenkins_playbook.yml \
-  --inventory playbooks/hosts \
+  $PLAYBOOK \
   --key-file=$PRIVATE_KEY_FILE \
   --tags "${TAGS}" \
   "${EXTRA_VARS[@]}"
