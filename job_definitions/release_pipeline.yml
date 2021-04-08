@@ -135,7 +135,7 @@
       stage('Create release tag') {
         node {
           git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
-              branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+              branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
           releaseHash = sh(
               script: "git rev-parse --short HEAD",
               returnStdout: true
