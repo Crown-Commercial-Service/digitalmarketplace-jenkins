@@ -21,8 +21,8 @@
           description: "Rerun the build even if the release already exists"
       - string:
           name: HEAD_BRANCH
-          default: "master"
-          description: "RELEASE_NAME must be present in this branch. *USE WITH CARE* - production releases should *ALWAYS* be present in master"
+          default: "main"
+          description: "RELEASE_NAME must be present in this branch. *USE WITH CARE* - production releases should *ALWAYS* be present in main"
       - bool:
           name: MARK_LATEST
           default: true
@@ -42,11 +42,11 @@
               }
 
               stage('Prepare') {
-                  if (RELEASE_NAME ==~ /release-\d+/ && HEAD_BRANCH != "master") {
-                    input("WARNING: It is probably a bad idea to create a release- tagged image from a non-master HEAD_BRANCH!")
+                  if (RELEASE_NAME ==~ /release-\d+/ && HEAD_BRANCH != "main") {
+                    input("WARNING: It is probably a bad idea to create a release- tagged image from a non-main HEAD_BRANCH!")
                   }
-                  if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "master") {
-                    input("WARNING: It is probably a bad idea to mark a non-master HEAD_BRANCH image as 'latest'")
+                  if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "main") {
+                    input("WARNING: It is probably a bad idea to mark a non-main HEAD_BRANCH image as 'latest'")
                   }
                   git url: "git@github.com:alphagov/digitalmarketplace-${REPOSITORY}.git", branch: HEAD_BRANCH, credentialsId: 'github_com_and_enterprise'
                   echo "Cleaning repository"
