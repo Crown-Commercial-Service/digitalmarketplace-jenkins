@@ -49,7 +49,7 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
-          default: "master"
+          default: "main"
     triggers:
       - timed: "{{ test_type.timing }}"
     wrappers:
