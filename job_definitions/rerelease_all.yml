@@ -16,10 +16,10 @@
         https://github.com/alphagov/digitalmarketplace-jenkins/blob/main/job_definitions/release_application_paas.yml#L2<br>
         (Runs the update-credentials job on Jenkins)<br><br>
 
-        https://github.com/alphagov/digitalmarketplace-aws/blob/master/Makefile#L67 (generate-manifest)<br>
+        https://github.com/alphagov/digitalmarketplace-aws/blob/main/Makefile#L67 (generate-manifest)<br>
         (Generates a manifest with the new credentials)<br><br>
 
-        https://github.com/alphagov/digitalmarketplace-aws/blob/master/Makefile#L84 (deploy-app)<br>
+        https://github.com/alphagov/digitalmarketplace-aws/blob/main/Makefile#L84 (deploy-app)<br>
         (Pushes the new manifest)<br>
 
     concurrent: false
