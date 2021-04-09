@@ -59,7 +59,7 @@
 {# TODO: make this job work with a docker container #}
             stage('Build scripts') {
               dir('digitalmarketplace-scripts') {
-                git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'master', credentialsId: 'github_com_and_enterprise', poll: true
+                git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
                 sh('''
                   git clean -fdx
                   git reset --hard origin/master

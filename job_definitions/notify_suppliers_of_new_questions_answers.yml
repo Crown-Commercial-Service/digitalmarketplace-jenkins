@@ -19,7 +19,7 @@
           url: git@github.com:alphagov/digitalmarketplace-scripts.git
           credentials-id: github_com_and_enterprise
           branches:
-            - master
+            - main
           wipe-workspace: false
     triggers:
       - timed: "H 8 * * *"
