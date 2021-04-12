@@ -10,6 +10,6 @@
 - name: Install aws-auth
   tags: [aws-auth]
   get_url:
-    url: https://raw.githubusercontent.com/alphagov/aws-auth/master/aws-auth.sh
+    url: https://raw.githubusercontent.com/alphagov/aws-auth/main/aws-auth.sh
     dest: /usr/local/bin/aws-auth
     mode: 0755
