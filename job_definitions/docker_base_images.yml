@@ -8,8 +8,8 @@
     parameters:
       - string:
           name: HEAD_BRANCH
-          default: "master"
-          description: "*USE WITH CARE* - production releases should *ALWAYS* be from master"
+          default: "main"
+          description: "*USE WITH CARE* - production releases should *ALWAYS* be from main"
       - bool:
           name: MARK_LATEST
           default: true
@@ -39,11 +39,11 @@
               sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
             }
 
-            if (HEAD_BRANCH != "master" && sh(script: "cat VERSION", returnStdout: true) ==~ /\d.*/) {
-              input("WARNING: VERSION looks numeric - it is probably a bad idea to create a release- tagged image from a non-master HEAD_BRANCH!")
+            if (HEAD_BRANCH != "main" && sh(script: "cat VERSION", returnStdout: true) ==~ /\d.*/) {
+              input("WARNING: VERSION looks numeric - it is probably a bad idea to create a release- tagged image from a non-main HEAD_BRANCH!")
             }
-            if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "master") {
-              input("WARNING: It is probably a bad idea to mark a non-master HEAD_BRANCH image as 'latest'")
+            if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "main") {
+              input("WARNING: It is probably a bad idea to mark a non-main HEAD_BRANCH image as 'latest'")
             }
 
             withEnv(MARK_LATEST.toString() == "true" ? [] : ["NOT_LATEST=1"]) {
