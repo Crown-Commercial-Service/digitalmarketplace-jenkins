@@ -28,7 +28,7 @@
         stage('Pull repo') {
           dir("${APPLICATION_NAME}") {
             git url: 'git@github.com:alphagov/digitalmarketplace-${APPLICATION_NAME}.git',
-                branch: 'master',
+                branch: 'main',
                 credentialsId: 'github_com_and_enterprise'
           }
         }
