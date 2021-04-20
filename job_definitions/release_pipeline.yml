@@ -188,7 +188,7 @@
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
           ]
-          build job: "tag-application-deloyment", parameters: [
+          build job: "tag-application-deployment", parameters: [
             string(name: "STAGE", value: "preview"),
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
@@ -241,7 +241,7 @@
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
           ]
-          build job: "tag-application-deloyment", parameters: [
+          build job: "tag-application-deployment", parameters: [
             string(name: "STAGE", value: "staging"),
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
@@ -288,7 +288,7 @@
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
           ]
-          build job: "tag-application-deloyment", parameters: [
+          build job: "tag-application-deployment", parameters: [
             string(name: "STAGE", value: "production"),
             string(name: "APPLICATION_NAME", value: "{{ application }}"),
             string(name: "RELEASE_NAME", value: "${releaseName}"),
