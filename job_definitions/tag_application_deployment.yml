@@ -1,6 +1,6 @@
 ---
 - job:
-    name: tag-application-deloyment
+    name: tag-application-deployment
     display-name: "Tag application deployment"
     project-type: pipeline
     description: Tag repos with their current release positions for preview, staging and production. Useful for the deploy lag radiator.

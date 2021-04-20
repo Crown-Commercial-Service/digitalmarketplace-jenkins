@@ -156,7 +156,7 @@
       - notify-slack
       - publish-toolkit-documentation
       - rerelease-all-apps
-      - tag-application-deloyment
+      - tag-application-deployment
       - tag-digitalmarketplace-govuk-frontend
       - tag-dmapiclient
       - tag-dmcontent-loader
