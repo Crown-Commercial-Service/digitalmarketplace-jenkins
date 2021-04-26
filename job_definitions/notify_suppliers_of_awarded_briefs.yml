@@ -37,16 +37,16 @@
     builders:
       - shell: |
           if [ -n "$AWARDED_AT" ]; then
-            FLAGS="--awarded_at=$AWARDED_AT"
+            FLAGS="--awarded-at=$AWARDED_AT"
           fi
 
           if [ -n "$BRIEF_RESPONSE_IDS" ]; then
-            FLAGS="$FLAGS --brief_response_ids=$BRIEF_RESPONSE_IDS"
+            FLAGS="$FLAGS --brief-response-ids=$BRIEF_RESPONSE_IDS"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
 
-          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-awarded-briefs.py '{{ environment }}' $NOTIFY_API_TOKEN {{ NOTIFY_TEMPLATE_ID }} $FLAGS --verbose
+          docker run --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-awarded-briefs.py --stage '{{ environment }}' --notify-api-key $NOTIFY_API_TOKEN --notify-template-id {{ NOTIFY_TEMPLATE_ID }} $FLAGS --verbose
 {% endfor %}
