@@ -19,7 +19,7 @@
       - string:
           name: RESUME_BUILD_NUMBER
           default: null
-          description: "Build number to resume (using email engine log)"
+          description: "Build number to resume using email engine log"
       - bool:
           name: DRY_RUN
           default: false
@@ -49,14 +49,14 @@
           fi
 
           if [ -n "$RESUME_BUILD_NUMBER" ]; then
-            FLAGS="$FLAGS --reference=$RESUME_BUILD_NUMBER"
+            FLAGS="$FLAGS --reference=${JOB_NAME}_${RESUME_BUILD_NUMBER}"
           else
-            FLAGS="$FLAGS --reference=$BUILD_NUMBER"
+            FLAGS="$FLAGS --reference=${JOB_NAME}_${BUILD_NUMBER}"
           fi
 
           if [ "$DRY_RUN" = "true" ]; then
             FLAGS="$FLAGS --dry-run"
           fi
-          
+
           docker run --mount type=bind,source="$(pwd)",target=/tmp --rm -e DM_DATA_API_TOKEN_{{ environment|upper }} digitalmarketplace/scripts scripts/notify-suppliers-of-awarded-briefs.py --stage '{{ environment }}' --notify-api-key $NOTIFY_API_TOKEN --notify-template-id {{ NOTIFY_TEMPLATE_ID }} $FLAGS --verbose
 {% endfor %}
