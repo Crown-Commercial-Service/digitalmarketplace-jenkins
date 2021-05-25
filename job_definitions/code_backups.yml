@@ -57,6 +57,18 @@
           ignore-post-commit-hooks: True
     wrappers:
       - ansicolor
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=code-backups
+              JOB=Backup code repository {{ package }}
+              ICON=:card_index_dividers:
+              STAGE=production
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL=#dm-2ndline
     builders:
       - shell: |
           rm -rf {{ package }}
