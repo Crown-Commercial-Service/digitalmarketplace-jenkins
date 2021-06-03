@@ -27,9 +27,11 @@
       def run_functional_tests(stage) {
         waitUntil {
           try {
-            node {
-              build job: "functional-tests-${stage}"
-              return true
+            throttle(['AppPipelines']) {
+              node {
+                build job: "functional-tests-${stage}"
+                return true
+              }
             }
           } catch(error) {
             echo "Functional tests failed: ${error}"
@@ -64,10 +66,12 @@
         def vr_job = null
 
         waitUntil {
-          node {
-            vr_job = build job: job_name, parameters: [
-              string(name: "COMMAND", value: "test"),
-            ], propagate: false
+          throttle(['AppPipelines']) {
+            node {
+              vr_job = build job: job_name, parameters: [
+                string(name: "COMMAND", value: "test"),
+              ], propagate: false
+            }
           }
 
           def vr_job_result = vr_job.result
@@ -106,10 +110,12 @@
               if (test_job_last_build_number == vr_job_number) {
                 echo "Verified that the last visual regression job built was triggered by this pipeline. Approving."
                 try {
-                  node {
-                    build job: job_name, parameters: [
-                      string(name: "COMMAND", value: "approve"),
-                    ]
+                  throttle(['AppPipelines']) {
+                    node {
+                      build job: job_name, parameters: [
+                        string(name: "COMMAND", value: "approve"),
+                      ]
+                    }
                   }
 
                 } catch(inside_error) {
@@ -133,44 +139,50 @@
       }
 
       stage('Create release tag') {
-        node {
-          git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
-              branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
-          releaseHash = sh(
-              script: "git rev-parse --short HEAD",
-              returnStdout: true
-          ).trim()
+        throttle(['AppPipelines']) {
+          node {
+            git url: "git@github.com:alphagov/digitalmarketplace-{{ application }}.git",
+                branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
+            releaseHash = sh(
+                script: "git rev-parse --short HEAD",
+                returnStdout: true
+            ).trim()
 
-          if (releaseHash == "") {
-              throw new Exception('Release hash can not be found')
+            if (releaseHash == "") {
+                throw new Exception('Release hash can not be found')
+            }
+
+            releaseName = "release-${releaseHash}"
+
+            tag_release(releaseName)
+
+            echo "Release git hash: ${releaseHash}"
+            currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
           }
-
-          releaseName = "release-${releaseHash}"
-
-          tag_release(releaseName)
-
-          echo "Release git hash: ${releaseHash}"
-          currentBuild.displayName = "#${BUILD_NUMBER} - ${releaseName}"
         }
       }
 
       stage('Build') {
-        node {
-          build job: "build-image", parameters: [
-            string(name: "REPOSITORY", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "build-image", parameters: [
+              string(name: "REPOSITORY", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
 
       {% if application in dm_db_applications %}
       stage('DB migration on preview') {
-        node {
-          build job: "database-migration-paas", parameters: [
-            string(name: "STAGE", value: "preview"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
 
@@ -182,17 +194,19 @@
       {% endif %}
 
       stage('Release to preview') {
-        node {
-          build job: "release-app-paas", parameters: [
-            string(name: "STAGE", value: "preview"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
-          build job: "tag-application-deployment", parameters: [
-            string(name: "STAGE", value: "preview"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deployment", parameters: [
+              string(name: "STAGE", value: "preview"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
 
@@ -213,12 +227,14 @@
         milestone()
         input(message: "Release to staging?")
         milestone()
-        node {
-          build job: "database-migration-paas", parameters: [
-            string(name: "STAGE", value: "staging"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
 
@@ -235,17 +251,19 @@
         input(message: "Release to staging?")
         milestone()
         {% endif %}
-        node {
-          build job: "release-app-paas", parameters: [
-            string(name: "STAGE", value: "staging"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
-          build job: "tag-application-deployment", parameters: [
-            string(name: "STAGE", value: "staging"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deployment", parameters: [
+              string(name: "STAGE", value: "staging"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
 
@@ -266,12 +284,14 @@
         milestone()
         input(message: "Release to production?")
         milestone()
-        node {
-          build job: "database-migration-paas", parameters: [
-            string(name: "STAGE", value: "production"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
+        throttle(['AppPipelines']) {
+          node {
+            build job: "database-migration-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+          }
         }
       }
       {% endif %}
@@ -282,18 +302,20 @@
         input(message: "Release to production?")
         milestone()
         {% endif %}
-        node {
-          build job: "release-app-paas", parameters: [
-            string(name: "STAGE", value: "production"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
-          build job: "tag-application-deployment", parameters: [
-            string(name: "STAGE", value: "production"),
-            string(name: "APPLICATION_NAME", value: "{{ application }}"),
-            string(name: "RELEASE_NAME", value: "${releaseName}"),
-          ]
-          build job: "apps-are-working-production", wait: false
+        throttle(['AppPipelines']) {
+          node {
+            build job: "release-app-paas", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "tag-application-deployment", parameters: [
+              string(name: "STAGE", value: "production"),
+              string(name: "APPLICATION_NAME", value: "{{ application }}"),
+              string(name: "RELEASE_NAME", value: "${releaseName}"),
+            ]
+            build job: "apps-are-working-production", wait: false
+          }
         }
       }
 {% endfor %}
