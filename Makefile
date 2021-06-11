@@ -16,8 +16,9 @@ ${VIRTUALENV_ROOT}/activate:
 	[ -z $$VIRTUAL_ENV ] && [ ! -d venv ] && python3 -m venv venv || true
 
 .PHONY: requirements
-requirements: venv ## Install requirements
+requirements: venv ## Install requirements; TODO: remove uninstall once everyone's on Ansible 4
 	${VIRTUALENV_ROOT}/bin/pip install --upgrade pip
+	${VIRTUALENV_ROOT}/bin/pip show ansible | grep -q "Version: 4" || ${VIRTUALENV_ROOT}/bin/pip uninstall --yes ansible ansible-base ansible-core
 	${VIRTUALENV_ROOT}/bin/pip install -Ur requirements.txt
 	${VIRTUALENV_ROOT}/bin/ansible-galaxy install -r playbooks/requirements.yml
 
