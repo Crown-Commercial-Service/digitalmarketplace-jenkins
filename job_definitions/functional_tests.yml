@@ -124,5 +124,9 @@
 
           export DM_ENVIRONMENT={{ job.environment }}
 
+          export BROWSER=true
+
+          export HEADLESS=true
+
           make run-parallel && make build-report || ( make build-report; make rerun )
 {% endfor %}

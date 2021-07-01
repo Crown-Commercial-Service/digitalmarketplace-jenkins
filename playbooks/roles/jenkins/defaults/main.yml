@@ -22,6 +22,7 @@ dist_tools:
   - bzip2
   - curl
   - fonts-liberation
+  - firefox
   - git
   - gnupg2
   - libffi-dev
