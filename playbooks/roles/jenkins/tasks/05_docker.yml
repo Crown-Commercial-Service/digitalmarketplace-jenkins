@@ -21,7 +21,10 @@
   group: name=docker
 
 - name: Add jenkins user to the docker group
-  user: name=jenkins group=docker append=yes
+  user:
+    name: jenkins
+    groups: [docker]
+    append: yes
   notify: restart docker
 
 - name: Create docker image graph/cache directory
