@@ -14,7 +14,7 @@
 
 - name: Add Postgres repo to sources list
   tags: [apt]
-  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main' state=present
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main' state=present
 
 - name: Install tools
   tags: [apt]
@@ -38,7 +38,7 @@
 - name: Install wkhtmltopdf with patched qt
   tags: [apt]
   apt:
-    deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+    deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.{{ ansible_distribution_release }}_amd64.deb
     state: present
 
 - name: Update Python 3 pip
