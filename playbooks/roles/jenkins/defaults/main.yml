@@ -19,6 +19,7 @@ jobs: '*'
 jobs_disabled: false
 
 dist_tools:
+  - acl
   - bzip2
   - curl
   - fonts-liberation
