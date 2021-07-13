@@ -47,7 +47,7 @@
 
 - name: Install AWS cli
   pip:
-    name: awscli==1.16.109
+    name: awscli==1.19.110
     state: present
 
 - name: Create AWS cli config folder
