@@ -45,7 +45,7 @@
           }
           stage('Clone bad words') {
             dir('data/digitalmarketplace-bad-words') {
-              git url: 'git@github.com:alphagov/digitalmarketplace-bad-words.git', branch: 'master', credentialsId: 'github_com_and_enterprise'
+              git url: 'git@github.com:alphagov/digitalmarketplace-bad-words.git', branch: 'main', credentialsId: 'github_com_and_enterprise'
             }
           }
           stage('Run bad words script') {
