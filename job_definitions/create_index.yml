@@ -31,7 +31,7 @@
           description: >
             This mapping is a filename (without .json suffix) which should exist in the
             digitalmarketplace-search-api/mappings directory
-            (https://github.com/alphagov/digitalmarketplace-search-api/tree/master/mappings)
+            (https://github.com/alphagov/digitalmarketplace-search-api/tree/main/mappings)
             (eg 'services', 'services-g-cloud-10', 'briefs-digital-outcomes-and-specialists-2')
       - bool:
           name: SERIAL
