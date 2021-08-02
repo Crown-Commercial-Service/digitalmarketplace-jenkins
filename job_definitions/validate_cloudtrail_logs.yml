@@ -26,7 +26,7 @@
     builders:
       - shell: |
           docker run --rm \
-            -v /var/lib/jenkins/digitalmarketplace-credentials:/digitalmarketplace-credentials \
+            -v /home/jenkins/digitalmarketplace-credentials:/digitalmarketplace-credentials \
             -v $HOME/.aws:/root/.aws \
             -e DM_CREDENTIALS_REPO=/digitalmarketplace-credentials \
             -e VERBOSE="$VERBOSE" \

@@ -8,7 +8,7 @@
     name: jenkins
     group: jenkins
     create_home: yes
-    home: /var/lib/jenkins
+    home: /home/jenkins
 
 - name: Prep data volume
   filesystem: fstype=ext4 dev={{ jenkins_data_device }}

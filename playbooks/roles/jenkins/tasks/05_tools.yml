@@ -14,7 +14,7 @@
 
 - name: Add Postgres repo to sources list
   tags: [apt]
-  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main' state=present
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main' state=present
 
 - name: Install tools
   tags: [apt]
@@ -31,14 +31,12 @@
     update_cache: yes
     state: present
     name:
-      - jq=1.5+dfsg-*
-      - nodejs=8.*
-      - libssl1.0-dev
+      - nodejs=10.*
 
 - name: Install wkhtmltopdf with patched qt
   tags: [apt]
   apt:
-    deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bionic_amd64.deb
+    deb: https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.{{ ansible_distribution_release }}_amd64.deb
     state: present
 
 - name: Update Python 3 pip
@@ -49,7 +47,7 @@
 
 - name: Install AWS cli
   pip:
-    name: awscli==1.16.109
+    name: awscli==1.19.110
     state: present
 
 - name: Create AWS cli config folder
@@ -76,7 +74,7 @@
     assume_infrastructure_roles: "{{ aws_infrastructure_roles }}"
 
 - name: Install rbenv
-  git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
+  git: repo={{ item.repo }} dest=/home/jenkins/{{ item.path }}
   with_items:
     - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
     - {repo: "https://github.com/sstephenson/ruby-build.git", path: ".rbenv/plugins/ruby-build"}
@@ -86,18 +84,18 @@
 
 - name: Add rbenv to shell
   blockinfile:
-    dest: /var/lib/jenkins/.profile
+    dest: /home/jenkins/.profile
     owner: jenkins
     group: jenkins
     create: yes
     block: |
-      export RBENV_ROOT="/var/lib/jenkins/.rbenv"
+      export RBENV_ROOT="/home/jenkins/.rbenv"
       export PATH="${RBENV_ROOT}/bin:$PATH"
       eval "$(rbenv init -)"
 
 - name: Add gpg-agent conf directory
   file:
-    path: /var/lib/jenkins/.gnupg
+    path: /home/jenkins/.gnupg
     state: directory
     group: jenkins
     owner: jenkins
@@ -106,7 +104,7 @@
 - name: Add gpg-agent conf file
   copy:
     src: ../files/gpg-agent.conf
-    dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
+    dest: /home/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
     mode: 0600

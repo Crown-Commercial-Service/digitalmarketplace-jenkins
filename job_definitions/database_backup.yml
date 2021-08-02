@@ -32,7 +32,7 @@
         currentBuild.displayName = "#${BUILD_NUMBER} - ${STAGE}"
 
         withEnv([
-          "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials",
+          "DM_CREDENTIALS_REPO=/home/jenkins/digitalmarketplace-credentials",
           "CF_HOME=${pwd()}",
           "DUMP_FILE_NAME=${STAGE}-${new java.text.SimpleDateFormat('yyyyMMddHHmm').format(new Date())}.sql.gz.gpg"
         ]) {

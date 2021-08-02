@@ -34,7 +34,7 @@
             sh("make build")
           }
           stage('Push') {
-            docker_credentials = sh(script: 'sops -d /var/lib/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
+            docker_credentials = sh(script: 'sops -d /home/jenkins/digitalmarketplace-credentials/jenkins-vars/docker_credentials_env.enc', returnStdout: true).trim()
             withEnv(docker_credentials.tokenize("\n")) {
               sh("set +x; docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}")
             }
@@ -54,7 +54,7 @@
             if (SCAN.toString() == "true") {
               sh 'rm -rf reports && mkdir reports'
               ansiColor('xterm') {
-                sh 'make scan DM_CREDENTIALS_REPO="/var/lib/jenkins/digitalmarketplace-credentials" REPORTS="reports"'
+                sh 'make scan DM_CREDENTIALS_REPO="/home/jenkins/digitalmarketplace-credentials" REPORTS="reports"'
               }
               publishHTML reportName: "Snyk reports", reportDir: "reports", reportFiles: "**/snyk_report.html"
             } else {

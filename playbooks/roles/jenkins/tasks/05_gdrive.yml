@@ -2,13 +2,13 @@
 
 - name: Install gdrive (google drive command line interface client)
   get_url:
-    url: "https://github.com/gdrive-org/gdrive/releases/download/2.1.0/gdrive-linux-x64"
+    url: "https://raw.githubusercontent.com/AnimMouse/gdrive-binaries/master/linux/gdrive-linux-x64"
     dest: /usr/local/bin/gdrive
-    checksum: sha1:6ef7c740e980358a9a5de36c1aac7ea375319aa3
+    checksum: sha1:4fd8391b300cac45963e53da44dcfe68da08d843
     mode: 0755
 
 - name: Add local .gdrive directory
-  file: path=/var/lib/jenkins/.gdrive state=directory owner=jenkins group=jenkins
+  file: path=/home/jenkins/.gdrive state=directory owner=jenkins group=jenkins
 
 - name: Create token_v2.json file in .gdrive directory
-  template: src=gdrive_token_v2.json.j2 dest=/var/lib/jenkins/.gdrive/token_v2.json owner=jenkins group=jenkins mode=600
+  template: src=gdrive_token_v2.json.j2 dest=/home/jenkins/.gdrive/token_v2.json owner=jenkins group=jenkins mode=600

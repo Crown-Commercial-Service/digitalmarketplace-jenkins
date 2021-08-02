@@ -106,7 +106,7 @@
             stage("Upload to drive") {
               sh('''
                 /usr/local/bin/gdrive \
-                  --config "/var/lib/jenkins/.gdrive" \
+                  --config "/home/jenkins/.gdrive" \
                   upload --delete \
                   --parent "{{ drive_folder }}" \
                   "${FILENAME}"

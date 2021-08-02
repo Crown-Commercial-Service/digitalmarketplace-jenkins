@@ -1,3 +1,3 @@
 Host *
   User git
-  IdentityFile /var/lib/jenkins/.ssh/github_com_and_enterprise
+  IdentityFile /home/jenkins/.ssh/github_com_and_enterprise
