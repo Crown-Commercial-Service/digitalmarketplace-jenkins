@@ -19,7 +19,7 @@
             }
             stage('Update jobs') {
               withEnv([
-                "DM_CREDENTIALS_REPO=/var/lib/jenkins/digitalmarketplace-credentials"
+                "DM_CREDENTIALS_REPO=/home/jenkins/digitalmarketplace-credentials"
                 ]) {
                  sh('make jobs LOCALHOST=true') 
                 }

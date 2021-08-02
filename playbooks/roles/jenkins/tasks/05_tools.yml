@@ -74,7 +74,7 @@
     assume_infrastructure_roles: "{{ aws_infrastructure_roles }}"
 
 - name: Install rbenv
-  git: repo={{ item.repo }} dest=/var/lib/jenkins/{{ item.path }}
+  git: repo={{ item.repo }} dest=/home/jenkins/{{ item.path }}
   with_items:
     - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
     - {repo: "https://github.com/sstephenson/ruby-build.git", path: ".rbenv/plugins/ruby-build"}
@@ -84,18 +84,18 @@
 
 - name: Add rbenv to shell
   blockinfile:
-    dest: /var/lib/jenkins/.profile
+    dest: /home/jenkins/.profile
     owner: jenkins
     group: jenkins
     create: yes
     block: |
-      export RBENV_ROOT="/var/lib/jenkins/.rbenv"
+      export RBENV_ROOT="/home/jenkins/.rbenv"
       export PATH="${RBENV_ROOT}/bin:$PATH"
       eval "$(rbenv init -)"
 
 - name: Add gpg-agent conf directory
   file:
-    path: /var/lib/jenkins/.gnupg
+    path: /home/jenkins/.gnupg
     state: directory
     group: jenkins
     owner: jenkins
@@ -104,7 +104,7 @@
 - name: Add gpg-agent conf file
   copy:
     src: ../files/gpg-agent.conf
-    dest: /var/lib/jenkins/.gnupg/gpg-agent.conf
+    dest: /home/jenkins/.gnupg/gpg-agent.conf
     group: jenkins
     owner: jenkins
     mode: 0600

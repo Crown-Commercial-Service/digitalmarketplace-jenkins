@@ -8,7 +8,7 @@
     mode: 0755
 
 - name: Add local .gdrive directory
-  file: path=/var/lib/jenkins/.gdrive state=directory owner=jenkins group=jenkins
+  file: path=/home/jenkins/.gdrive state=directory owner=jenkins group=jenkins
 
 - name: Create token_v2.json file in .gdrive directory
-  template: src=gdrive_token_v2.json.j2 dest=/var/lib/jenkins/.gdrive/token_v2.json owner=jenkins group=jenkins mode=600
+  template: src=gdrive_token_v2.json.j2 dest=/home/jenkins/.gdrive/token_v2.json owner=jenkins group=jenkins mode=600

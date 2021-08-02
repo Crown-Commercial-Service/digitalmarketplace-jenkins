@@ -1,7 +1,7 @@
 [jenkins]
 # ci.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol06bc719ccbe9a20db
 # ci3.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol00bfc5f17f9313c72
-ci-test.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol047e32fa298bd56c9
+ci-test.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol057eaebd172e43435
 
 [jenkins:vars]
 ansible_python_interpreter=/usr/bin/python3
