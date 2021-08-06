@@ -62,7 +62,7 @@
                 git url: 'git@github.com:alphagov/digitalmarketplace-scripts.git', branch: 'main', credentialsId: 'github_com_and_enterprise', poll: true
                 sh('''
                   git clean -fdx
-                  git reset --hard origin/master
+                  git reset --hard origin/main
 
                   pip install -U digitalmarketplace-developer-tools
                   invoke virtualenv
