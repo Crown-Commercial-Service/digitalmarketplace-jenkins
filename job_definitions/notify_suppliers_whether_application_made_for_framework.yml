@@ -29,7 +29,7 @@
               STAGE={{ environment }}
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-release
+              CHANNEL=#dm-2ndline
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
@@ -39,7 +39,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-release
+              CHANNEL=#dm-2ndline
     builders:
       - shell: |
           if [ "$DRY_RUN" = "true" ]; then

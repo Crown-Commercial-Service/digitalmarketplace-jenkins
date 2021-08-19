@@ -20,7 +20,7 @@
       - choice:
           name: CHANNEL
           choices:
-            - "#dm-release"
+            - "#dm-2ndline"
             - "#dm-2ndline"
       - string:
           name: PROJECT
@@ -46,7 +46,7 @@
 
           USERNAME = os.getenv('USERNAME', 'deploy')
           ICON = os.getenv('ICON', ':shipit:')
-          CHANNEL = os.getenv('CHANNEL', '#dm-release')
+          CHANNEL = os.getenv('CHANNEL', '#dm-2ndline')
           SLACK_URL = '{{ jenkins_slack_dm2ndline_url }}' if CHANNEL == '#dm-2ndline' else '{{ jenkins_slack_dmrelease_url }}'
 
           TEXT = os.getenv('TEXT', '')

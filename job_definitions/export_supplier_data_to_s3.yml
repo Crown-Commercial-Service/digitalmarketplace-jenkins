@@ -24,7 +24,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL={{'#dm-2ndline' if environment == 'production' else '#dm-release'}}
+              CHANNEL=#dm-2ndline
     builders:
       - shell: |
 
