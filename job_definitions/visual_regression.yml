@@ -46,7 +46,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-release
+              CHANNEL=#dm-2ndline
     builders:
       - conditional-step:
           condition-kind: strings-match
@@ -137,7 +137,7 @@
                   STAGE={{ environment }}
                   STATUS=SUCCESS
                   URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
-                  CHANNEL=#dm-release
+                  CHANNEL=#dm-2ndline
 
       - conditional-step:
           condition-kind: and
@@ -159,5 +159,5 @@
                   STAGE={{ environment }}
                   STATUS=APPROVED
                   URL=<${BUILD_URL}Visual_Regression_Test_Report|${BUILD_DISPLAY_NAME}>
-                  CHANNEL=#dm-release
+                  CHANNEL=#dm-2ndline
 {% endfor %}
