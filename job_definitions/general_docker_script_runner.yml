@@ -17,7 +17,7 @@
               ICON=:whale:
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
           - project: notify-slack
             condition: UNSTABLE_OR_WORSE
             predefined-parameters: |
@@ -26,7 +26,7 @@
               ICON=:railfail:
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
     builders:
       - shell: |
           docker run --rm digitalmarketplace/scripts $RUN_COMMAND

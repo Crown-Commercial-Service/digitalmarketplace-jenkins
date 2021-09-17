@@ -51,7 +51,7 @@
               STAGE={{ environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
           - project: notify-slack
             condition: SUCCESS
             predefined-parameters: |
@@ -61,7 +61,7 @@
               STAGE={{ environment }}
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
     builders:
       - shell: |
           if [ "$DRY_RUN" = "true" ]; then

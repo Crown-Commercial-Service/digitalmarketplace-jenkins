@@ -56,7 +56,7 @@
       - ansicolor
     dsl: |
 
-      def notify_slack(icon, status, channel = "#dm-2ndline") {
+      def notify_slack(icon, status, channel = "#dm-release") {
         build job: "notify-slack",
               parameters: [
                 string(name: 'USERNAME', value: '{{ test_type.slack_username }}'),

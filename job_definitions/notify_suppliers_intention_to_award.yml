@@ -71,7 +71,7 @@
                     string(name: 'USERNAME', value: 'notify-suppliers-of-intention-to-award-(41)'),
                     string(name: 'ICON', value: ':e-mail:'),
                     string(name: 'JOB', value: "Notify suppliers of Intention To Award (41)"),
-                    string(name: 'CHANNEL', value: "#dm-2ndline"),
+                    string(name: 'CHANNEL', value: "#dm-release"),
                     text(name: 'STATUS', value: "SUCCESS"),
                     text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
                   ]

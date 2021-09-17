@@ -57,7 +57,7 @@
               STAGE={{ job.environment }}
               STATUS=FAILED
               URL=<${BUILD_URL}functional_test_report|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
           - project: notify-slack
             condition: SUCCESS
             predefined-parameters: |
@@ -67,7 +67,7 @@
               STAGE={{ job.environment }}
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
     builders:
       - build-name-setter:
           template: "#${BUILD_NUMBER} - ${FT_BRANCH_NAME}"

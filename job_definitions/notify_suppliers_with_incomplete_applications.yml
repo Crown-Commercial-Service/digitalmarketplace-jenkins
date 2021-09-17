@@ -48,7 +48,7 @@
               STAGE={{ environment }}
               STATUS=SUCCESS
               URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
-              CHANNEL=#dm-2ndline
+              CHANNEL=#dm-release
     builders:
       - shell: |
           if [ "$DRY_RUN" = "true" ]; then
