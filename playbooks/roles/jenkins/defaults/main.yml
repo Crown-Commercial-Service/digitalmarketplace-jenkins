@@ -25,7 +25,7 @@ dist_tools:
   - fonts-liberation
   - git
   - gnupg2
-  - google-chrome-stable=92.0.4515.131-1
+  - google-chrome-stable=94.0.4606.71-1
   - jq
   - libffi-dev
   - libpq-dev
