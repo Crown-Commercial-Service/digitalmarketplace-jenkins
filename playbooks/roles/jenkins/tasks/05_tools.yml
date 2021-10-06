@@ -40,7 +40,7 @@
   apt:
     update_cache: yes
     state: present
-    name: "{{ dist_tools }}"
+    name: "{{ dist_tools_unpinned + dist_tools_pinned }}"
   notify:
     - restart jenkins
 

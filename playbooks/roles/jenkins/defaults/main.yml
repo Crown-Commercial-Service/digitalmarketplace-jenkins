@@ -18,14 +18,13 @@ jenkins_java_args: ""
 jobs: '*'
 jobs_disabled: false
 
-dist_tools:
+dist_tools_unpinned:
   - acl
   - bzip2
   - curl
   - fonts-liberation
   - git
   - gnupg2
-  - google-chrome-stable=94.0.4606.71-1
   - jq
   - libffi-dev
   - libpq-dev
@@ -44,6 +43,9 @@ dist_tools:
   - xvfb
   - zip
   - zlib1g-dev
+
+dist_tools_pinned:
+  - google-chrome-stable=94.0.4606.71-1
 
 dm_applications:
   - api
