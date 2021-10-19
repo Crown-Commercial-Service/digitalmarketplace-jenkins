@@ -64,13 +64,13 @@ If you encounter Python 3.x/OpenSSL errors when running the Ansible playbooks, t
 
 ```bash
 $ pip install certifi
-$ export SSL_CERT_FILE=venv/lib/python3.6/site-packages/certifi/cacert.pem
+$ export SSL_CERT_FILE=venv/lib/python3.8/site-packages/certifi/cacert.pem
 ```
 
 If you still get a certificate error, try:
 
 ```bash
-$ open /Applications/Python\ 3.6/Install\ Certificates.command
+$ open /Applications/Python\ 3.8/Install\ Certificates.command
 ```
 
 ## SSH access to Jenkins
