@@ -5,7 +5,7 @@ An Ansible project to manage the Digital Marketplace [Jenkins instance](https://
 We use [Jenkins job builder](https://jenkins-job-builder.readthedocs.org/en/latest/index.html) for managing jobs.
 
 The infrastructure that Jenkins runs on is now managed via our Terraform code, found in the [digitalmarketplace-aws
-repo](https://github.com/alphagov/digitalmarketplace-aws/tree/main/terraform/modules/jenkins).
+repo](https://github.com/Crown-Commercial-Service/digitalmarketplace-aws/tree/main/terraform/modules/jenkins).
 
 ## Making changes to Jenkins
 
@@ -102,7 +102,7 @@ docker run digitalmarketplace/scripts scripts/my-amazing-script.py arg1 arg2 ...
 This removes the need for activating a virtualenv, or installing requirements with pip on the Jenkins
 instance itself.
 
-[More information on running scripts with Docker](https://github.com/alphagov/digitalmarketplace-scripts#running-scripts-with-docker)
+[More information on running scripts with Docker](https://github.com/Crown-Commercial-Service/digitalmarketplace-scripts#running-scripts-with-docker)
 
 
 ## Plugins
@@ -128,17 +128,17 @@ us to maintain multiple Jenkins instances (if required). These credentials are d
 
 ## Creating a new Jenkins instance
 
-The process for creating a new instance is documented in [the team manual](https://alphagov.github.io/digitalmarketplace-manual/2nd-line-runbook/rebuilding-jenkins.html).
+The process for creating a new instance is documented in [the team manual](https://crown-commercial-service.github.io/digitalmarketplace-manual/2nd-line-runbook/rebuilding-jenkins.html).
 
 ## Logging
 
 The Jenkins server captures the following logs:
 
 - Events, using the [Jenkins Audit Trail plugin](https://wiki.jenkins.io/display/JENKINS/Audit+Trail+Plugin)
-- Access logs (see [PR #171](https://github.com/alphagov/digitalmarketplace-jenkins/pull/171)
-- SSH Access logs (see [PR #172](https://github.com/alphagov/digitalmarketplace-jenkins/pull/172)
+- Access logs (see [PR #171](https://github.com/Crown-Commercial-Service/digitalmarketplace-jenkins/pull/171))
+- SSH Access logs (see [PR #172](https://github.com/Crown-Commercial-Service/digitalmarketplace-jenkins/pull/172))
 
-The log files are sent to CloudWatch for long term storage. See PR [PR #173](https://github.com/alphagov/digitalmarketplace-jenkins/pull/173)
+The log files are sent to CloudWatch for long term storage. See PR [PR #173](https://github.com/Crown-Commercial-Service/digitalmarketplace-jenkins/pull/173)
 and the `awslogs-config` section in `playbooks/jenkins_playbook.yml` for more details.
 
 ## Licence
