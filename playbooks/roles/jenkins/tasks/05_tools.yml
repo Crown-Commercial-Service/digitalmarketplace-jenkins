@@ -30,7 +30,7 @@
 - name: Install Chromedriver binary
   tags: [apt]
   unarchive:
-    src: "https://chromedriver.storage.googleapis.com/96.0.4664.45/chromedriver_linux64.zip"
+    src: "https://chromedriver.storage.googleapis.com/98.0.4758.48/chromedriver_linux64.zip"
     dest: /usr/local/bin
     mode: 0755
     remote_src: yes
