@@ -1,24 +1,24 @@
-{# frameworks = (framework_slug, drive_folder, enabled?) #}
+{# frameworks = (framework_slug, enabled?) #}
 
-{#    ('digital-outcomes-and-specialists-6', '1QSiKocZbuQeGXqeIKMoNDK4RvvFeNtnb', False),    #}
-{#    ('digital-outcomes-and-specialists-7', '1PZQp2c_3O3fe82POThq6Gea6AHD1L2b0', False),    #}
-{#    ('digital-outcomes-and-specialists-8', '19C-pOTvBh8ki9LOeWBf3AUm_DDVkzqUR', False),    #}
-{#    ('digital-outcomes-and-specialists-9', '1x5-70gVBb2sFbxmVObs8qWUkDmHwUE-4', False),    #}
-{#    ('g-cloud-13', '16gkAlN9oR1JTakk1c0blPA_zabcIWRSG', False)    #}
-{#    ('g-cloud-14', '1zi8hwhymblSXsSgWsVcsIT1nHX5j-0Pb', False)    #}
-{#    ('g-cloud-15', '1oN1UoDNYXWoJruHzfGO9yC0SvfDt9wWN', False)    #}
-{#    ('g-cloud-16', '1fWI3LrnPU1cHVYo_83KWfgND-lng2ztM', False)    #}
+{#    ('digital-outcomes-and-specialists-6', False),    #}
+{#    ('digital-outcomes-and-specialists-7', False),    #}
+{#    ('digital-outcomes-and-specialists-8', False),    #}
+{#    ('digital-outcomes-and-specialists-9', False),    #}
+{#    ('g-cloud-13', False)    #}
+{#    ('g-cloud-14', False)    #}
+{#    ('g-cloud-15', False)    #}
+{#    ('g-cloud-16', False)    #}
 
 {% set frameworks = (
-    ('g-cloud-12', '1LVGqBCRhjpl2OrKaUouh8rEiV3dpBep_', False),
-    ('digital-outcomes-and-specialists-5', '1KqVLn0yHBt3Sd7BJrNwo1mw7C31HCpPB', False),
+    ('g-cloud-12', False),
+    ('digital-outcomes-and-specialists-5', False),
 ) %}
 
 {% set environments = ['production'] %}
 ---
 
 {% for environment in environments %}
-{% for framework, drive_folder, enabled in frameworks %}
+{% for framework, enabled in frameworks %}
 - job:
     name: hourly-stats-snapshot-{{ framework }}-{{ environment }}
     display-name: Snapshot stats for {{ framework }} - {{ environment }} - Hourly Audit Event Dump
@@ -55,10 +55,10 @@
 {% endfor %}
 
 {% for environment in environments %}
-{% for framework, drive_folder, enabled in frameworks %}
+{% for framework, enabled in frameworks %}
 - job:
     name: daily-stats-snapshot-{{ framework }}-{{ environment }}
-    display-name: "Snapshot stats for {{ framework }} - {{ environment }} - Daily GDrive Dump"
+    display-name: "Snapshot stats for {{ framework }} - {{ environment }} - Daily email"
 {% if not enabled %}
     disabled: true
 {% endif %}
@@ -66,7 +66,7 @@
     triggers:
       - timed: "H 23 * * *"
     description: |
-      <p>Daily export of application statistics to Google Drive. Also logs to audit event.</p>
+      <p>Daily export of application statistics to email. Also logs to audit event.</p>
     dsl: |
 
       def notify_slack() {
@@ -99,17 +99,9 @@
                     scripts/framework-applications/snapshot-framework-stats.py \
                       "{{ environment }}" \
                       "{{ framework }}" \
-                      --outfile="${FILENAME}"
+                      --outfile="${FILENAME}" \
+                      --notify="${NOTIFY_API_TOKEN}"
 
-              ''')
-            }
-            stage("Upload to drive") {
-              sh('''
-                /usr/local/bin/gdrive \
-                  --config "/home/jenkins/.gdrive" \
-                  upload --delete \
-                  --parent "{{ drive_folder }}" \
-                  "${FILENAME}"
               ''')
             }
           } catch(err) {
