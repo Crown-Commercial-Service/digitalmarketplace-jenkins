@@ -32,8 +32,15 @@ if [ ! -z ${LOCALHOST+x} ]
 then 
   PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
   EXTRA_VARS+=(--connection "local")
-elif [ ! -z ${DMP_SO_CI_DANGEROUS_AND_EXPERIMENTAL_DO_NOT_USE+x} ]
+elif [ ! -z ${DMP_SO_CI+x} ]
 then
+  # Many tags that work for jenkins don't yet work for dmp_so_jenkins. Only allow the tags that are known to be safe.
+  if [ "${TAGS}" != "jenkins" -a "${TAGS}" != "apt" -a "${TAGS}" != "keys" ]
+  then
+    echo "Unsupported tag for dmp-so-ci: ${TAGS}"
+    exit 1
+  fi
+
   PLAYBOOK="playbooks/jenkins_playbook_dmp_so.yml"
   EXTRA_VARS+=(--inventory "playbooks/hosts")
 else
