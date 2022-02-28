@@ -1,2 +1,2 @@
 # See https://github.com/ansible-community/ansible-build-data for changelog
-ansible==5.3.0
+ansible==5.4.0
