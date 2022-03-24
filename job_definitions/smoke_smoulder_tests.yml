@@ -73,11 +73,15 @@
         try {
           stage('Prepare') {
             git url: 'git@github.com:alphagov/digitalmarketplace-functional-tests.git', branch: '${FT_BRANCH_NAME}', credentialsId: 'github_com_and_enterprise'
-            sh("rbenv install -s")
-            sh("gem install bundler --conservative")
+            sh('''
+              source /home/jenkins/.profile
+              rbenv install -s
+              gem install bundler --conservative
+            ''')
           }
           stage('{{ test_type.stage_name }}') {
             sh('''
+              source /home/jenkins/.profile
               set +x # do not echo credentials - remove for debugging
 
               export DM_API_DOMAIN="{{ app_urls[environment].data_api }}"
