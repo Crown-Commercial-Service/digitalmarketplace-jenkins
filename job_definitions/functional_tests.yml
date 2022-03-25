@@ -73,8 +73,6 @@
           template: "#${BUILD_NUMBER} - ${FT_BRANCH_NAME}"
           macro: true
       - shell: |
-          source /home/jenkins/.profile
-          rbenv install -s
           gem install bundler --conservative
 
           set +x # do not echo credentials - remove for debugging
