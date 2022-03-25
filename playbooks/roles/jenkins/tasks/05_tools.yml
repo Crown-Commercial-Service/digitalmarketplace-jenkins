@@ -92,26 +92,6 @@
     assume_cloudtrail_roles: "{{ cloudtrail_validate_logs_roles }}"
     assume_infrastructure_roles: "{{ aws_infrastructure_roles }}"
 
-- name: Install rbenv
-  git: repo={{ item.repo }} dest=/home/jenkins/{{ item.path }}
-  with_items:
-    - {repo: "https://github.com/sstephenson/rbenv.git", path: ".rbenv"}
-    - {repo: "https://github.com/sstephenson/ruby-build.git", path: ".rbenv/plugins/ruby-build"}
-    - {repo: "https://github.com/carsomyr/rbenv-bundler.git", path: ".rbenv/plugins/bundler"}
-  become: yes
-  become_user: jenkins
-
-- name: Add rbenv to shell
-  blockinfile:
-    dest: /home/jenkins/.profile
-    owner: jenkins
-    group: jenkins
-    create: yes
-    block: |
-      export RBENV_ROOT="/home/jenkins/.rbenv"
-      export PATH="${RBENV_ROOT}/bin:$PATH"
-      eval "$(rbenv init -)"
-
 - name: Add gpg-agent conf directory
   file:
     path: /home/jenkins/.gnupg
