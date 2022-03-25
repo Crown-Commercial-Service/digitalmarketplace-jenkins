@@ -32,10 +32,6 @@ if [ ! -z ${LOCALHOST+x} ]
 then 
   PLAYBOOK="playbooks/jenkins_playbook_local.yml"; 
   EXTRA_VARS+=(--connection "local")
-elif [ ! -z ${DMP_SO_CI_DANGEROUS_AND_EXPERIMENTAL_DO_NOT_USE+x} ]
-then
-  PLAYBOOK="playbooks/jenkins_playbook_dmp_so.yml"
-  EXTRA_VARS+=(--inventory "playbooks/hosts")
 else
   PLAYBOOK="playbooks/jenkins_playbook.yml"
   EXTRA_VARS+=(--inventory "playbooks/hosts")
