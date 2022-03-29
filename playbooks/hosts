@@ -6,10 +6,3 @@ ci.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme
 [jenkins:vars]
 ansible_python_interpreter=/usr/bin/python3
 ec2_region=eu-west-1
-
-[jenkins_dmp_so]
-dmp-so-ci.marketplace.team ansible_user=ubuntu jenkins_data_device=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0a0785262cce46c9f
-
-[jenkins_dmp_so:vars]
-ansible_python_interpreter=/usr/bin/python3
-ec2_region=eu-west-2
