@@ -281,9 +281,6 @@
 
       {% if application in dm_db_applications %}
       stage('DB migration on production') {
-        milestone()
-        input(message: "Release to production?")
-        milestone()
         throttle(['AppPipelines']) {
           node {
             build job: "database-migration-paas", parameters: [
@@ -297,11 +294,6 @@
       {% endif %}
 
       stage('Release to production') {
-        {% if application not in dm_db_applications %}
-        milestone()
-        input(message: "Release to production?")
-        milestone()
-        {% endif %}
         throttle(['AppPipelines']) {
           node {
             build job: "release-app-paas", parameters: [
