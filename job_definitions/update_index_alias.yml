@@ -23,11 +23,11 @@
           description: >
             The name of the index the alias will point to to, e.g.
             'g-cloud-9-2018-01-26'.
-      - extended-choice:
+      - choice:
           name: DELETE_OLD_INDEX
-          type: radio
-          default: no
-          value: yes,no
+          choices:
+            - "no"
+            - "yes"
           description: >
             If there is an index with the alias '<alias>-old' and
             this option is enabled then that index will be deleted.

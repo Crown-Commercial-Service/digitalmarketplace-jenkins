@@ -8,11 +8,12 @@
     triggers:
       - timed: "0 3 * * *"
     parameters:
-      - extended-choice:
+      - choice:
           name: STAGE
-          type: radio
-          default-value: production
-          value: preview,staging,production
+          choices:
+            - production
+            - staging
+            - preview
     dsl: |
 
       def notify_slack(icon, status) {
