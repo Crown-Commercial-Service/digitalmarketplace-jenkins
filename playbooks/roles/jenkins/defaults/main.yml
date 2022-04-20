@@ -72,7 +72,6 @@ jenkins_plugins:
   - build-user-vars-plugin
   - conditional-buildstep
   - cvs
-  - extended-choice-parameter
   - git
   - github
   - github-oauth
