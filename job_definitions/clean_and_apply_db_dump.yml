@@ -9,7 +9,13 @@
     concurrent: false
 {% if environment == 'staging' %}
     triggers:
+      {# Every Sunday at 4:00am #}
       - timed: "0 4 * * 0"
+{% endif %}
+{% if environment == 'preview' %}
+    triggers:
+      {# 1st of each month at 4:00am #}
+      - timed: "0 4 1 * *"
 {% endif %}
     dsl: |
 
