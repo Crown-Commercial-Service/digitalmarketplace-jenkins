@@ -96,7 +96,7 @@
               notify_slack(':kaboom:', '{{ stage.name }} - FAILED')
               echo "Error caught"
               currentBuild.result = 'FAILURE'
-              return
+              throw e
             }
           }
         }

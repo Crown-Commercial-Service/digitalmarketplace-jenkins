@@ -75,7 +75,7 @@
             notify_slack(':kaboom:', 'create-new-aws-token - FAILED')
             echo "Error caught"
             currentBuild.result = 'FAILURE'
-            return
+            throw e
           }
         }
       }
@@ -144,7 +144,7 @@
             notify_slack(':kaboom:', 'deactivate-old-aws-token - FAILED')
             echo "Error caught"
             currentBuild.result = 'FAILURE'
-            return
+            throw e
           }
         }
       }
