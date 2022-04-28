@@ -67,7 +67,7 @@
       stage("Add new token") {
         node {
           try {
-            sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh create-new-aws-token "${STAGE}"')
+            sh('docker run --rm --env GITHUB_ACCESS_TOKEN --volume /home/jenkins/.aws/config:/root/.aws/config digitalmarketplace/scripts scripts/rotate-api-tokens.sh create-new-aws-token "${STAGE}"')
 
             notify_slack(':spinner:', 'create-new-aws-token - SUCCESS')
 
@@ -75,7 +75,7 @@
             notify_slack(':kaboom:', 'create-new-aws-token - FAILED')
             echo "Error caught"
             currentBuild.result = 'FAILURE'
-            return
+            throw e
           }
         }
       }
@@ -136,7 +136,7 @@
       stage("Deactivate old token") {
         node {
           try {
-            sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh deactivate-old-aws-token "${STAGE}"')
+            sh('docker run --rm --env GITHUB_ACCESS_TOKEN --volume /home/jenkins/.aws/config:/root/.aws/config digitalmarketplace/scripts scripts/rotate-api-tokens.sh deactivate-old-aws-token "${STAGE}"')
 
             notify_slack(':spinner:', 'deactivate-old-aws-token - SUCCESS')
 
@@ -144,7 +144,7 @@
             notify_slack(':kaboom:', 'deactivate-old-aws-token - FAILED')
             echo "Error caught"
             currentBuild.result = 'FAILURE'
-            return
+            throw e
           }
         }
       }
