@@ -1,0 +1,154 @@
+---
+- job:
+    name: rotate-AWS-access-token
+    display-name: "Rotate AWS access token"
+    project-type: pipeline
+    description: |
+      <p>Rotate the AWS access token.</p>
+
+      <p>This pipeline requires a lot of user interaction to do its job:</p>
+
+      <ol>
+        <li>
+          <p>
+          The 'Merge PR' step requires you to approve and merge a PR that the job creates in
+          <a href="https://www.github.com/alphagov/digitalmarketplace-credentials/pulls">
+          digitalmarketplace-credentials
+          </a>.
+          </p>
+          <p>
+          You will need to checkout the changes locally to review them.
+          </p>
+        </li>
+        <li>
+          <p>
+          The 'Confirm success' step requires you to confirm that the new AWS token is working and being used.
+          </p>
+        </li>
+      </ol>
+
+      <p>
+      Every point where user interaction is required Jenkins will prompt you
+      <em>twice</em> to make sure you have done it.
+      </p>
+
+      <p>
+      This means the pipeline will prompt you a lot. Just remember, if the
+      pipeline isn’t doing anything, that means it’s waiting for you!
+      </p>
+
+      <p>
+      This pipeline automates <a href="https://crown-commercial-service.github.io/digitalmarketplace-manual/2nd-line-runbook/rotate-keys.html#rotating-aws-access-keys">the old manual process</a>.
+      Once we're comfortable that the pipeline is reliable, we may be able to remove some of the manual checks.
+      </p>
+
+    concurrent: false
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - production
+          description: Production includes staging
+    dsl: |
+      def notify_slack(icon, status) {
+        build job: "notify-slack",
+        parameters: [
+          string(name: 'USERNAME', value: "rotate-aws-token"),
+          string(name: 'ICON', value: icon),
+          string(name: 'JOB', value: "Rotate AWS access token for ${STAGE}"),
+          string(name: 'CHANNEL', value: "#dm-release"),
+          text(name: 'STAGE', value: "${STAGE}"),
+          text(name: 'STATUS', value: status),
+          text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+        ]
+      }
+
+      stage("Add new token") {
+        node {
+          try {
+            sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh create-new-aws-token "${STAGE}"')
+
+            notify_slack(':spinner:', 'create-new-aws-token - SUCCESS')
+
+          } catch(e) {
+            notify_slack(':kaboom:', 'create-new-aws-token - FAILED')
+            echo "Error caught"
+            currentBuild.result = 'FAILURE'
+            return
+          }
+        }
+      }
+
+      stage('Merge PR') {
+        milestone()
+        waitUntil {
+          try {
+            input(message: "1/2: Do not continue until the Pull Request updating the AWS access token has been merged to master.")
+            input(message: "2/2: Have you definitely merged the dm-credentials Pull Request? Great. Go ahead.")
+            return true
+          } catch(error) {
+            input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. You will then need to manually remove the new AWS token. If not, click 'Proceed' to continue.")
+            return false
+          }
+        }
+        milestone()
+      }
+
+      stage('Redeploy environment') {
+        if (STAGE == "production") {
+          build job: "rerelease-all-apps", parameters: [
+            string(name: "STAGE", value: "staging")
+          ]
+        }
+
+        build job: "rerelease-all-apps", parameters: [
+          string(name: "STAGE", value: "${STAGE}")
+        ]
+      }
+
+      stage("Confirm success") {
+        milestone()
+        waitUntil {
+          try {
+            input(message: "1/2: Check that the new access token is working. Try accessing a restricted document on Digital Marketplace for the relevant stage(s). For example, log in as a supplier and download/upload a service document.")
+            input(message: "2/2: Are you sure the new access token is working? Great. Go ahead.")
+            return true
+          } catch(error) {
+            input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. You will then need to manually tidy up the AWS access tokens for this environment. If not, click 'Proceed' to continue.")
+            return false
+          }
+        }
+        milestone()
+        waitUntil {
+          try {
+            input(message: "1/2: In the AWS console, check that the new key has been used (and that the old key has not been used since the release). This information may take up to 5 minutes to appear in the AWS console. If it doesn’t appear, check if logs for the stage are appearing in CloudWatch (the PaaS apps use the AWS access key to send logs to CloudWatch). If there are no logs in CloudWatch, the key is probably invalid/misconfigured and you will need to start again.")
+            input(message: "2/2: Are you sure the new access token is being used? Great. Go ahead.")
+            return true
+          } catch(error) {
+            input(message: "If you *definitely* want to abandon this pipeline, click 'Abort' again. You will then need to manually tidy up the AWS access tokens for this environment. If not, click 'Proceed' to continue.")
+            return false
+          }
+        }
+        milestone()
+      }
+
+      stage("Deactivate old token") {
+        node {
+          try {
+            sh('docker run --rm -e GITHUB_ACCESS_TOKEN digitalmarketplace/scripts scripts/rotate-api-tokens.sh deactivate-old-aws-token "${STAGE}"')
+
+            notify_slack(':spinner:', 'deactivate-old-aws-token - SUCCESS')
+
+          } catch(e) {
+            notify_slack(':kaboom:', 'deactivate-old-aws-token - FAILED')
+            echo "Error caught"
+            currentBuild.result = 'FAILURE'
+            return
+          }
+        }
+      }
+
+      stage("Notify Slack") {
+        notify_slack(':confetti_ball:', 'COMPLETE')
+      }
