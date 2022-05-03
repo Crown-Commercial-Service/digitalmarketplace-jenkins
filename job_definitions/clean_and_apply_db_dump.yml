@@ -7,6 +7,11 @@
     project-type: pipeline
     description: "Takes the latest production database dump, cleans it, and applies it to target stage. Also S3."
     concurrent: false
+    properties:
+      - throttle:
+          categories:
+            - clean-database-dump
+          option: category
 {% if environment == 'staging' %}
     triggers:
       {# Every Sunday at 4:00am #}
