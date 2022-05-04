@@ -47,7 +47,7 @@ dist_tools_unpinned:
   - zlib1g-dev
 
 dist_tools_pinned:
-  - google-chrome-stable=98.0.4758.80-1
+  - google-chrome-stable=101.0.4951.41-1
 
 dm_applications:
   - api
