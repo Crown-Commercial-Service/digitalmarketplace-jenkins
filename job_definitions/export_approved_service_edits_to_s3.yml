@@ -1,0 +1,23 @@
+- job:
+    name: "export-approved-service-edits-production"
+    display-name: "Export approved service edits - production"
+    project-type: freestyle
+    description: "Runs the export-approved-service-edits.py script, which uploads the generated CSV file to the reports S3 bucket"
+    triggers:
+      {# 2nd of each month at 3:00am #}
+      - timed: "0 3 2 * *"
+    publishers:
+      - trigger-parameterized-builds:
+          - project: notify-slack
+            condition: UNSTABLE_OR_WORSE
+            predefined-parameters: |
+              USERNAME=export-approved-service-edits
+              JOB='Export approved service edits - production'
+              ICON=:fire:
+              STAGE=production
+              STATUS=FAILED
+              URL=<${BUILD_URL}consoleFull|#${BUILD_NUMBER}>
+              CHANNEL='#dm-2ndline'
+    builders:
+      - shell: |
+          docker run --rm -e NOTIFY_API_TOKEN -e DM_DATA_API_TOKEN_PRODUCTION --user $(id -u) digitalmarketplace/scripts scripts/export-approved-service-edits.py --stage production "$(date --date='-1 month' +%Y-%m)" "$(date +%Y-%m)"
