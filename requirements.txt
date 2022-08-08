@@ -1,2 +1,2 @@
 # See https://github.com/ansible-community/ansible-build-data for changelog
-ansible==6.1.0
+ansible==6.2.0
