@@ -1,0 +1,48 @@
+- job:
+    name: release-app-aws
+    display-name: Release application to AWS
+    project-type: pipeline
+    description: Deploy an application to AWS
+    concurrent: true
+    parameters:
+      - choice:
+          name: STAGE
+          choices:
+            - preview
+            - staging
+            - production
+      - choice:
+          name: APPLICATION_NAME
+          choices:
+{% for application in dm_applications %}
+            - {{ application }}
+{% endfor %}
+    dsl: |
+      pipeline {
+          agent any
+          tools {
+              terraform 'Terraform'
+          }
+          options {
+              ansiColor('xterm')
+          }
+          parameters {
+              choice(name: "STAGE", choices: ["preview", "staging", "production"])
+              choice(name: "APPLICATION_NAME", choices: ["api", "search_api", "antivirus_api", "user-frontend", "briefs-frontend", "brief-responses-frontend", "buyer-frontend", "supplier-frontend", "admin-frontend", "router"])
+          }
+          stages {
+              stage('Pre-requisites'){
+                  steps{
+                      checkout([$class: 'GitSCM', branches: [[name: '*/dmp-migrate-poc-v1']], extensions: [], userRemoteConfigs: [[credentialsId: 'github_com_and_enterprise', url: 'https://github.com/Crown-Commercial-Service/digitalmarketplace-aws.git']]])
+                      sh 'python3 -m venv venv && make requirements'
+                  }
+              }
+              stage('Deploy'){
+                  steps {
+                      withAWS(roleAccount:'315835742569', role: 'digitalmarketplace-staging-ecs-deployment-jenkins-role') {
+                          sh 'make deploy-app-aws-native APPLICATION_NAME=${APPLICATION_NAME} STAGE=${STAGE}'
+                      }
+                  }
+              }
+          }
+      }
