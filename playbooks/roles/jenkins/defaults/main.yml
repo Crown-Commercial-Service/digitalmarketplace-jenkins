@@ -81,8 +81,10 @@ jenkins_plugins:
   - next-executions
   - nodejs
   - parameterized-trigger
+  - pipeline-aws
   - postbuildscript
   - rebuild
+  - terraform
   - throttle-concurrents
   - translation
   - workflow-aggregator  # aka 'Pipeline' suite
