@@ -1,2 +1,2 @@
 python-jenkins==1.7.0
-jenkins-job-builder==4.3.0
+jenkins-job-builder==5.0.1
