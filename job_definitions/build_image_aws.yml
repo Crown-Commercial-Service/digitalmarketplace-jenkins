@@ -49,26 +49,23 @@
       node {
           try {
               stage('Configure AWS Account ID') {
+                if (AWS_ACCOUNT == "main") {
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "398263320410"
+                }
                 if (AWS_ACCOUNT == "sandbox") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "935733975822"
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "458854535304"
+                }
+                if (AWS_ACCOUNT == "development") {
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "381494870249"
                 }
                 if (AWS_ACCOUNT == "preview") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "659769700005"
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "159609953067"
                 }
-                if (AWS_ACCOUNT == "test") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "031951151667"
+                if (AWS_ACCOUNT == "staging") {
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "685221540012"
                 }
-                if (AWS_ACCOUNT == "nft") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "243533761516"
-                }
-                if (AWS_ACCOUNT == "uat") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "463479836324"
-                }
-                if (AWS_ACCOUNT == "integration") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "836672299601"
-                }
-                if (AWS_ACCOUNT == "preproduction") {
-                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "259593444005"
+                if (AWS_ACCOUNT == "production") {
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "050019655025"
                 }
               }
               stage('Build AWS Docker Base Images') {
@@ -99,7 +96,7 @@
               }
               stage('Push Built Image to ECR Registry') {
                 dir("ccs-digitalmarketplace-${REPOSITORY}") {
-                  withAWS(roleAccount:"${DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-2') {
+                  withAWS(roleAccount:"${DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-2') {
                     git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-infra.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
                     sh 'git submodule init && git submodule update --recursive'
                     if (REPOSITORY == "api") {
