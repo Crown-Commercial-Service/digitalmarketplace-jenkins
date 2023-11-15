@@ -1,0 +1,154 @@
+- job:
+    name: build-image-aws
+    display-name: Build Docker image (AWS)
+    project-type: pipeline
+    description: Builds the docker image for consumption in AWS
+    concurrent: true
+    parameters:
+      - choice:
+          name: REPOSITORY
+          choices:
+{% for application in dm_applications %}
+            - {{ application }}
+{% endfor %}
+      - string:
+          name: RELEASE_NAME
+          description: "git ref (eg 'release-42') to checkout for building the artefact. This will also become the image release name."
+      - bool:
+          name: REBUILD
+          default: true
+          description: "Rerun the build even if the release already exists"
+      - string:
+          name: HEAD_BRANCH
+          default: "main"
+          description: "RELEASE_NAME must be present in this branch. *USE WITH CARE* - production releases should *ALWAYS* be present in main"
+      - bool:
+          name: MARK_LATEST
+          default: true
+          description: "Whether to mark the built image as the application's 'latest'"
+      - choice:
+          name: AWS_ACCOUNT
+          description: "The AWS Account in which to build the image"
+          choices:
+            - "sandbox"
+            - "preview"
+            - "test"
+            - "nft"
+            - "uat"
+            - "integration"
+            - "preproduction"
+            - "production"
+      - choice:
+          name: DOCKER_BUILD_BASE_IMAGES
+          default: "false"
+          description: "Whether or not to build the Docker Base images - for more info, see https://github.com/Crown-Commercial-Service/ccs-digitalmarketplace-aws-docker-base"
+          choices:
+            - "false"
+            - "true"
+    dsl: |
+      node {
+          try {
+              stage('Configure AWS Account ID') {
+                if (AWS_ACCOUNT == "sandbox") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "935733975822"
+                }
+                if (AWS_ACCOUNT == "preview") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "659769700005"
+                }
+                if (AWS_ACCOUNT == "test") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "031951151667"
+                }
+                if (AWS_ACCOUNT == "nft") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "243533761516"
+                }
+                if (AWS_ACCOUNT == "uat") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "463479836324"
+                }
+                if (AWS_ACCOUNT == "integration") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "836672299601"
+                }
+                if (AWS_ACCOUNT == "preproduction") {
+                  DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "259593444005"
+                }
+              }
+              stage('Build AWS Docker Base Images') {
+                dir('ccs-digitalmarketplace-aws-docker-base') {
+                  if (DOCKER_BUILD_BASE_IMAGES == "true") {
+                    git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-docker-base.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
+                    sh 'make build BASE_HTTP_BUILDSTATIC_IMAGE_NAME=digitalmarketplace/dmp-http-buildstatic BASE_HTTP_FRONTEND_IMAGE_NAME=digitalmarketplace/dmp-http-frontend BASE_HTTP_HEADLESS_IMAGE_NAME=digitalmarketplace/dmp-http-headless BASE_WSGI_IMAGE_NAME=digitalmarketplace/dmp-wsgi'
+                  } else {
+                    echo "Not building DMP AWS Docker Base images, continuing with the ${REPOSITORY} image build"
+                  }
+                }
+              }
+              stage('Build Application Image') {
+                dir("ccs-digitalmarketplace-${REPOSITORY}") {
+                  if (RELEASE_NAME ==~ /release-\d+/ && HEAD_BRANCH != "main") {
+                    input("WARNING: It is probably a bad idea to create a release- tagged image from a non-main HEAD_BRANCH!")
+                  }
+                  if (MARK_LATEST.toString() == "true" && HEAD_BRANCH != "main") {
+                    input("WARNING: It is probably a bad idea to mark a non-main HEAD_BRANCH image as 'latest'")
+                  }
+                  git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-${REPOSITORY}.git", branch: HEAD_BRANCH, credentialsId: 'github_com_and_enterprise'
+                  echo "Cleaning repository"
+                  sh 'git clean -fdx'
+                  echo "Checking out ${RELEASE_NAME}"
+                  sh 'git reset -- hard ${RELEASE_NAME}'
+                  sh 'make build'
+                }
+              }
+              stage('Push Built Image to ECR Registry') {
+                dir("ccs-digitalmarketplace-${REPOSITORY}") {
+                  withAWS(roleAccount:"${DMP_1_5_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-2') {
+                    git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-infra.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
+                    sh 'git submodule init && git submodule update --recursive'
+                    if (REPOSITORY == "api") {
+                      sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
+                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
+                      sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
+                      if (MARK_LATEST.toString() == "true") {
+                        sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
+                        sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
+                      }
+                      sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
+                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
+                      sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
+                      if (MARK_LATEST.toString() == "true") {
+                        sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
+                        sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
+                      }  
+                    } else {
+                      sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
+                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
+                      sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
+                      if (MARK_LATEST.toString() == "true") {
+                        sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
+                        sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
+                      }
+                      sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
+                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
+                      sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
+                      if (MARK_LATEST.toString() == "true") {
+                        sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
+                        sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
+                      }
+                    }
+                  }
+                }
+              }
+            } catch(err) {
+              currentBuild.result = 'FAILURE'
+              echo "Error: ${err}"
+              build job: "notify-slack",
+                    parameters: [
+                      string(name: 'USERNAME', value: 'build-image-aws'),
+                      string(name: 'ICON', value: ':sad-docker:'),
+                      string(name: 'JOB', value: "Build Docker image AWS: ${REPOSITORY} - ${RELEASE_NAME}"),
+                      string(name: 'CHANNEL', value: "#dmp-1-5-non-production"),
+                      string(name: 'PROJECT', value: "${REPOSITORY}"),
+                      text(name: 'RELEASE_NAME', value: "${RELEASE_NAME}"),
+                      text(name: 'STATUS', value: 'FAILED'),
+                      text(name: 'URL', value: "<${BUILD_URL}consoleFull|${BUILD_DISPLAY_NAME}>")
+                    ]
+            }
+      }
