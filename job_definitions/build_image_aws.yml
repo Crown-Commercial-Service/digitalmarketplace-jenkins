@@ -30,13 +30,11 @@
           name: AWS_ACCOUNT
           description: "The AWS Account in which to build the image"
           choices:
+            - "main"
             - "sandbox"
+            - "development"
             - "preview"
-            - "test"
-            - "nft"
-            - "uat"
-            - "integration"
-            - "preproduction"
+            - "staging"
             - "production"
       - choice:
           name: DOCKER_BUILD_BASE_IMAGES
@@ -96,19 +94,19 @@
               }
               stage('Push Built Image to ECR Registry') {
                 dir("ccs-digitalmarketplace-${REPOSITORY}") {
-                  withAWS(roleAccount:"${DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-2') {
+                  withAWS(roleAccount:"${DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-1') {
                     git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-infra.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
                     sh 'git submodule init && git submodule update --recursive'
                     if (REPOSITORY == "api") {
                       sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
-                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
+                      sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
                       sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
                       if (MARK_LATEST.toString() == "true") {
                         sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
                         sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
                       }
                       sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
-                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
+                      sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
                       sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
                       if (MARK_LATEST.toString() == "true") {
                         sh 'docker tag ccs-digitalmarketplace-aws-data-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
@@ -116,14 +114,14 @@
                       }  
                     } else {
                       sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
-                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
+                      sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
                       sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
                       if (MARK_LATEST.toString() == "true") {
                         sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
                         sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:latest'
                       }
                       sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
-                      sh 'aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
+                      sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`'
                       sh 'docker push `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:${RELEASE_NAME}'
                       if (MARK_LATEST.toString() == "true") {
                         sh 'docker tag ccs-digitalmarketplace-aws-${REPOSITORY}-wsgi `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-wsgi`:latest'
