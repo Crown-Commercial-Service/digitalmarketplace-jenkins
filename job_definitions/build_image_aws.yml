@@ -39,7 +39,7 @@
       - choice:
           name: DOCKER_BUILD_BASE_IMAGES
           default: "false"
-          description: "Whether or not to build the Docker Base images - for more info, see https://github.com/Crown-Commercial-Service/digitalmarketplace-aws-docker-base"
+          description: "Whether or not to build the Docker Base images - for more info, see https://github.com/Crown-Commercial-Service/ccs-digitalmarketplace-aws-docker-base"
           choices:
             - "false"
             - "true"
@@ -69,7 +69,7 @@
               stage('Build AWS Docker Base Images') {
                 dir('digitalmarketplace-aws-docker-base') {
                   if (DOCKER_BUILD_BASE_IMAGES == "true") {
-                    git url: "git@github.com:Crown-Commercial-Service/digitalmarketplace-aws-docker-base.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
+                    git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-docker-base.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
                     sh 'make build BASE_HTTP_BUILDSTATIC_IMAGE_NAME=digitalmarketplace/dmp-http-buildstatic BASE_HTTP_FRONTEND_IMAGE_NAME=digitalmarketplace/dmp-http-frontend BASE_HTTP_HEADLESS_IMAGE_NAME=digitalmarketplace/dmp-http-headless BASE_WSGI_IMAGE_NAME=digitalmarketplace/dmp-wsgi'
                   } else {
                     echo "Not building DMP AWS Docker Base images, continuing with the ${REPOSITORY} image build"
