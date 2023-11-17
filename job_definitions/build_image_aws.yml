@@ -30,9 +30,7 @@
           name: AWS_ACCOUNT
           description: "The AWS Account in which to build the image"
           choices:
-            - "main"
             - "sandbox"
-            - "development"
             - "preview"
             - "staging"
             - "production"
@@ -47,17 +45,11 @@
       node {
           try {
               stage('Configure AWS Account ID') {
-                if (AWS_ACCOUNT == "main") {
-                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "398263320410"
-                }
                 if (AWS_ACCOUNT == "sandbox") {
                   DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "458854535304"
                 }
-                if (AWS_ACCOUNT == "development") {
-                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "381494870249"
-                }
                 if (AWS_ACCOUNT == "preview") {
-                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "159609953067"
+                  DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "381494870249"
                 }
                 if (AWS_ACCOUNT == "staging") {
                   DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID = "685221540012"
