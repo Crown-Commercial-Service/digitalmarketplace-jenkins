@@ -89,6 +89,7 @@
                   withAWS(roleAccount:"${DMP_1_0_IMAGE_BUILD_TARGET_AWS_ACCOUNT_ID}", role: 'cicd_infrastructure', region:'eu-west-1') {
                     git url: "git@github.com:Crown-Commercial-Service/ccs-digitalmarketplace-aws-infra.git", branch: 'main', credentialsId: 'github_com_and_enterprise'
                     sh 'git submodule init && git submodule update --recursive'
+                    sh 'pip install -r scripts/core/requirements.in'
                     if (REPOSITORY == "api") {
                       sh 'docker tag digitalmarketplace-aws-data-${REPOSITORY}-http `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`:${RELEASE_NAME}'
                       sh 'aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin `scripts/core/ecr_repository/get_ecr_repository_uri.py ${REPOSITORY}-http`'
