@@ -34,7 +34,11 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
+{% if job.environment == 'preview' or job.environment == 'staging' %}
           default: "main"
+{% else %}
+          default: "aws-main"
+{% endif %}
     scm:
       - git:
           url: git@github.com:alphagov/digitalmarketplace-functional-tests.git
@@ -42,9 +46,11 @@
           branches:
             - "${FT_BRANCH_NAME}"
           wipe-workspace: false
+{% if job.environment == 'preview' or job.environment == 'staging' %}
     triggers:
       - pollscm:
           cron: "H/2 * * * *"
+{% endif %}
     wrappers:
       - ansicolor
     publishers:
