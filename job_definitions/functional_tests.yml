@@ -7,6 +7,14 @@
    "display_name": "staging",
    "description": "Run the functional test suite against the staging environment",
   },
+  {"environment": "pre",
+   "display_name": "pre",
+   "description": "Run the functional test suite against the AWS preview environment",
+  },
+  {"environment": "stg",
+   "display_name": "stg",
+   "description": "Run the functional test suite against the AWS staging environment",
+  },
 ] %}
 ---
 {% for job in jobs %}
