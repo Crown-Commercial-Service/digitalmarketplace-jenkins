@@ -80,19 +80,29 @@
     <<: *list_view
     job-name:
       - create-index-preview
+      - create-index-pre
       - create-index-staging
+      - create-index-stg
       - create-index-production
       - update-index-preview
+      - update-index-pre
       - update-index-staging
+      - update-index-stg
       - update-index-production
       - update-index-alias-preview
+      - update-index-alias-pre
       - update-index-alias-staging
+      - update-index-alias-stg
       - update-index-alias-production
       - update-briefs-index-preview
+      - update-briefs-index-pre
       - update-briefs-index-staging
+      - update-briefs-index-stg
       - update-briefs-index-production
       - update-services-index-preview
+      - update-services-index-pre
       - update-services-index-staging
+      - update-services-index-stg
       - update-services-index-production
 
 - view:
@@ -125,6 +135,8 @@
       - functional-tests-staging
       - visual-regression-preview
       - visual-regression-staging
+      - functional-tests-pre
+      - functional-tests-stg
 
 - view:
     name: "Release"

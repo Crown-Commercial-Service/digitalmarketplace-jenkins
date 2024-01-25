@@ -24,7 +24,39 @@ smoke_test_variables:
     supplier_email: supplier+smoke_test+preview@example.com
     supplier_id: 11235
     supplier_password: PreviewSmokeTestSupplierPassword
+  pre:
+    admin_email: admin+smoke_test+preview@example.com
+    admin_password: PreviewSmokeTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoke_test+preview@example.com
+    admin_ccs_category_password: PreviewSmokeTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoke_test+preview@example.com
+    admin_ccs_sourcing_password: PreviewSmokeTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoke_test+preview@example.com
+    admin_manager_password: PreviewSmokeTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoke_test+preview@example.com
+    admin_framework_manager_password: PreviewSmokeTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoke_test+preview@example.com
+    buyer_password: PreviewSmokeTestBuyerPassword
+    supplier_email: supplier+smoke_test+preview@example.com
+    supplier_id: 11235
+    supplier_password: PreviewSmokeTestSupplierPassword
   staging:
+    admin_email: admin+smoke_test+staging@example.com
+    admin_password: StagingSmokeTestAdminPassword
+    admin_ccs_category_email: admin_ccs_category+smoke_test+staging@example.com
+    admin_ccs_category_password: StagingSmokeTestAdminCCSCategoryPassword
+    admin_ccs_sourcing_email: admin_ccs_sourcing+smoke_test+staging@example.com
+    admin_ccs_sourcing_password: StagingSmokeTestAdminCCSSourcingPassword
+    admin_manager_email: admin_manager+smoke_test+staging@example.com
+    admin_manager_password: StagingSmokeTestAdminManagerPassword
+    admin_framework_manager_email: admin_framework_manager+smoke_test+staging@example.com
+    admin_framework_manager_password: StagingSmokeTestAdminFrameworkManagerPassword
+    buyer_email: buyer+smoke_test+staging@example.com
+    buyer_password: StagingSmokeTestBuyerPassword
+    supplier_email: supplier+smoke_test+staging@example.com
+    supplier_id: 11235
+    supplier_password: StagingSmokeTestSupplierPassword
+  stg:
     admin_email: admin+smoke_test+staging@example.com
     admin_password: StagingSmokeTestAdminPassword
     admin_ccs_category_email: admin_ccs_category+smoke_test+staging@example.com
