@@ -136,11 +136,11 @@ app_urls:
     www: https://www.staging.marketplace.team
     assets: https://assets.staging.marketplace.team
   stg:
-    data_api: https://api.staging.marketplace.team
-    search_api: https://search-api.staging.marketplace.team
-    antivirus_api: https://antivirus-api.staging.marketplace.team
-    www: https://www.staging.marketplace.team
-    assets: https://assets.staging.marketplace.team
+    data_api: https://api.stg.marketplace.team
+    search_api: https://search-api.stg.marketplace.team
+    antivirus_api: https://antivirus-api.stg.marketplace.team
+    www: https://www.stg.marketplace.team
+    assets: https://assets.stg.marketplace.team
   production:
     data_api: https://api.digitalmarketplace.service.gov.uk
     search_api: https://search-api.digitalmarketplace.service.gov.uk
