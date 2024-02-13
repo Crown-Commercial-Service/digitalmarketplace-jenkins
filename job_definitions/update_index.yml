@@ -19,6 +19,11 @@
       be 'g-cloud-10'.</p>
       </br>
       <p>However you may be testing a new index and want to input its name and frameworks manually.</p>
+{% if environment == 'preview' or environment == 'staging' %}
+    disabled: true
+{% else %}
+    disabled: false
+{% endif %}
     parameters:
       - choice:
           name: OBJECTS

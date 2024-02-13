@@ -1,9 +1,14 @@
-{% for environment in ['preview', 'staging', 'production'] %}
+{% for environment in ['preview', 'pre', 'staging', 'stg', 'production'] %}
 - job:
     name: "virus-scan-s3-buckets-{{ environment }}"
     display-name: "Virus scan S3 bucket(s) - {{ environment }}"
     project-type: freestyle
     description: "Run the `virus-scan-s3-bucket` script to scan & tag files in buckets via the antivirus-api"
+{% if job.environment == 'preview' or job.environment == 'staging' %}
+    disabled: true
+{% else %}
+    disabled: false
+{% endif %}
     parameters:
       - string:
           name: BUCKETS

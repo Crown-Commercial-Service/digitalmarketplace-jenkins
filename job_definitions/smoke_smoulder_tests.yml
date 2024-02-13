@@ -25,8 +25,12 @@
 {% set environments = (
   ("preview", smoke_test_variables["preview"], test_types["smoke"]),
   ("preview", smoulder_test_variables["preview"], test_types["smoulder"]),
+  ("pre", smoke_test_variables["pre"], test_types["smoke"]),
+  ("pre", smoulder_test_variables["pre"], test_types["smoulder"]),
   ("staging", smoke_test_variables["staging"], test_types["smoke"]),
   ("staging", smoulder_test_variables["staging"], test_types["smoulder"]),
+  ("stg", smoke_test_variables["stg"], test_types["smoke"]),
+  ("stg", smoulder_test_variables["stg"], test_types["smoulder"]),
   ("production", smoke_test_variables["production"], test_types["smoke"]),
   ("production", smoulder_test_variables["production"], test_types["smoulder"])
 ) %}
@@ -38,6 +42,11 @@
     project-type: pipeline
     description: |
       Check that all Digital Marketplace apps are {{ test_type.assertion_description }} in the {{ environment|upper }} environment
+{% if environment == 'preview' or environment == 'staging' or environment == 'production' %}
+    disabled: false
+{% else %}
+    disabled: true
+{% endif %}
     properties:
       - build-discarder:
           days-to-keep: 30
@@ -49,7 +58,11 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
+{% if environment == 'preview' or environment == 'staging' or environment == 'production' %}
           default: "main"
+{% else %}
+          default: "main-no-aws"
+{% endif %}
     triggers:
       - timed: "{{ test_type.timing }}"
     wrappers:
@@ -88,6 +101,8 @@
               export DM_ANTIVIRUS_API_DOMAIN="{{ app_urls[environment].antivirus_api }}"
 
               export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+
+              export DM_ADMIN_FRONTEND_DOMAIN="{{ app_urls[environment].admin_www }}"
 
               export DM_SUPPLIER_USER_EMAIL="{{ vars.supplier_email }}"
               export DM_SUPPLIER_USER_PASSWORD="{{ vars.supplier_password }}"

@@ -23,6 +23,11 @@
     display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
     description: "{{ job.description }}"
+{% if job.environment == 'pre' or job.environment == 'stg' %}
+    disabled: false
+{% else %}
+    disabled: true
+{% endif %}
     properties:
       - build-discarder:
           days-to-keep: 60
@@ -34,10 +39,10 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
-{% if job.environment == 'preview' or job.environment == 'staging' %}
+{% if job.environment == 'pre' or job.environment == 'stg' %}
           default: "main"
 {% else %}
-          default: "aws-main"
+          default: "main-no-aws"
 {% endif %}
     scm:
       - git:
@@ -46,11 +51,9 @@
           branches:
             - "${FT_BRANCH_NAME}"
           wipe-workspace: false
-{% if job.environment == 'preview' or job.environment == 'staging' %}
     triggers:
       - pollscm:
           cron: "H/2 * * * *"
-{% endif %}
     wrappers:
       - ansicolor
     publishers:
@@ -101,6 +104,8 @@
           export DM_ASSETS_DOMAIN="{{ app_urls[job.environment].assets }}"
 
           export DM_FRONTEND_DOMAIN="{{ app_urls[job.environment].www }}"
+
+          export DM_ADMIN_FRONTEND_DOMAIN="{{ app_urls[job.environment].admin_www }}"
 
           export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ job.environment|upper }}"
 
