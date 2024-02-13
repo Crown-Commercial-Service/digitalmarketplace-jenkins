@@ -65,6 +65,7 @@
           set +x # do not echo credentials - remove for debugging
 
           export DM_FRONTEND_DOMAIN="{{ app_urls[environment].www }}"
+          export DM_ADMIN_FRONTEND_DOMAIN="{{ app_urls[environment].admin_www }}"
 
           export DM_SUPPLIER_USER_EMAIL="{{ smoke_test_variables[environment].supplier_email }}"
           export DM_SUPPLIER_USER_PASSWORD="{{ smoke_test_variables[environment].supplier_password }}"
@@ -96,7 +97,7 @@
           curl ${DM_FRONTEND_DOMAIN}/buyers/_status
           curl ${DM_FRONTEND_DOMAIN}/suppliers/_status
           curl ${DM_FRONTEND_DOMAIN}/suppliers/opportunities/_status
-          curl ${DM_FRONTEND_DOMAIN}/admin/_status
+          curl ${DM_ADMIN_FRONTEND_DOMAIN}/admin/_status
           curl ${DM_FRONTEND_DOMAIN}/user/_status
 
           BACKSTOP_VERSION="$(jq -r '.dependencies.backstopjs.version' package-lock.json)"
@@ -106,7 +107,7 @@
           docker pull backstopjs/backstopjs:$BACKSTOP_VERSION
 
           docker run --rm -v $(pwd):/src -u $DOCKER_UID:$DOCKER_GID \
-            -e DM_ENVIRONMENT -e DM_FRONTEND_DOMAIN \
+            -e DM_ENVIRONMENT -e DM_FRONTEND_DOMAIN -e DM_ADMIN_FRONTEND_DOMAIN \
             -e DM_SUPPLIER_USER_EMAIL -e DM_SUPPLIER_USER_PASSWORD \
             -e DM_BUYER_USER_EMAIL -e DM_BUYER_USER_PASSWORD \
             -e DM_ADMIN_USER_EMAIL -e DM_ADMIN_USER_PASSWORD \

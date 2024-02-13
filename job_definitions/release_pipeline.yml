@@ -6,6 +6,7 @@
     project-type: pipeline
     description: Promote {{ application }} through environments
     concurrent: true
+    disabled: true
     triggers:
       - pollscm:
           cron: "* * * * *"

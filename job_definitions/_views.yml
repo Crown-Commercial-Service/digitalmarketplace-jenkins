@@ -126,17 +126,23 @@
     <<: *list_view
     job-name:
       - apps-are-up-preview
+      - apps-are-up-pre
       - apps-are-up-staging
+      - apps-are-up-stg
       - apps-are-up-production
       - apps-are-working-preview
+      - apps-are-working-pre
       - apps-are-working-staging
+      - apps-are-working-stg
       - apps-are-working-production
       - functional-tests-preview
-      - functional-tests-staging
-      - visual-regression-preview
-      - visual-regression-staging
       - functional-tests-pre
+      - functional-tests-staging
       - functional-tests-stg
+      - visual-regression-preview
+      - visual-regression-pre
+      - visual-regression-staging
+      - visual-regression-stg
 
 - view:
     name: "Release"
@@ -160,7 +166,6 @@
     <<: *list_view
     job-name:
       - build-image
-      - build-image-aws
       - build-scripts
       - clean-docker-images
       - docker-base-images

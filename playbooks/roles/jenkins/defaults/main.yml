@@ -122,30 +122,35 @@ app_urls:
     search_api: https://search-api.preview.marketplace.team
     antivirus_api: https://antivirus-api.preview.marketplace.team
     www: https://www.preview.marketplace.team
+    admin_www: https://www.preview.marketplace.team
     assets: https://assets.preview.marketplace.team
   pre:
     data_api: https://api.pre.marketplace.team
     search_api: https://search-api.pre.marketplace.team
     antivirus_api: https://antivirus-api.pre.marketplace.team
     www: https://www.pre.marketplace.team
+    admin_www: https://admin.pre.marketplace.team
     assets: https://assets.pre.marketplace.team
   staging:
     data_api: https://api.staging.marketplace.team
     search_api: https://search-api.staging.marketplace.team
     antivirus_api: https://antivirus-api.staging.marketplace.team
     www: https://www.staging.marketplace.team
+    admin_www: https://www.staging.marketplace.team
     assets: https://assets.staging.marketplace.team
   stg:
     data_api: https://api.stg.marketplace.team
     search_api: https://search-api.stg.marketplace.team
     antivirus_api: https://antivirus-api.stg.marketplace.team
     www: https://www.stg.marketplace.team
+    admin_www: https://admin.stg.marketplace.team
     assets: https://assets.stg.marketplace.team
   production:
     data_api: https://api.digitalmarketplace.service.gov.uk
     search_api: https://search-api.digitalmarketplace.service.gov.uk
     antivirus_api: https://antivirus-api.digitalmarketplace.service.gov.uk
     www: https://www.digitalmarketplace.service.gov.uk
+    admin_www: https://admin.digitalmarketplace.service.gov.uk
     assets: https://assets.digitalmarketplace.service.gov.uk
 
 search_config:

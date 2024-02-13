@@ -14,6 +14,11 @@
 
       Once you have created your new index you might want to use it on the site. To do so, you can give your new index
       an 'alias' here https://ci.marketplace.team/job/update-index-alias-{{ environment }}/
+{% if environment == 'preview' or environment == 'staging' %}
+    disabled: true
+{% else %}
+    disabled: false
+{% endif %}
     parameters:
       - choice:
           name: OBJECTS
