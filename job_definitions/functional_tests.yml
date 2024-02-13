@@ -2,18 +2,22 @@
   {"environment": "preview",
    "display_name": "preview",
    "description": "Run the functional test suite against the preview environment",
-  },
-  {"environment": "staging",
-   "display_name": "staging",
-   "description": "Run the functional test suite against the staging environment",
+   "bucket": "preview",
   },
   {"environment": "pre",
    "display_name": "pre",
    "description": "Run the functional test suite against the AWS preview environment",
+   "bucket": "preview",
+  },
+  {"environment": "staging",
+   "display_name": "staging",
+   "description": "Run the functional test suite against the staging environment",
+   "bucket": "staging",
   },
   {"environment": "stg",
    "display_name": "stg",
    "description": "Run the functional test suite against the AWS staging environment",
+   "bucket": "staging",
   },
 ] %}
 ---
@@ -23,10 +27,10 @@
     display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
     description: "{{ job.description }}"
-{% if job.environment == 'pre' or job.environment == 'stg' %}
-    disabled: false
-{% else %}
+{% if job.environment == 'preview' or job.environment == 'staging' %}
     disabled: true
+{% else %}
+    disabled: false
 {% endif %}
     properties:
       - build-discarder:
@@ -134,7 +138,11 @@
           export DM_ADMIN_FRAMEWORK_MANAGER_USER_EMAIL="{{ smoke_test_variables[job.environment].admin_framework_manager_email }}"
           export DM_ADMIN_FRAMEWORK_MANAGER_USER_PASSWORD="{{ smoke_test_variables[job.environment].admin_framework_manager_password }}"
 
-          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ job.environment }}-{{ job.environment }}"
+{% if environment == "stg" %}
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ job.bucket }}"
+{% else %}
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ job.bucket }}-{{ job.bucket }}"
+{% endif %}
 
           set -x # restore echo
 

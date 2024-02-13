@@ -42,10 +42,10 @@
     project-type: pipeline
     description: |
       Check that all Digital Marketplace apps are {{ test_type.assertion_description }} in the {{ environment|upper }} environment
-{% if environment == 'preview' or environment == 'staging' or environment == 'production' %}
-    disabled: false
-{% else %}
+{% if environment == 'preview' or environment == 'staging' %}
     disabled: true
+{% else %}
+    disabled: false
 {% endif %}
     properties:
       - build-discarder:
@@ -58,10 +58,10 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
-{% if environment == 'preview' or environment == 'staging' or environment == 'production' %}
-          default: "main"
-{% else %}
+{% if environment == 'preview' or environment == 'staging' %}
           default: "main-no-aws"
+{% else %}
+          default: "main"
 {% endif %}
     triggers:
       - timed: "{{ test_type.timing }}"
@@ -131,7 +131,13 @@
 
 
 {% if test_type["name"] == "smoulder" %}
-              export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
+{% if environment == "pre" %}
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-preview-preview"
+{% elif environment == "stg" %}
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-stg"
+{% else %}
+          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
+{% endif %}
               export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ environment|upper }}"
 {% endif %}
 
