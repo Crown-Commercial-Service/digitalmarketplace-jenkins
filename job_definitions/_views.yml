@@ -187,8 +187,12 @@
       - rotate-production-notify-callback-token
       - rotate-ft-account-passwords
       - virus-scan-s3-buckets-preview
+      - virus-scan-s3-buckets-pre
       - virus-scan-s3-buckets-staging
+      - virus-scan-s3-buckets-stag
       - virus-scan-s3-buckets-production
       - virus-scan-s3-buckets-nightly-preview
+      - virus-scan-s3-buckets-nightly-pre
       - virus-scan-s3-buckets-nightly-staging
+      - virus-scan-s3-buckets-nightly-stg
       - virus-scan-s3-buckets-nightly-production

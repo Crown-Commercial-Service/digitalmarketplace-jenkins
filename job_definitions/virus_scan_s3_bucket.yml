@@ -4,7 +4,7 @@
     display-name: "Virus scan S3 bucket(s) - {{ environment }}"
     project-type: freestyle
     description: "Run the `virus-scan-s3-bucket` script to scan & tag files in buckets via the antivirus-api"
-{% if job.environment == 'preview' or job.environment == 'staging' %}
+{% if environment == 'preview' or environment == 'staging' %}
     disabled: true
 {% else %}
     disabled: false
@@ -55,7 +55,11 @@
             condition: UNSTABLE_OR_WORSE
             block: true
             predefined-parameters: |
+{% if environment == 'stg' %}
+              BUCKETS=digitalmarketplace-agreements-{{ environment }},digitalmarketplace-communications-{{ environment }},digitalmarketplace-documents-{{ environment }},digitalmarketplace-submissions-{{ environment }}
+{% else %}
               BUCKETS=digitalmarketplace-agreements-{{ environment }}-{{ environment }},digitalmarketplace-communications-{{ environment }}-{{ environment }},digitalmarketplace-documents-{{ environment }}-{{ environment }},digitalmarketplace-submissions-{{ environment }}-{{ environment }}
+{% endif %}
               SINCE=49 hours ago
               DRY_RUN=false
 {% if environment != 'preview' %}
