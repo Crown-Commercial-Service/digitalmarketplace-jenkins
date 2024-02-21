@@ -1,8 +1,6 @@
 {% for environment, search_api_url in [
   ('preview', 'https://search-api.preview.marketplace.team/_status'),
-  ('pre', 'https://search-api.pre.marketplace.team/_status'),
   ('staging', 'https://search-api.staging.marketplace.team/_status'),
-  ('stg', 'https://search-api.stg.marketplace.team/_status'),
   ('production', 'https://search-api.digitalmarketplace.service.gov.uk/_status')
 ] %}
 - job:

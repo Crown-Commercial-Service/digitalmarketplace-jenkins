@@ -124,13 +124,6 @@ app_urls:
     www: https://www.preview.marketplace.team
     admin_www: https://www.preview.marketplace.team
     assets: https://assets.preview.marketplace.team
-  pre:
-    data_api: https://api.pre.marketplace.team
-    search_api: https://search-api.pre.marketplace.team
-    antivirus_api: https://antivirus-api.pre.marketplace.team
-    www: https://www.pre.marketplace.team
-    admin_www: https://admin.pre.marketplace.team
-    assets: https://assets.pre.marketplace.team
   staging:
     data_api: https://api.staging.marketplace.team
     search_api: https://search-api.staging.marketplace.team
@@ -138,13 +131,6 @@ app_urls:
     www: https://www.staging.marketplace.team
     admin_www: https://www.staging.marketplace.team
     assets: https://assets.staging.marketplace.team
-  stg:
-    data_api: https://api.stg.marketplace.team
-    search_api: https://search-api.stg.marketplace.team
-    antivirus_api: https://antivirus-api.stg.marketplace.team
-    www: https://www.stg.marketplace.team
-    admin_www: https://admin.stg.marketplace.team
-    assets: https://assets.stg.marketplace.team
   production:
     data_api: https://api.digitalmarketplace.service.gov.uk
     search_api: https://search-api.digitalmarketplace.service.gov.uk
@@ -159,15 +145,7 @@ search_config:
       default_index: briefs-digital-outcomes-and-specialists
       frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
-    pre:
-      default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4,digital-outcomes-and-specialists-5
-      default_mapping_name: briefs-digital-outcomes-and-specialists-2
     staging:
-      default_index: briefs-digital-outcomes-and-specialists
-      frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4,digital-outcomes-and-specialists-5
-      default_mapping_name: briefs-digital-outcomes-and-specialists-2
-    stg:
       default_index: briefs-digital-outcomes-and-specialists
       frameworks: digital-outcomes-and-specialists,digital-outcomes-and-specialists-2,digital-outcomes-and-specialists-3,digital-outcomes-and-specialists-4,digital-outcomes-and-specialists-5
       default_mapping_name: briefs-digital-outcomes-and-specialists-2
@@ -180,15 +158,7 @@ search_config:
       default_index: g-cloud-12
       frameworks: g-cloud-12
       default_mapping_name: services-g-cloud-12
-    pre:
-      default_index: g-cloud-12
-      frameworks: g-cloud-12
-      default_mapping_name: services-g-cloud-12
     staging:
-      default_index: g-cloud-12
-      frameworks: g-cloud-12
-      default_mapping_name: services-g-cloud-12
-    stg:
       default_index: g-cloud-12
       frameworks: g-cloud-12
       default_mapping_name: services-g-cloud-12

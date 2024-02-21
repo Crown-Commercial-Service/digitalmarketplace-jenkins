@@ -1,4 +1,4 @@
-{% for environment in ['preview', 'pre', 'staging', 'stg', 'production'] %}
+{% for environment in ['preview', 'staging', 'production'] %}
 - job:
     name: "virus-scan-s3-buckets-{{ environment }}"
     display-name: "Virus scan S3 bucket(s) - {{ environment }}"
@@ -55,7 +55,7 @@
             condition: UNSTABLE_OR_WORSE
             block: true
             predefined-parameters: |
-{% if environment == 'stg' %}
+{% if environment == 'staging' %}
               BUCKETS=digitalmarketplace-agreements-{{ environment }},digitalmarketplace-communications-{{ environment }},digitalmarketplace-documents-{{ environment }},digitalmarketplace-submissions-{{ environment }}
 {% else %}
               BUCKETS=digitalmarketplace-agreements-{{ environment }}-{{ environment }},digitalmarketplace-communications-{{ environment }}-{{ environment }},digitalmarketplace-documents-{{ environment }}-{{ environment }},digitalmarketplace-submissions-{{ environment }}-{{ environment }}

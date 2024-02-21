@@ -25,12 +25,8 @@
 {% set environments = (
   ("preview", smoke_test_variables["preview"], test_types["smoke"]),
   ("preview", smoulder_test_variables["preview"], test_types["smoulder"]),
-  ("pre", smoke_test_variables["pre"], test_types["smoke"]),
-  ("pre", smoulder_test_variables["pre"], test_types["smoulder"]),
   ("staging", smoke_test_variables["staging"], test_types["smoke"]),
   ("staging", smoulder_test_variables["staging"], test_types["smoulder"]),
-  ("stg", smoke_test_variables["stg"], test_types["smoke"]),
-  ("stg", smoulder_test_variables["stg"], test_types["smoulder"]),
   ("production", smoke_test_variables["production"], test_types["smoke"]),
   ("production", smoulder_test_variables["production"], test_types["smoulder"])
 ) %}
@@ -131,12 +127,10 @@
 
 
 {% if test_type["name"] == "smoulder" %}
-{% if environment == "pre" %}
-          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-preview-preview"
-{% elif environment == "stg" %}
-          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-stg"
+{% if environment == "staging" %}
+              export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-staging"
 {% else %}
-          export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
+              export DM_DOCUMENTS_BUCKET_NAME="digitalmarketplace-documents-{{ environment }}-{{ environment }}"
 {% endif %}
               export DM_NOTIFY_API_KEY="$NOTIFY_API_FUNCTIONAL_TESTS_KEY_{{ environment|upper }}"
 {% endif %}
