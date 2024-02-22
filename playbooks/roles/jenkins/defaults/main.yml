@@ -122,14 +122,14 @@ app_urls:
     search_api: https://search-api.preview.marketplace.team
     antivirus_api: https://antivirus-api.preview.marketplace.team
     www: https://www.preview.marketplace.team
-    admin_www: https://www.preview.marketplace.team
+    admin_www: https://admin.preview.marketplace.team
     assets: https://assets.preview.marketplace.team
   staging:
     data_api: https://api.staging.marketplace.team
     search_api: https://search-api.staging.marketplace.team
     antivirus_api: https://antivirus-api.staging.marketplace.team
     www: https://www.staging.marketplace.team
-    admin_www: https://www.staging.marketplace.team
+    admin_www: https://admin.staging.marketplace.team
     assets: https://assets.staging.marketplace.team
   production:
     data_api: https://api.digitalmarketplace.service.gov.uk
