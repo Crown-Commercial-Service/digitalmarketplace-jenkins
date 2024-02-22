@@ -4,11 +4,6 @@
     display-name: "Index services - {{ environment }}"
     project-type: pipeline
     description: "Update the {{ environment }} services index with services in the {{ environment }} database."
-{% if environment == 'preview' or environment == 'staging' %}
-    disabled: true
-{% else %}
-    disabled: false
-{% endif %}
     concurrent: false
     triggers:
       - timed: "H 2 * * *"

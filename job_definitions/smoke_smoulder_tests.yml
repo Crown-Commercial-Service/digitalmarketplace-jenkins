@@ -38,11 +38,6 @@
     project-type: pipeline
     description: |
       Check that all Digital Marketplace apps are {{ test_type.assertion_description }} in the {{ environment|upper }} environment
-{% if environment == 'preview' or environment == 'staging' %}
-    disabled: true
-{% else %}
-    disabled: false
-{% endif %}
     properties:
       - build-discarder:
           days-to-keep: 30

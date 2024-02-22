@@ -15,11 +15,6 @@
       <a href="https://alphagov.github.io/digitalmarketplace-manual/infrastructure/elasticsearch.html#aliases">https://alphagov.github.io/digitalmarketplace-manual/infrastructure/elasticsearch.html#aliases</a><br><br>
 
       The value you choose for <code>'TARGET'</code> should be included in: <a href="{{ search_api_url }}">{{ search_api_url }}</a>
-{% if environment == 'preview' or environment == 'staging' %}
-    disabled: true
-{% else %}
-    disabled: false
-{% endif %}
     project-type: pipeline
     concurrent: false
     parameters:

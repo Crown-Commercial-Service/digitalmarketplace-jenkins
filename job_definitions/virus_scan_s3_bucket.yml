@@ -4,11 +4,6 @@
     display-name: "Virus scan S3 bucket(s) - {{ environment }}"
     project-type: freestyle
     description: "Run the `virus-scan-s3-bucket` script to scan & tag files in buckets via the antivirus-api"
-{% if environment == 'preview' or environment == 'staging' %}
-    disabled: true
-{% else %}
-    disabled: false
-{% endif %}
     parameters:
       - string:
           name: BUCKETS
