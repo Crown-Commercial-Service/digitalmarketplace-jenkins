@@ -80,29 +80,19 @@
     <<: *list_view
     job-name:
       - create-index-preview
-      - create-index-pre
       - create-index-staging
-      - create-index-stg
       - create-index-production
       - update-index-preview
-      - update-index-pre
       - update-index-staging
-      - update-index-stg
       - update-index-production
       - update-index-alias-preview
-      - update-index-alias-pre
       - update-index-alias-staging
-      - update-index-alias-stg
       - update-index-alias-production
       - update-briefs-index-preview
-      - update-briefs-index-pre
       - update-briefs-index-staging
-      - update-briefs-index-stg
       - update-briefs-index-production
       - update-services-index-preview
-      - update-services-index-pre
       - update-services-index-staging
-      - update-services-index-stg
       - update-services-index-production
 
 - view:
@@ -126,23 +116,15 @@
     <<: *list_view
     job-name:
       - apps-are-up-preview
-      - apps-are-up-pre
       - apps-are-up-staging
-      - apps-are-up-stg
       - apps-are-up-production
       - apps-are-working-preview
-      - apps-are-working-pre
       - apps-are-working-staging
-      - apps-are-working-stg
       - apps-are-working-production
       - functional-tests-preview
-      - functional-tests-pre
       - functional-tests-staging
-      - functional-tests-stg
       - visual-regression-preview
-      - visual-regression-pre
       - visual-regression-staging
-      - visual-regression-stg
 
 - view:
     name: "Release"
@@ -187,12 +169,9 @@
       - rotate-production-notify-callback-token
       - rotate-ft-account-passwords
       - virus-scan-s3-buckets-preview
-      - virus-scan-s3-buckets-pre
       - virus-scan-s3-buckets-staging
       - virus-scan-s3-buckets-stag
       - virus-scan-s3-buckets-production
       - virus-scan-s3-buckets-nightly-preview
-      - virus-scan-s3-buckets-nightly-pre
       - virus-scan-s3-buckets-nightly-staging
-      - virus-scan-s3-buckets-nightly-stg
       - virus-scan-s3-buckets-nightly-production
