@@ -17,11 +17,6 @@
     display-name: "Functional tests - {{ job.display_name }}"
     project-type: freestyle
     description: "{{ job.description }}"
-{% if job.environment == 'preview' or job.environment == 'staging' %}
-    disabled: true
-{% else %}
-    disabled: false
-{% endif %}
     properties:
       - build-discarder:
           days-to-keep: 60
