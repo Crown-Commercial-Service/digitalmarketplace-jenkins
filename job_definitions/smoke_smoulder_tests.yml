@@ -49,11 +49,7 @@
     parameters:
       - string:
           name: FT_BRANCH_NAME
-{% if environment == 'preview' or environment == 'staging' %}
-          default: "main-no-aws"
-{% else %}
           default: "main"
-{% endif %}
     triggers:
       - timed: "{{ test_type.timing }}"
     wrappers:
